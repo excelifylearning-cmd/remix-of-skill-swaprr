@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 
 const navLinks = [
   { label: "Features", href: "/features" },
+  { label: "Marketplace", href: "/marketplace" },
   { label: "How It Works", href: "/how-it-works" },
   { label: "Pricing", href: "/pricing" },
   { label: "About", href: "/about" },
@@ -12,6 +13,27 @@ const navLinks = [
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLight, setIsLight] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("theme");
+    if (stored === "light") {
+      setIsLight(true);
+      document.documentElement.classList.add("light");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isLight;
+    setIsLight(next);
+    if (next) {
+      document.documentElement.classList.add("light");
+      localStorage.setItem("theme", "light");
+    } else {
+      document.documentElement.classList.remove("light");
+      localStorage.setItem("theme", "dark");
+    }
+  };
 
   return (
     <motion.nav
@@ -25,7 +47,7 @@ const Navbar = () => {
           Skill<span className="text-silver">Swappr</span>
         </a>
 
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-7 lg:flex">
           {navLinks.map((link, i) => (
             <motion.a
               key={link.label}
@@ -42,7 +64,39 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-3 lg:flex">
+          <motion.button
+            onClick={toggleTheme}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:text-foreground"
+            whileHover={{ scale: 1.1, rotate: 15 }}
+            whileTap={{ scale: 0.9 }}
+            aria-label="Toggle theme"
+          >
+            <AnimatePresence mode="wait">
+              {isLight ? (
+                <motion.div
+                  key="moon"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Moon size={16} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="sun"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Sun size={16} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
+
           <motion.a
             href="/login"
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -61,12 +115,21 @@ const Navbar = () => {
           </motion.a>
         </div>
 
-        <button
-          className="text-foreground md:hidden"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <motion.button
+            onClick={toggleTheme}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground"
+            whileTap={{ scale: 0.9 }}
+          >
+            {isLight ? <Moon size={16} /> : <Sun size={16} />}
+          </motion.button>
+          <button
+            className="text-foreground"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -75,7 +138,7 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-xl md:hidden"
+            className="overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-xl lg:hidden"
           >
             <div className="flex flex-col gap-4 p-6">
               {navLinks.map((link) => (
