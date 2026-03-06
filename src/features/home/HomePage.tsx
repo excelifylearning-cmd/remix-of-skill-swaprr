@@ -1,4 +1,5 @@
 import Navbar from "@/components/shared/Navbar";
+import CustomCursor from "@/components/shared/CustomCursor";
 import HeroSection from "./sections/HeroSection";
 import SkillPointsSection from "./sections/SkillPointsSection";
 import MarketplacePreviewSection from "./sections/MarketplacePreviewSection";
@@ -15,6 +16,7 @@ import CTAFooterSection from "./sections/CTAFooterSection";
 const HomePage = () => {
   return (
     <div className="min-h-screen bg-background">
+      <CustomCursor />
       <Navbar />
       <HeroSection />
       <SkillPointsSection />

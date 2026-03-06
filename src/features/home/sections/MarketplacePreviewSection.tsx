@@ -1,5 +1,7 @@
+import { useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import { Star, TrendingUp, Palette, Code, PenTool, Video, BarChart3 } from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
 
 const categories = [
   { label: "Design", icon: Palette },
@@ -20,14 +22,8 @@ const mockGigs = [
   { skill: "Motion Graphics", wants: "Backend API", points: 35, seller: "Omar H.", elo: 1600, rating: 4.9, avatar: "OH" },
 ];
 
-const GigCard = ({ gig, index }: { gig: typeof mockGigs[0]; index: number }) => (
-  <motion.div
-    initial={{ opacity: 0, x: 50 }}
-    whileInView={{ opacity: 1, x: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: index * 0.08, duration: 0.5 }}
-    className="card-3d group min-w-[300px] flex-shrink-0"
-  >
+const GigCard = ({ gig }: { gig: (typeof mockGigs)[0] }) => (
+  <div className="card-3d group min-w-0 flex-[0_0_300px]">
     <div className="card-3d-inner h-full rounded-2xl border border-border bg-card p-5 transition-all duration-300 hover:border-silver/30">
       <div className="mb-4 flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 font-mono text-xs font-semibold text-silver-accent">
@@ -67,10 +63,33 @@ const GigCard = ({ gig, index }: { gig: typeof mockGigs[0]; index: number }) => 
         </div>
       )}
     </div>
-  </motion.div>
+  </div>
 );
 
 const MarketplacePreviewSection = () => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: "start",
+    dragFree: true,
+    containScroll: false,
+  });
+  const animationRef = useRef<number>();
+
+  const autoScroll = useCallback(() => {
+    if (!emblaApi) return;
+    if (!emblaApi.canScrollNext()) {
+      emblaApi.scrollTo(0);
+    }
+    emblaApi.scrollNext();
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const interval = setInterval(autoScroll, 3000);
+    emblaApi.on("pointerDown", () => clearInterval(interval));
+    return () => clearInterval(interval);
+  }, [emblaApi, autoScroll]);
+
   return (
     <section className="relative overflow-hidden bg-background py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6">
@@ -116,10 +135,12 @@ const MarketplacePreviewSection = () => {
           <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-24 bg-gradient-to-r from-background to-transparent" />
           <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-background to-transparent" />
 
-          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-            {mockGigs.map((gig, i) => (
-              <GigCard key={i} gig={gig} index={i} />
-            ))}
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex gap-4">
+              {[...mockGigs, ...mockGigs].map((gig, i) => (
+                <GigCard key={i} gig={gig} />
+              ))}
+            </div>
           </div>
         </div>
 
