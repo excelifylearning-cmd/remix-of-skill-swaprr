@@ -11,25 +11,22 @@ const footerLinks = {
     { label: "Roadmap", href: "/roadmap" },
   ],
   Community: [
-    { label: "Forums", href: "#" },
-    { label: "Guilds", href: "#" },
-    { label: "Leaderboard", href: "#" },
+    { label: "Forums", href: "/forums" },
+    { label: "Blog", href: "/blog" },
     { label: "Success Stories", href: "/about" },
-    { label: "Blog", href: "#" },
+    { label: "Enterprise", href: "/enterprise" },
   ],
   Resources: [
-    { label: "Help Center", href: "#" },
-    { label: "Docs & API", href: "#" },
-    { label: "Status", href: "#" },
-    { label: "Bug Bounty", href: "#" },
-    { label: "Changelog", href: "#" },
+    { label: "Contact Us", href: "/contact" },
+    { label: "About", href: "/about" },
+    { label: "Help Center", href: "/contact" },
   ],
   Legal: [
     { label: "Privacy Policy", href: "/legal" },
     { label: "Terms of Service", href: "/legal" },
     { label: "GDPR", href: "/legal" },
     { label: "Community Guidelines", href: "/legal" },
-    { label: "IP Policy", href: "/legal" },
+    { label: "Cookie Policy", href: "/legal" },
   ],
 };
 
