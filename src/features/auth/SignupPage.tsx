@@ -1,21 +1,40 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, User, GraduationCap, CheckCircle2, Github } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, User, GraduationCap, CheckCircle2, Github, Circle, AlertCircle } from "lucide-react";
 import PageTransition from "@/components/shared/PageTransition";
+
+const passwordCriteria = [
+  { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
+  { label: "Uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+  { label: "Lowercase letter", test: (p: string) => /[a-z]/.test(p) },
+  { label: "Number", test: (p: string) => /[0-9]/.test(p) },
+  { label: "Special character (!@#$...)", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+];
 
 const SignupPage = () => {
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [university, setUniversity] = useState("");
   const [showPass, setShowPass] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [skills, setSkills] = useState<string[]>([]);
 
   const allSkills = ["UI/UX Design", "Web Dev", "Mobile Dev", "Video Editing", "Copywriting", "Data Science", "Marketing", "Illustration", "Photography", "3D Modeling"];
 
   const toggleSkill = (s: string) => setSkills((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
+
+  const criteriaMet = useMemo(() => passwordCriteria.map((c) => c.test(password)), [password]);
+  const passedCount = criteriaMet.filter(Boolean).length;
+  const strengthLabel = passedCount <= 1 ? "Weak" : passedCount <= 3 ? "Fair" : passedCount <= 4 ? "Good" : "Strong";
+  const strengthColor = passedCount <= 1 ? "bg-destructive" : passedCount <= 3 ? "bg-badge-gold" : "bg-skill-green";
+  const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
+  const passwordsMismatch = confirmPassword.length > 0 && password !== confirmPassword;
+
+  const canContinueStep1 = name.trim() && email.trim() && passedCount >= 4 && passwordsMatch;
 
   return (
     <PageTransition>
@@ -53,6 +72,73 @@ const SignupPage = () => {
                       <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">{showPass ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                     </div>
 
+                    {/* Password Strength */}
+                    {password.length > 0 && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="space-y-3">
+                        {/* Strength bar */}
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-medium text-muted-foreground">Password strength</span>
+                            <span className={`text-[10px] font-semibold ${passedCount <= 1 ? "text-destructive" : passedCount <= 3 ? "text-badge-gold" : "text-skill-green"}`}>
+                              {strengthLabel}
+                            </span>
+                          </div>
+                          <div className="flex gap-1">
+                            {[0, 1, 2, 3, 4].map((i) => (
+                              <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i < passedCount ? strengthColor : "bg-border"}`} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Criteria checklist */}
+                        <div className="space-y-1.5">
+                          {passwordCriteria.map((c, i) => (
+                            <motion.div
+                              key={c.label}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.05 }}
+                              className="flex items-center gap-2"
+                            >
+                              {criteriaMet[i] ? (
+                                <CheckCircle2 size={13} className="text-skill-green flex-shrink-0" />
+                              ) : (
+                                <Circle size={13} className="text-muted-foreground/40 flex-shrink-0" />
+                              )}
+                              <span className={`text-[11px] transition-colors ${criteriaMet[i] ? "text-skill-green" : "text-muted-foreground/60"}`}>
+                                {c.label}
+                              </span>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Confirm Password */}
+                    <div className="relative">
+                      <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type={showConfirm ? "text" : "password"}
+                        placeholder="Confirm password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className={`h-12 w-full rounded-xl border bg-card pl-11 pr-11 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none transition-colors ${
+                          passwordsMismatch ? "border-destructive focus:border-destructive" : passwordsMatch ? "border-skill-green/50 focus:border-skill-green" : "border-border focus:border-ring"
+                        }`}
+                      />
+                      <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">{showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}</button>
+                    </div>
+                    {passwordsMismatch && (
+                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-1.5 text-[11px] text-destructive">
+                        <AlertCircle size={12} /> Passwords don't match
+                      </motion.p>
+                    )}
+                    {passwordsMatch && (
+                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-1.5 text-[11px] text-skill-green">
+                        <CheckCircle2 size={12} /> Passwords match
+                      </motion.p>
+                    )}
+
                     <div className="relative mb-6">
                       <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
                       <div className="relative flex justify-center"><span className="bg-background px-3 text-xs text-muted-foreground">or</span></div>
@@ -67,7 +153,16 @@ const SignupPage = () => {
                       </button>
                     </div>
 
-                    <motion.button onClick={() => setStep(2)} className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                    <motion.button
+                      onClick={() => canContinueStep1 && setStep(2)}
+                      className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all ${
+                        canContinueStep1
+                          ? "bg-foreground text-background"
+                          : "bg-muted text-muted-foreground cursor-not-allowed"
+                      }`}
+                      whileHover={canContinueStep1 ? { scale: 1.01 } : {}}
+                      whileTap={canContinueStep1 ? { scale: 0.99 } : {}}
+                    >
                       Continue <ArrowRight size={16} />
                     </motion.button>
                   </div>
