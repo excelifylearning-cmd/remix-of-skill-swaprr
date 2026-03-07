@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useInView, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
+import CursorGlow from "@/components/shared/CursorGlow";
+import PageTransition from "@/components/shared/PageTransition";
 import {
   Heart, Target, Zap, Shield, Users, Globe, ArrowRight, Play, Star,
   Award, TrendingUp, BookOpen, Handshake, Building2, Mail, Linkedin,
