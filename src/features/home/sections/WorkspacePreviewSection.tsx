@@ -159,18 +159,35 @@ const WorkspacePreviewSection = () => {
                   )}
 
                   {current.id === "whiteboard" && (
-                    <div className="flex h-40 items-center justify-center rounded-xl border-2 border-dashed border-border bg-surface-2">
-                      <p className="text-sm text-silver">Interactive tldraw canvas preview</p>
+                    <div className="relative overflow-hidden rounded-xl border-2 border-dashed border-border">
+                      <img
+                        src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&h=300&fit=crop"
+                        alt="Whiteboard collaboration"
+                        className="h-40 w-full object-cover opacity-60 grayscale"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-surface-2/50">
+                        <p className="text-sm text-silver">Interactive tldraw canvas</p>
+                      </div>
                     </div>
                   )}
 
                   {current.id === "video" && (
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="flex h-28 items-center justify-center rounded-xl bg-surface-2">
-                        <p className="text-xs text-silver">Your Camera</p>
+                      <div className="relative overflow-hidden rounded-xl">
+                        <img
+                          src="https://images.unsplash.com/photo-1543269865-cbf427effbad?w=300&h=200&fit=crop&crop=face"
+                          alt="Your camera"
+                          className="h-28 w-full object-cover grayscale"
+                        />
+                        <div className="absolute bottom-2 left-2 rounded bg-card/70 px-2 py-0.5 text-[10px] text-silver backdrop-blur-sm">You</div>
                       </div>
-                      <div className="flex h-28 items-center justify-center rounded-xl bg-surface-3">
-                        <p className="text-xs text-silver">Partner</p>
+                      <div className="relative overflow-hidden rounded-xl">
+                        <img
+                          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop&crop=face"
+                          alt="Partner camera"
+                          className="h-28 w-full object-cover grayscale"
+                        />
+                        <div className="absolute bottom-2 left-2 rounded bg-card/70 px-2 py-0.5 text-[10px] text-silver backdrop-blur-sm">Partner</div>
                       </div>
                     </div>
                   )}
