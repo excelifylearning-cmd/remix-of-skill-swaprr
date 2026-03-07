@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Github, Twitter, Linkedin, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const footerLinks = {
   Platform: [
@@ -13,13 +14,15 @@ const footerLinks = {
   Community: [
     { label: "Forums", href: "/forums" },
     { label: "Blog", href: "/blog" },
-    { label: "Success Stories", href: "/about" },
+    { label: "Leaderboard", href: "/leaderboard" },
     { label: "Enterprise", href: "/enterprise" },
   ],
   Resources: [
+    { label: "Help Center", href: "/help" },
     { label: "Contact Us", href: "/contact" },
     { label: "About", href: "/about" },
-    { label: "Help Center", href: "/contact" },
+    { label: "Transaction Lookup", href: "/transaction" },
+    { label: "History", href: "/history" },
   ],
   Legal: [
     { label: "Privacy Policy", href: "/legal" },
@@ -144,9 +147,9 @@ const CTAFooterSection = () => {
       <footer className="mx-auto max-w-7xl px-6 py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-1">
-            <a href="/" className="font-heading text-xl font-bold text-foreground">
+            <Link to="/" className="font-heading text-xl font-bold text-foreground">
               Skill<span className="text-muted-foreground">Swappr</span>
-            </a>
+            </Link>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               The skill exchange platform for students. Trade what you know for what you need.
             </p>
@@ -156,7 +159,7 @@ const CTAFooterSection = () => {
                   key={s.label}
                   href={s.href}
                   aria-label={s.label}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-2 text-muted-foreground transition-colors hover:bg-surface-3 hover:text-foreground"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-2 text-muted-foreground transition-colors hover:text-foreground"
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -172,9 +175,9 @@ const CTAFooterSection = () => {
               <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={link.label}>
-                    <a href={link.href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                    <Link to={link.href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

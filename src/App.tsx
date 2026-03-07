@@ -7,6 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import { lazy, Suspense } from "react";
 import ScrollToTop from "@/components/shared/ScrollToTop";
 import LoadingScreen from "@/components/shared/LoadingScreen";
+import CookieConsent from "@/components/shared/CookieConsent";
 
 const HomePage = lazy(() => import("./features/home/HomePage"));
 const AboutPage = lazy(() => import("./features/about/AboutPage"));
@@ -22,6 +23,10 @@ const BlogPage = lazy(() => import("./features/blog/BlogPage"));
 const ForumsPage = lazy(() => import("./features/forums/ForumsPage"));
 const LoginPage = lazy(() => import("./features/auth/LoginPage"));
 const SignupPage = lazy(() => import("./features/auth/SignupPage"));
+const HelpPage = lazy(() => import("./features/help/HelpPage"));
+const HistoryPage = lazy(() => import("./features/history/HistoryPage"));
+const LeaderboardPage = lazy(() => import("./features/leaderboard/LeaderboardPage"));
+const TransactionLookupPage = lazy(() => import("./features/transaction/TransactionLookupPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -47,6 +52,10 @@ const AnimatedRoutes = () => {
           <Route path="/forums" element={<ForumsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/help" element={<HelpPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
+          <Route path="/transaction" element={<TransactionLookupPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
@@ -62,6 +71,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <AnimatedRoutes />
+        <CookieConsent />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
