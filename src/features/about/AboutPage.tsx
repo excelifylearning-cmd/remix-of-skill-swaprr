@@ -863,9 +863,11 @@ const AboutCTASection = () => (
 
 /* ───── Main Page ───── */
 const AboutPage = () => (
-  <div className="min-h-screen bg-background">
-    <CustomCursor />
-    <Navbar />
+  <PageTransition>
+    <div className="min-h-screen bg-background">
+      <CustomCursor />
+      <CursorGlow />
+      <Navbar />
     <MissionHeroSection />
     <ProblemSection />
     <TimelineSection />
