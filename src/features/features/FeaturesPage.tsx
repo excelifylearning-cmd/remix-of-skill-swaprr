@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Coins, ArrowLeftRight, Gavel, Users, Layers, FolderKanban, Shield,
+  Coins, ArrowLeftRight, Gavel, Users, Layers, FolderKanban, Shield, Star,
   Target, Trophy, Flame, Medal, Swords, Scale, Bot, GraduationCap,
   Zap, MessageSquare, PenTool, Video, FolderOpen, CheckCircle2, Sparkles,
   Building2, Search, Clock, Timer, Eye, Lock, FileText, TrendingUp
