@@ -60,7 +60,15 @@ const StatCounter = ({ value, suffix, label }: { value: number; suffix: string; 
 const UniversityPartnersSection = () => {
   return (
     <section className="relative overflow-hidden bg-background py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-6">
+      {/* Background campus image */}
+      <div className="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1562774053-701939374585?w=1920&h=1080&fit=crop"
+          alt="University campus"
+          className="h-full w-full object-cover opacity-[0.06] grayscale"
+        />
+      </div>
+      <div className="relative mx-auto max-w-7xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
