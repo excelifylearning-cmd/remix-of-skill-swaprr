@@ -8,7 +8,7 @@ const LoadingScreen = () => {
           {[0, 1, 2, 3, 4].map((i) => (
             <motion.div
               key={i}
-              className="h-8 w-1.5 rounded-full bg-foreground"
+              className="h-8 w-1.5 rounded-full bg-muted-foreground"
               animate={{
                 scaleY: [1, 2.5, 1],
                 opacity: [0.3, 1, 0.3],

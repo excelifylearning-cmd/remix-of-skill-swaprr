@@ -17,6 +17,11 @@ const EnterprisePage = lazy(() => import("./features/enterprise/EnterprisePage")
 const MarketplacePage = lazy(() => import("./features/marketplace/MarketplacePage"));
 const LegalPage = lazy(() => import("./features/legal/LegalPage"));
 const RoadmapPage = lazy(() => import("./features/roadmap/RoadmapPage"));
+const ContactPage = lazy(() => import("./features/contact/ContactPage"));
+const BlogPage = lazy(() => import("./features/blog/BlogPage"));
+const ForumsPage = lazy(() => import("./features/forums/ForumsPage"));
+const LoginPage = lazy(() => import("./features/auth/LoginPage"));
+const SignupPage = lazy(() => import("./features/auth/SignupPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -37,6 +42,11 @@ const AnimatedRoutes = () => {
           <Route path="/marketplace" element={<MarketplacePage />} />
           <Route path="/legal" element={<LegalPage />} />
           <Route path="/roadmap" element={<RoadmapPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/forums" element={<ForumsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
