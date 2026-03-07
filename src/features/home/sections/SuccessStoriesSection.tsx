@@ -4,7 +4,7 @@ import { Quote, ArrowRight, Star } from "lucide-react";
 const featuredStory = {
   name: "Sofia Chen",
   university: "Stanford University",
-  avatar: "SC",
+  photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face",
   quote: "I designed 12 logos and got a complete portfolio website, a mobile app prototype, and SEO strategy in return. No money spent — just skill points and great work.",
   skillsGained: ["React", "Mobile Design", "SEO"],
   gigsCompleted: 47,
@@ -16,7 +16,7 @@ const stories = [
   {
     name: "Marcus Johnson",
     university: "MIT",
-    avatar: "MJ",
+    photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
     quote: "Guild Wars got my team competing and improving. Our guild's ELO jumped 300 points in two months.",
     skill: "Backend Development",
     rating: 5.0,
@@ -24,7 +24,7 @@ const stories = [
   {
     name: "Priya Sharma",
     university: "IIT Delhi",
-    avatar: "PS",
+    photo: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=100&h=100&fit=crop&crop=face",
     quote: "The co-creation studio let me work with 4 people across 3 countries to build a complete SaaS product.",
     skill: "Product Design",
     rating: 4.9,
@@ -32,7 +32,7 @@ const stories = [
   {
     name: "Thomas Berg",
     university: "ETH Zürich",
-    avatar: "TB",
+    photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     quote: "Skill Court judging earned me expert status and 500 bonus points. The weighted voting system is genuinely fair.",
     skill: "Data Science",
     rating: 4.8,
@@ -72,9 +72,11 @@ const SuccessStoriesSection = () => {
                 "{featuredStory.quote}"
               </p>
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-surface-2 font-heading text-sm font-bold text-foreground">
-                  {featuredStory.avatar}
-                </div>
+                <img
+                  src={featuredStory.photo}
+                  alt={featuredStory.name}
+                  className="h-12 w-12 rounded-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                />
                 <div>
                   <p className="font-heading font-semibold text-foreground">{featuredStory.name}</p>
                   <p className="text-sm text-silver">{featuredStory.university}</p>
@@ -121,9 +123,11 @@ const SuccessStoriesSection = () => {
               className="group rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-silver/30"
             >
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 font-heading text-xs font-bold text-foreground">
-                  {story.avatar}
-                </div>
+                <img
+                  src={story.photo}
+                  alt={story.name}
+                  className="h-10 w-10 rounded-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                />
                 <div>
                   <p className="text-sm font-medium text-foreground">{story.name}</p>
                   <p className="text-xs text-silver">{story.university}</p>

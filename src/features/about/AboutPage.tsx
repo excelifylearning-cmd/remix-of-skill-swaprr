@@ -32,7 +32,7 @@ const useCountUp = (end: number, duration = 2000) => {
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 60 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" as const } },
 };
 
 const staggerContainer = {
@@ -51,7 +51,17 @@ const MissionHeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-transparent" />
-      {/* Floating 3D-like shapes */}
+      {/* Background image */}
+      <div className="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&h=1080&fit=crop"
+          alt="Students collaborating"
+          className="h-full w-full object-cover opacity-15 grayscale"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
+      </div>
+
+      {/* Floating shapes */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(6)].map((_, i) => (
           <motion.div
@@ -73,14 +83,6 @@ const MissionHeroSection = () => {
             }}
           />
         ))}
-        {/* Hands exchanging icon */}
-        <motion.div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-          animate={{ y: [-10, 10, -10] }}
-          transition={{ duration: 6, repeat: Infinity }}
-        >
-          <Handshake className="w-32 h-32 text-silver/10" strokeWidth={0.5} />
-        </motion.div>
       </div>
 
       <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
@@ -176,8 +178,8 @@ const ProblemSection = () => {
               variants={fadeUp}
             >
               {/* Problem */}
-              <div className="glass rounded-2xl p-6 text-right">
-                <div className="flex items-center justify-end gap-3">
+              <div className="glass rounded-2xl p-6 text-right overflow-hidden relative">
+                <div className="flex items-center justify-end gap-3 relative z-10">
                   <span className="text-destructive font-medium">{item.problem}</span>
                   <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
                     <item.icon className="w-5 h-5 text-destructive" />
@@ -367,9 +369,12 @@ const SuccessStoriesGallery = () => {
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-radial from-[hsl(var(--badge-gold)/0.05)] to-transparent" />
           <div className="flex flex-col md:flex-row gap-8 items-center">
-            <div className="w-24 h-24 rounded-full bg-surface-2 border-2 border-badge-gold flex items-center justify-center text-2xl font-bold font-heading text-badge-gold shrink-0" style={{ borderColor: "hsl(var(--badge-gold))" }}>
-              {stories[0].avatar}
-            </div>
+            <img
+              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face"
+              alt={stories[0].name}
+              className="w-24 h-24 rounded-full object-cover border-2 shrink-0 grayscale hover:grayscale-0 transition-all duration-500"
+              style={{ borderColor: "hsl(var(--badge-gold))" }}
+            />
             <div className="flex-1 text-center md:text-left">
               <Quote className="w-8 h-8 text-badge-gold mb-4 mx-auto md:mx-0" />
               <p className="text-xl md:text-2xl font-medium mb-4 leading-relaxed">"{stories[0].quote}"</p>
@@ -397,9 +402,15 @@ const SuccessStoriesGallery = () => {
             >
               <div className="card-3d-inner">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-surface-2 flex items-center justify-center font-heading font-bold text-sm">
-                    {story.avatar}
-                  </div>
+                  <img
+                    src={[
+                      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+                      "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=100&h=100&fit=crop&crop=face",
+                      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+                    ][i]}
+                    alt={story.name}
+                    className="w-12 h-12 rounded-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                  />
                   <div>
                     <p className="font-semibold text-sm">{story.name}</p>
                     <p className="text-xs text-silver">{story.university}</p>
@@ -476,9 +487,12 @@ const UniversityPartnershipsSection = () => {
           animate={inView ? { opacity: 1, scale: 1 } : {}}
           transition={{ delay: 0.3 }}
         >
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Globe className="w-48 h-48 text-border/30" />
-          </div>
+          <img
+            src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=600&fit=crop"
+            alt="University campus"
+            className="absolute inset-0 h-full w-full object-cover opacity-20 grayscale"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-card/90 to-transparent" />
           {universities.slice(0, 10).map((uni, i) => (
             <motion.div
               key={i}
@@ -656,9 +670,18 @@ const TeamSection = () => {
                   className="absolute inset-0 glass rounded-2xl p-8 flex flex-col items-center justify-center"
                   style={{ backfaceVisibility: "hidden" }}
                 >
-                  <div className="w-20 h-20 rounded-full bg-surface-2 border border-border flex items-center justify-center text-2xl font-heading font-bold mb-4">
-                    {member.initials}
-                  </div>
+                  <img
+                    src={[
+                      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=face",
+                      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face",
+                      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face",
+                      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=face",
+                      "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=200&h=200&fit=crop&crop=face",
+                      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face",
+                    ][i]}
+                    alt={member.name}
+                    className="w-20 h-20 rounded-full object-cover border border-border mb-4 grayscale group-hover:grayscale-0 transition-all duration-500"
+                  />
                   <h3 className="font-heading font-bold text-lg">{member.name}</h3>
                   <p className="text-sm text-silver mt-1">{member.role}</p>
                 </div>

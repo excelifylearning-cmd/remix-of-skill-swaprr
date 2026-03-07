@@ -41,11 +41,13 @@ const GuildSection = () => {
               <div className="border-b border-border px-5 py-3">
                 <span className="font-heading text-sm font-semibold text-foreground">Sample Guild</span>
               </div>
-              <div className="p-5">
+                <div className="p-5">
                 <div className="mb-4 flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-2 font-heading text-lg font-bold text-foreground">
-                    ΛX
-                  </div>
+                  <img
+                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&h=100&fit=crop"
+                    alt="Lambda X guild"
+                    className="h-12 w-12 rounded-xl object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                  />
                   <div>
                     <h3 className="font-heading font-semibold text-foreground">Lambda X</h3>
                     <p className="text-xs text-silver">Full-stack design & dev collective</p>
