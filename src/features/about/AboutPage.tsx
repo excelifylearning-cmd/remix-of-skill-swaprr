@@ -49,11 +49,10 @@ const fadeUp = {
 
 /* ───── Section 1: Mission Hero ───── */
 const MissionHeroSection = () => {
-  const headline = "Built by students, for students.";
+  const words = ["Built", "by", "students,", "for", "students."];
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-transparent" />
-      {/* Background image */}
       <div className="absolute inset-0">
         <img
           src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&h=1080&fit=crop"
@@ -63,7 +62,6 @@ const MissionHeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
       </div>
 
-      {/* Floating shapes */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(6)].map((_, i) => (
           <motion.div
@@ -75,10 +73,7 @@ const MissionHeroSection = () => {
               left: `${20 + i * 10}%`,
               top: `${15 + i * 8}%`,
             }}
-            animate={{
-              rotate: [0, 360],
-              scale: [1, 1.05, 1],
-            }}
+            animate={{ rotate: [0, 360], scale: [1, 1.05, 1] }}
             transition={{
               rotate: { duration: 20 + i * 5, repeat: Infinity, ease: "linear" },
               scale: { duration: 4 + i, repeat: Infinity, ease: "easeInOut" },
@@ -88,19 +83,19 @@ const MissionHeroSection = () => {
       </div>
 
       <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
-        <motion.div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-8">
-          {headline.split("").map((char, i) => (
+        <div className="flex flex-wrap justify-center gap-x-3 sm:gap-x-5 gap-y-2 mb-8">
+          {words.map((word, i) => (
             <motion.span
               key={i}
-              className="font-heading text-5xl sm:text-7xl lg:text-8xl font-bold text-foreground"
+              className="font-heading text-4xl sm:text-6xl lg:text-8xl font-bold text-foreground"
               initial={{ opacity: 0, y: 50, rotateX: -90 }}
               animate={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{ delay: 0.03 * i, duration: 0.5 }}
+              transition={{ delay: 0.15 * i, duration: 0.5 }}
             >
-              {char === " " ? "\u00A0" : char}
+              {word}
             </motion.span>
           ))}
-        </motion.div>
+        </div>
 
         <motion.p
           className="text-xl sm:text-2xl text-silver max-w-3xl mx-auto leading-relaxed"
