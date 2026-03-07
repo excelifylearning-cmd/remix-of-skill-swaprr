@@ -877,8 +877,9 @@ const AboutPage = () => (
     <TeamSection />
     <CommunityStatsSection />
     <ValuesCultureSection />
-    <AboutCTASection />
-  </div>
+      <AboutCTASection />
+    </div>
+  </PageTransition>
 );
 
 export default AboutPage;
