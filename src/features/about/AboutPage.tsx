@@ -142,70 +142,71 @@ const ProblemSection = () => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   const problems = [
-    { icon: Briefcase, problem: "High freelancing fees (20-30%)", solution: "Zero cash fees — trade skills directly" },
-    { icon: Shield, problem: "No trust between strangers", solution: "ELO ratings, verified identities, Skill Court" },
-    { icon: Target, problem: "Cash barrier for students", solution: "Skill Points economy — earn by doing" },
-    { icon: Clock, problem: "No dispute resolution", solution: "AI + community-powered Skill Court" },
+    { icon: Briefcase, problem: "High freelancing fees", stat: "20-30%", solution: "Zero cash fees — trade skills directly", solutionStat: "0%" },
+    { icon: Shield, problem: "No trust between strangers", stat: "87% worry", solution: "ELO ratings + verified identities", solutionStat: "98% safe" },
+    { icon: Target, problem: "Cash barrier for students", stat: "$0 budget", solution: "Skill Points economy — earn by doing", solutionStat: "∞ potential" },
+    { icon: Clock, problem: "No dispute resolution", stat: "Weeks lost", solution: "AI + community Skill Court", solutionStat: "48hr avg" },
   ];
 
   return (
     <motion.section
       ref={ref}
-      className="py-32 px-6"
+      className="py-24 lg:py-32 px-6"
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       variants={sectionVariants}
     >
       <div className="max-w-6xl mx-auto">
-        <motion.h2
-          className="font-heading text-4xl sm:text-5xl font-bold text-center mb-4"
-          variants={fadeUp}
-        >
-          The Problem We Solve
-        </motion.h2>
-        <motion.p className="text-silver text-center mb-20 max-w-2xl mx-auto" variants={fadeUp}>
-          Traditional freelancing wasn't built for students. We fixed that.
-        </motion.p>
+        <motion.div className="text-center mb-16" variants={fadeUp}>
+          <span className="inline-block rounded-full border border-border bg-surface-2 px-4 py-1.5 font-mono text-xs text-muted-foreground mb-4">Why SkillSwappr?</span>
+          <h2 className="font-heading text-4xl sm:text-5xl font-bold mb-4">The Problem We Solve</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">Traditional freelancing wasn't built for students. We fixed that.</p>
+        </motion.div>
 
-        <motion.div className="space-y-8" variants={staggerContainer}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {problems.map((item, i) => (
             <motion.div
               key={i}
-              className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-8 items-center"
-              variants={fadeUp}
+              className="group rounded-2xl border border-border bg-card p-6 transition-all hover:border-foreground/20"
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.1 + i * 0.1 }}
             >
-              {/* Problem */}
-              <div className="glass rounded-2xl p-6 text-right overflow-hidden relative">
-                <div className="flex items-center justify-end gap-3 relative z-10">
-                  <span className="text-destructive font-medium">{item.problem}</span>
-                  <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
-                    <item.icon className="w-5 h-5 text-destructive" />
+              <div className="flex items-start gap-4 mb-4">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-destructive/10">
+                  <item.icon className="w-5 h-5 text-destructive" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium text-destructive">{item.problem}</span>
+                    <span className="font-mono text-xs text-destructive/70">{item.stat}</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-destructive/10 mb-4">
+                    <motion.div
+                      className="h-full rounded-full bg-destructive/40"
+                      initial={{ width: 0 }}
+                      animate={inView ? { width: "100%" } : {}}
+                      transition={{ delay: 0.3 + i * 0.1, duration: 0.8 }}
+                    />
                   </div>
                 </div>
               </div>
 
-              {/* Connector */}
               <motion.div
-                className="hidden md:flex items-center justify-center"
-                initial={{ scaleX: 0 }}
-                animate={inView ? { scaleX: 1 } : {}}
-                transition={{ delay: 0.3 + i * 0.15, duration: 0.5 }}
+                className="flex items-center gap-3 rounded-xl bg-skill-green/5 border border-skill-green/10 p-4"
+                initial={{ opacity: 0 }}
+                animate={inView ? { opacity: 1 } : {}}
+                transition={{ delay: 0.5 + i * 0.1 }}
               >
-                <ArrowRight className="w-6 h-6 text-skill-green" />
-              </motion.div>
-
-              {/* Solution */}
-              <div className="glass rounded-2xl p-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[hsl(var(--skill-green)/0.1)] flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="w-5 h-5 text-skill-green" />
-                  </div>
-                  <span className="text-skill-green font-medium">{item.solution}</span>
+                <CheckCircle2 className="w-5 h-5 text-skill-green flex-shrink-0" />
+                <div className="flex-1">
+                  <span className="text-sm font-medium text-skill-green">{item.solution}</span>
                 </div>
-              </div>
+                <span className="font-mono text-xs text-skill-green/70">{item.solutionStat}</span>
+              </motion.div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </motion.section>
   );
