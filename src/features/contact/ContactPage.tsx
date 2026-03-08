@@ -32,7 +32,7 @@ const topics = [
 
 const priorityLevels = [
   { label: "Low", desc: "General question, no rush", color: "text-muted-foreground", bg: "border-border" },
-  { label: "Medium", desc: "Need help soon", color: "text-badge-gold", bg: "border-badge-gold/30" },
+  { label: "Medium", desc: "Need help soon", color: "text-muted-foreground", bg: "border-muted-foreground/30" },
   { label: "High", desc: "Blocking my work", color: "text-alert-red", bg: "border-alert-red/30" },
 ];
 
