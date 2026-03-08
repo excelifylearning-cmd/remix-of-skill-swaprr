@@ -521,7 +521,37 @@ const ForumsPage = () => {
     });
   };
 
-  const sortedThreads = [...allThreads]
+  // Convert DB threads to display format and merge with hardcoded fallback
+  const allThreadsDisplay = dbThreads.length > 0 
+    ? dbThreads.map(t => ({
+        id: t.id,
+        title: t.title,
+        author: t.author_name,
+        authorAvatar: t.author_name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase(),
+        authorFlair: "Member",
+        authorKarma: 100,
+        authorJoined: "2025",
+        authorGigs: 0,
+        replies: t.comment_count,
+        views: t.view_count,
+        upvotes: t.upvotes,
+        downvotes: t.downvotes,
+        hot: t.upvotes > 50,
+        category: forumCategories.find(c => 'id' in c && c.id === t.category_id)?.name || "General",
+        timeAgo: formatTimeAgo(t.created_at),
+        tags: t.tags || [],
+        hasImage: false,
+        hasPoll: false,
+        hasCode: false,
+        hasAttachment: false,
+        locked: t.is_locked,
+        sticky: t.is_pinned,
+        content: t.content,
+        awards: [] as { icon: string; count: number }[],
+      }))
+    : allThreads;
+
+  const sortedThreads = [...allThreadsDisplay]
     .filter((t) => !selectedCategory || t.category === selectedCategory)
     .filter((t) => !searchQuery || t.title.toLowerCase().includes(searchQuery.toLowerCase()) || t.tags.some((tag) => tag.includes(searchQuery.toLowerCase())))
     .sort((a, b) => {
@@ -533,8 +563,30 @@ const ForumsPage = () => {
       return b.views - a.views;
     });
 
-  const openThread = allThreads.find((t) => t.id === selectedThread);
-  const replies = selectedThread ? (threadReplies[selectedThread] || []) : [];
+  const openThread = allThreadsDisplay.find((t) => t.id === selectedThread);
+  
+  // Convert DB comments to display format
+  const replies = dbComments.length > 0 
+    ? dbComments.filter(c => !c.parent_id).map(c => ({
+        author: c.author_name,
+        avatar: c.author_name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase(),
+        flair: "Member",
+        text: c.content,
+        time: formatTimeAgo(c.created_at),
+        upvotes: c.upvotes,
+        downvotes: c.downvotes,
+        replies: dbComments.filter(r => r.parent_id === c.id).length,
+        awards: [] as { icon: string; count: number }[],
+        nested: dbComments.filter(r => r.parent_id === c.id).map(r => ({
+          author: r.author_name,
+          avatar: r.author_name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase(),
+          flair: "Member",
+          text: r.content,
+          time: formatTimeAgo(r.created_at),
+          upvotes: r.upvotes,
+        }))
+      }))
+    : (selectedThread ? (threadReplies[selectedThread] || []) : []);
 
   // ============ THREAD DETAIL VIEW ============
   if (openThread) {
