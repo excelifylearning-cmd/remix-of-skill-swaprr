@@ -35,10 +35,10 @@ const HeroSection = () => {
   }, [spotlightX, spotlightY]);
 
   return (
-    <section ref={containerRef} className="relative flex min-h-screen items-center overflow-hidden bg-background">
+    <section ref={containerRef} className="relative flex min-h-screen items-center overflow-hidden bg-background pt-20 lg:pt-0">
       {/* Cursor-following gradient spotlight */}
       <motion.div
-        className="pointer-events-none absolute z-[1] h-[600px] w-[600px] rounded-full"
+        className="pointer-events-none absolute z-[1] h-[600px] w-[600px] rounded-full hidden lg:block"
         style={{
           x: spotlightX,
           y: spotlightY,
@@ -51,12 +51,12 @@ const HeroSection = () => {
       />
 
       <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 px-6 lg:grid-cols-2">
-        {/* Left: Spline 3D Robot */}
+        {/* Left: Spline 3D Robot — hidden on mobile for performance */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative aspect-square w-full max-w-[600px] mx-auto lg:mx-0"
+          className="relative aspect-square w-full max-w-[500px] mx-auto lg:mx-0 hidden md:block"
         >
           <iframe
             src="https://my.spline.design/genkubgreetingrobot-HTe9Lm88u5SNyHQbXlcTcSeH/"
@@ -65,6 +65,7 @@ const HeroSection = () => {
             height="100%"
             className="rounded-2xl"
             title="3D Robot"
+            loading="lazy"
           />
         </motion.div>
 
@@ -81,7 +82,7 @@ const HeroSection = () => {
             </span>
           </motion.div>
 
-          <h1 className="mb-6 font-heading text-5xl font-black leading-[1.1] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+          <h1 className="mb-6 font-heading text-4xl font-black leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-7xl">
             {headlineWords.map((word, i) => (
               <motion.span
                 key={i}
@@ -135,7 +136,7 @@ const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2.2, duration: 1 }}
-            className="mt-12 flex items-center gap-8"
+            className="mt-12 flex items-center gap-4 sm:gap-8 flex-wrap"
           >
             <div className="text-center">
               <span className="font-heading text-2xl font-bold text-foreground">10K+</span>

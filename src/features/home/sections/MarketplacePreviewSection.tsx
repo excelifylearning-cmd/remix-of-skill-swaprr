@@ -1,8 +1,9 @@
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import { Star, TrendingUp, Palette, Code, PenTool, Video, BarChart3, ArrowRight, Clock, Eye, Flame } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const categories = [
   { label: "Design", icon: Palette },
@@ -12,21 +13,38 @@ const categories = [
   { label: "Marketing", icon: BarChart3 },
 ];
 
-const mockGigs = [
-  { skill: "Logo Design", wants: "React Development", points: 30, seller: "Maya K.", elo: 1450, rating: 4.9, avatar: "MK", hot: true, posted: "2h", views: 124 },
-  { skill: "Python Backend", wants: "UI/UX Design", points: 0, seller: "James T.", elo: 1680, rating: 5.0, avatar: "JT", hot: false, posted: "4h", views: 89 },
-  { skill: "Video Editing", wants: "Copywriting", points: 15, seller: "Aisha R.", elo: 1320, rating: 4.7, avatar: "AR", hot: false, posted: "6h", views: 67 },
-  { skill: "3D Modeling", wants: "Mobile App Dev", points: 45, seller: "Carlos M.", elo: 1550, rating: 4.8, avatar: "CM", hot: true, posted: "1h", views: 203 },
-  { skill: "SEO Strategy", wants: "Graphic Design", points: 10, seller: "Emma L.", elo: 1400, rating: 4.6, avatar: "EL", hot: false, posted: "8h", views: 45 },
-  { skill: "Data Analysis", wants: "Brand Identity", points: 25, seller: "Raj P.", elo: 1720, rating: 5.0, avatar: "RP", hot: true, posted: "30m", views: 312 },
-  { skill: "Illustration", wants: "WordPress Dev", points: 20, seller: "Lena S.", elo: 1380, rating: 4.8, avatar: "LS", hot: false, posted: "12h", views: 78 },
-  { skill: "Motion Graphics", wants: "Backend API", points: 35, seller: "Omar H.", elo: 1600, rating: 4.9, avatar: "OH", hot: false, posted: "3h", views: 156 },
-  { skill: "React Native App", wants: "UI Design", points: 50, seller: "Chen L.", elo: 1750, rating: 5.0, avatar: "CL", hot: true, posted: "15m", views: 445 },
-  { skill: "Game Design", wants: "Sound Design", points: 30, seller: "Alex F.", elo: 1490, rating: 4.8, avatar: "AF", hot: true, posted: "2h", views: 178 },
+type Gig = {
+  title: string;
+  wants: string;
+  points: number;
+  seller: string;
+  elo: number;
+  rating: number;
+  avatar: string;
+  hot: boolean;
+  posted: string;
+  views: number;
+};
+
+const fallbackGigs: Gig[] = [
+  { title: "Logo Design", wants: "React Development", points: 30, seller: "Maya K.", elo: 1450, rating: 4.9, avatar: "MK", hot: true, posted: "2h", views: 124 },
+  { title: "Python Backend", wants: "UI/UX Design", points: 0, seller: "James T.", elo: 1680, rating: 5.0, avatar: "JT", hot: false, posted: "4h", views: 89 },
+  { title: "Video Editing", wants: "Copywriting", points: 15, seller: "Aisha R.", elo: 1320, rating: 4.7, avatar: "AR", hot: false, posted: "6h", views: 67 },
+  { title: "3D Modeling", wants: "Mobile App Dev", points: 45, seller: "Carlos M.", elo: 1550, rating: 4.8, avatar: "CM", hot: true, posted: "1h", views: 203 },
+  { title: "SEO Strategy", wants: "Graphic Design", points: 10, seller: "Emma L.", elo: 1400, rating: 4.6, avatar: "EL", hot: false, posted: "8h", views: 45 },
 ];
 
-const GigCard = ({ gig }: { gig: (typeof mockGigs)[0] }) => (
-  <div className="card-3d group min-w-0 flex-[0_0_300px]">
+const timeAgo = (dateStr: string) => {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  return `${Math.floor(hrs / 24)}d`;
+};
+
+const GigCard = ({ gig }: { gig: Gig }) => (
+  <div className="card-3d group min-w-0 flex-[0_0_280px] sm:flex-[0_0_300px]">
     <div className="card-3d-inner h-full rounded-2xl border border-border bg-card p-5 transition-all duration-300 hover:border-foreground/20 hover:shadow-[0_0_20px_hsl(var(--silver)/0.06)]">
       <div className="mb-4 flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 font-mono text-xs font-semibold text-foreground">
@@ -47,11 +65,11 @@ const GigCard = ({ gig }: { gig: (typeof mockGigs)[0] }) => (
       <div className="mb-3 space-y-2">
         <div className="rounded-lg bg-surface-2 px-3 py-2">
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Offering</span>
-          <p className="text-sm font-medium text-foreground">{gig.skill}</p>
+          <p className="text-sm font-medium text-foreground">{gig.title}</p>
         </div>
         <div className="rounded-lg border border-dashed border-border px-3 py-2">
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Wants</span>
-          <p className="text-sm font-medium text-foreground/80">{gig.wants}</p>
+          <p className="text-sm font-medium text-foreground/80">{gig.wants || "Open to offers"}</p>
         </div>
       </div>
 
@@ -62,8 +80,7 @@ const GigCard = ({ gig }: { gig: (typeof mockGigs)[0] }) => (
 
       {gig.points > 0 ? (
         <div className="flex items-center gap-1.5 rounded-full bg-skill-green/10 px-3 py-1 text-xs font-semibold text-skill-green">
-          <TrendingUp size={12} />
-          +{gig.points} SP to balance
+          <TrendingUp size={12} />+{gig.points} SP to balance
         </div>
       ) : (
         <div className="rounded-full bg-surface-2 px-3 py-1 text-xs font-medium text-muted-foreground">
@@ -75,11 +92,41 @@ const GigCard = ({ gig }: { gig: (typeof mockGigs)[0] }) => (
 );
 
 const MarketplacePreviewSection = () => {
+  const [gigs, setGigs] = useState<Gig[]>(fallbackGigs);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from("listings")
+        .select("title, wants, points, views, hot, created_at, rating, user_id, profiles!listings_user_id_profiles_fkey(display_name, full_name, elo)")
+        .eq("status", "active")
+        .order("views", { ascending: false })
+        .limit(12);
+
+      if (data?.length) {
+        setGigs(data.map((l: any) => {
+          const name = l.profiles?.display_name || l.profiles?.full_name || "User";
+          const initials = name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+          return {
+            title: l.title,
+            wants: l.wants || "Open to offers",
+            points: l.points || 0,
+            seller: name,
+            elo: l.profiles?.elo || 1000,
+            rating: l.rating || 4.5,
+            avatar: initials,
+            hot: l.hot || false,
+            posted: timeAgo(l.created_at),
+            views: l.views || 0,
+          };
+        }));
+      }
+    };
+    load();
+  }, []);
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: true,
-    align: "start",
-    dragFree: true,
-    containScroll: false,
+    loop: true, align: "start", dragFree: true, containScroll: false,
   });
 
   const autoScroll = useCallback(() => {
@@ -108,23 +155,22 @@ const MarketplacePreviewSection = () => {
           <span className="mb-4 inline-block rounded-full border border-border bg-surface-2 px-4 py-1.5 font-mono text-xs text-muted-foreground">
             Live Activity
           </span>
-          <h2 className="mb-4 font-heading text-4xl font-bold text-foreground sm:text-5xl">
+          <h2 className="mb-4 font-heading text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl">
             Live Marketplace
           </h2>
-          <p className="mx-auto max-w-lg text-lg text-muted-foreground">
+          <p className="mx-auto max-w-lg text-base text-muted-foreground sm:text-lg">
             Real gigs happening right now. Find your perfect skill exchange.
           </p>
         </motion.div>
 
-        {/* Stats */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mb-8 flex flex-wrap justify-center gap-8"
+          className="mb-8 flex flex-wrap justify-center gap-4 sm:gap-8"
         >
           {[
-            { label: "Active Gigs", value: "240+" },
+            { label: "Active Gigs", value: `${gigs.length}+` },
             { label: "Online Now", value: "1.2K" },
             { label: "Avg Response", value: "< 5min" },
           ].map((stat) => (
@@ -139,7 +185,7 @@ const MarketplacePreviewSection = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mb-10 flex flex-wrap justify-center gap-3"
+          className="mb-10 flex flex-wrap justify-center gap-2 sm:gap-3"
         >
           {categories.map((cat, i) => (
             <motion.button
@@ -150,7 +196,7 @@ const MarketplacePreviewSection = () => {
               transition={{ delay: i * 0.08 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
-              className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-muted-foreground transition-all hover:border-foreground/30 hover:text-foreground"
+              className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm text-muted-foreground transition-all hover:border-foreground/30 hover:text-foreground"
             >
               <cat.icon size={14} />
               {cat.label}
@@ -159,12 +205,11 @@ const MarketplacePreviewSection = () => {
         </motion.div>
 
         <div className="relative">
-          <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-24 bg-gradient-to-r from-background to-transparent" />
-          <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-background to-transparent" />
-
+          <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-16 sm:w-24 bg-gradient-to-r from-background to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-16 sm:w-24 bg-gradient-to-l from-background to-transparent" />
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex gap-4">
-              {[...mockGigs, ...mockGigs].map((gig, i) => (
+              {[...gigs, ...gigs].map((gig, i) => (
                 <GigCard key={i} gig={gig} />
               ))}
             </div>
@@ -180,7 +225,7 @@ const MarketplacePreviewSection = () => {
         >
           <Link
             to="/marketplace"
-            className="inline-flex items-center gap-2 rounded-full bg-foreground px-8 py-3.5 text-sm font-semibold text-background transition-shadow hover:shadow-[0_0_20px_hsl(var(--silver)/0.2)]"
+            className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-shadow hover:shadow-[0_0_20px_hsl(var(--silver)/0.2)] sm:px-8 sm:py-3.5"
           >
             Browse Full Marketplace
             <ArrowRight size={16} />

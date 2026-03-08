@@ -207,15 +207,101 @@ const AnalyticsPage = () => {
   const [chartMetric, setChartMetric] = useState<"users" | "gigs">("users");
   const [dbQuarters, setDbQuarters] = useState<any[]>([]);
   const [dbMetrics, setDbMetrics] = useState<any>(null);
+  const [telemetry, setTelemetry] = useState<{
+    totalSessions: number;
+    avgDuration: number;
+    avgScrollDepth: number;
+    avgEngagement: number;
+    totalClicks: number;
+    rageClicks: number;
+    deadClicks: number;
+    totalErrors: number;
+    topPages: { path: string; count: number; avgDuration: number }[];
+    topClickElements: { tag: string; text: string; count: number }[];
+    errorTypes: { type: string; count: number }[];
+    hourlyActivity: { hour: number; sessions: number }[];
+    deviceBreakdown: { device: string; count: number }[];
+  }>({
+    totalSessions: 0, avgDuration: 0, avgScrollDepth: 0, avgEngagement: 0,
+    totalClicks: 0, rageClicks: 0, deadClicks: 0, totalErrors: 0,
+    topPages: [], topClickElements: [], errorTypes: [], hourlyActivity: [], deviceBreakdown: [],
+  });
 
   useEffect(() => {
     const fetchData = async () => {
-      const [qRes, mRes] = await Promise.all([
+      const [qRes, mRes, sessRes, clickRes, errRes] = await Promise.all([
         supabase.from("quarterly_reports").select("*").order("quarter_id"),
         supabase.from("platform_metrics").select("*").order("metric_date", { ascending: false }).limit(1),
+        supabase.from("page_sessions").select("*").order("created_at", { ascending: false }).limit(500),
+        supabase.from("click_heatmap").select("*").order("created_at", { ascending: false }).limit(500),
+        supabase.from("error_log").select("*").order("created_at", { ascending: false }).limit(200),
       ]);
       if (qRes.data?.length) setDbQuarters(qRes.data);
       if (mRes.data?.length) setDbMetrics(mRes.data[0]);
+
+      const sessions = sessRes.data || [];
+      const clicks = clickRes.data || [];
+      const errors = errRes.data || [];
+
+      // Aggregate telemetry
+      const totalSessions = sessions.length;
+      const avgDuration = totalSessions ? Math.round(sessions.reduce((a, s) => a + (s.duration_seconds || 0), 0) / totalSessions) : 0;
+      const avgScrollDepth = totalSessions ? Math.round(sessions.reduce((a, s) => a + (s.scroll_depth_max || 0), 0) / totalSessions) : 0;
+      const avgEngagement = totalSessions ? Math.round(sessions.reduce((a, s) => a + (s.engagement_score || 0), 0) / totalSessions) : 0;
+      
+      const rageClicks = clicks.filter(c => c.is_rage_click).length;
+      const deadClicks = clicks.filter(c => c.is_dead_click).length;
+
+      // Top pages
+      const pageMap = new Map<string, { count: number; totalDur: number }>();
+      sessions.forEach(s => {
+        const entry = pageMap.get(s.page_path) || { count: 0, totalDur: 0 };
+        entry.count++;
+        entry.totalDur += s.duration_seconds || 0;
+        pageMap.set(s.page_path, entry);
+      });
+      const topPages = Array.from(pageMap.entries())
+        .map(([path, v]) => ({ path, count: v.count, avgDuration: Math.round(v.totalDur / v.count) }))
+        .sort((a, b) => b.count - a.count).slice(0, 10);
+
+      // Top click elements
+      const elemMap = new Map<string, number>();
+      clicks.forEach(c => {
+        const key = `${c.element_tag || "?"}:${(c.element_text || "").slice(0, 30)}`;
+        elemMap.set(key, (elemMap.get(key) || 0) + 1);
+      });
+      const topClickElements = Array.from(elemMap.entries())
+        .map(([k, count]) => {
+          const [tag, text] = k.split(":");
+          return { tag, text: text || "(no text)", count };
+        })
+        .sort((a, b) => b.count - a.count).slice(0, 10);
+
+      // Error types
+      const errMap = new Map<string, number>();
+      errors.forEach(e => {
+        errMap.set(e.error_type, (errMap.get(e.error_type) || 0) + 1);
+      });
+      const errorTypes = Array.from(errMap.entries())
+        .map(([type, count]) => ({ type, count }))
+        .sort((a, b) => b.count - a.count);
+
+      // Hourly activity
+      const hourMap = new Map<number, number>();
+      sessions.forEach(s => {
+        const h = new Date(s.entered_at).getHours();
+        hourMap.set(h, (hourMap.get(h) || 0) + 1);
+      });
+      const hourlyActivity = Array.from({ length: 24 }, (_, i) => ({
+        hour: i, sessions: hourMap.get(i) || 0,
+      }));
+
+      setTelemetry({
+        totalSessions, avgDuration, avgScrollDepth, avgEngagement,
+        totalClicks: clicks.length, rageClicks, deadClicks,
+        totalErrors: errors.length, topPages, topClickElements,
+        errorTypes, hourlyActivity, deviceBreakdown: [],
+      });
     };
     fetchData();
   }, []);
@@ -609,6 +695,104 @@ const AnalyticsPage = () => {
                 </motion.div>
               ))}
             </div>
+          </div>
+        </section>
+        {/* 13. TELEMETRY — Real-Time User Behavior */}
+        <section className="bg-surface-1 py-20">
+          <div className="mx-auto max-w-6xl px-6">
+            <motion.div className="mb-12" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <span className="mb-2 inline-block rounded-full border border-border bg-surface-2 px-3 py-1 font-mono text-[10px] text-muted-foreground"><Activity size={10} className="inline mr-1" />Live Telemetry</span>
+              <h2 className="font-heading text-3xl font-bold text-foreground mb-1">User Behavior Analytics</h2>
+              <p className="text-sm text-muted-foreground">Real-time data from the telemetry engine</p>
+            </motion.div>
+
+            <div className="grid gap-3 grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 mb-8">
+              {[
+                { label: "Total Sessions", value: telemetry.totalSessions.toLocaleString(), icon: Users },
+                { label: "Avg Duration", value: `${telemetry.avgDuration}s`, icon: Clock },
+                { label: "Avg Scroll", value: `${telemetry.avgScrollDepth}%`, icon: TrendingUp },
+                { label: "Engagement", value: `${telemetry.avgEngagement}`, icon: Star },
+                { label: "Total Clicks", value: telemetry.totalClicks.toLocaleString(), icon: Activity },
+                { label: "Rage Clicks", value: String(telemetry.rageClicks), icon: Flame },
+                { label: "Dead Clicks", value: String(telemetry.deadClicks), icon: Shield },
+                { label: "Errors", value: String(telemetry.totalErrors), icon: Server },
+              ].map((s, i) => (
+                <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.03 }} className="rounded-xl border border-border bg-card p-4">
+                  <s.icon size={14} className="text-muted-foreground mb-1" />
+                  <p className="font-heading text-xl font-black text-foreground">{s.value}</p>
+                  <p className="text-[9px] text-muted-foreground">{s.label}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Hourly Activity Chart */}
+            <div className="rounded-2xl border border-border bg-card p-6 mb-6">
+              <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2"><Clock size={14} /> Hourly Activity Pattern</h3>
+              <div className="flex items-end gap-1" style={{ height: 120 }}>
+                {telemetry.hourlyActivity.map((h, i) => {
+                  const maxH = Math.max(...telemetry.hourlyActivity.map(x => x.sessions), 1);
+                  return (
+                    <motion.div key={i} className="relative flex-1 group" initial={{ height: 0 }} whileInView={{ height: `${(h.sessions / maxH) * 100}%` }} viewport={{ once: true }} transition={{ delay: i * 0.02, duration: 0.4 }}>
+                      <div className="absolute inset-0 rounded-t bg-foreground/60 group-hover:bg-foreground transition-colors" />
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[8px] font-bold text-foreground bg-card border border-border rounded px-1 py-0.5 whitespace-nowrap z-10">{h.sessions}</div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+              <div className="mt-2 flex gap-1">
+                {telemetry.hourlyActivity.filter((_, i) => i % 3 === 0).map((h) => (
+                  <div key={h.hour} className="flex-[3] text-center font-mono text-[7px] text-muted-foreground">{h.hour}:00</div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-2">
+              {/* Top Pages */}
+              <div className="rounded-2xl border border-border bg-card overflow-hidden">
+                <div className="bg-surface-2 px-5 py-3 text-xs font-bold text-foreground flex items-center gap-2"><Globe size={12} /> Top Pages by Sessions</div>
+                {telemetry.topPages.length ? telemetry.topPages.map((p, i) => (
+                  <div key={p.path} className="flex items-center justify-between border-b border-border/50 last:border-0 px-5 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-[10px] text-muted-foreground w-5">{i + 1}</span>
+                      <span className="text-xs font-medium text-foreground truncate max-w-[180px]">{p.path}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-xs text-foreground">{p.count}</span>
+                      <span className="font-mono text-[10px] text-muted-foreground">{p.avgDuration}s avg</span>
+                    </div>
+                  </div>
+                )) : <p className="px-5 py-8 text-xs text-muted-foreground text-center">No session data yet. Browse the site to generate telemetry.</p>}
+              </div>
+
+              {/* Top Clicked Elements */}
+              <div className="rounded-2xl border border-border bg-card overflow-hidden">
+                <div className="bg-surface-2 px-5 py-3 text-xs font-bold text-foreground flex items-center gap-2"><Activity size={12} /> Top Clicked Elements</div>
+                {telemetry.topClickElements.length ? telemetry.topClickElements.map((c, i) => (
+                  <div key={i} className="flex items-center justify-between border-b border-border/50 last:border-0 px-5 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground">&lt;{c.tag}&gt;</span>
+                      <span className="text-xs text-foreground truncate max-w-[150px]">{c.text}</span>
+                    </div>
+                    <span className="font-mono text-xs text-foreground">{c.count}×</span>
+                  </div>
+                )) : <p className="px-5 py-8 text-xs text-muted-foreground text-center">No click data yet.</p>}
+              </div>
+            </div>
+
+            {/* Error Log Summary */}
+            {telemetry.errorTypes.length > 0 && (
+              <div className="mt-6 rounded-2xl border border-destructive/20 bg-card p-6">
+                <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2"><Server size={14} className="text-destructive" /> Error Summary</h3>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {telemetry.errorTypes.map((e) => (
+                    <div key={e.type} className="rounded-xl border border-border bg-surface-1 p-4 text-center">
+                      <p className="font-heading text-2xl font-black text-destructive">{e.count}</p>
+                      <p className="text-[10px] text-muted-foreground mt-1">{e.type}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </section>
         
