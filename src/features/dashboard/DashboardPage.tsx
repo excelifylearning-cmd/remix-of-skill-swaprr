@@ -969,16 +969,17 @@ const SettingsTab = ({ profile, updateProfile }: { profile: any; updateProfile: 
   const [displayName, setDisplayName] = useState(profile?.display_name || "");
   const [bio, setBio] = useState(profile?.bio || "");
   const [saving, setSaving] = useState(false);
-  const { toast } = { toast: (await import("sonner")).toast };
 
   const handleSave = async () => {
     setSaving(true);
     const result = await updateProfile({ display_name: displayName, bio });
     setSaving(false);
-    if (result.success) {
-      (await import("sonner")).toast.success("Profile updated!");
+    if (result?.success) {
+      const { toast } = await import("sonner");
+      toast.success("Profile updated!");
     } else {
-      (await import("sonner")).toast.error(result.error || "Failed to save");
+      const { toast } = await import("sonner");
+      toast.error(result?.error || "Failed to save");
     }
   };
 
