@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageSquare, Users, Flame, Pin, ArrowRight, ArrowLeft, ThumbsUp,
@@ -8,18 +8,69 @@ import {
   TrendingUp, Lock, Globe, CheckCircle2, AlertCircle, Heart, AtSign,
   BarChart3, Layers, ChevronRight, Bot, Gift, Crown, Sparkles, Copy, Play,
   Calendar, Target, Swords, GraduationCap, BookOpen, Lightbulb, Megaphone,
-  ThumbsDown, Mic, Video, PenTool, ArrowUp, ExternalLink, Medal, Wifi
+  ThumbsDown, Mic, Video, PenTool, ArrowUp, ExternalLink, Medal, Wifi, Loader2
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
-
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
+import { toast } from "sonner";
 
 type SortType = "hot" | "new" | "top" | "rising";
 
-const forumCategories = [
+// Database types
+interface DbCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  icon: string;
+  color: string;
+  thread_count: number;
+  created_at: string;
+}
+
+interface DbThread {
+  id: string;
+  category_id: string | null;
+  author_id: string | null;
+  author_name: string;
+  title: string;
+  content: string;
+  is_pinned: boolean;
+  is_locked: boolean;
+  view_count: number;
+  upvotes: number;
+  downvotes: number;
+  comment_count: number;
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+  category?: DbCategory;
+}
+
+interface DbComment {
+  id: string;
+  thread_id: string;
+  parent_id: string | null;
+  author_id: string | null;
+  author_name: string;
+  content: string;
+  upvotes: number;
+  downvotes: number;
+  created_at: string;
+}
+
+// Icon mapping for categories
+const iconMap: Record<string, any> = {
+  MessageSquare, Palette, Code, Trophy, Shield, Users, Zap, Hash,
+  BarChart3, Globe, Lightbulb, Video, GraduationCap, Bot, Star, BookOpen
+};
+
+const defaultForumCategories = [
   { icon: MessageSquare, name: "General Discussion", desc: "Talk about anything related to SkillSwappr", threads: 1240, posts: 8930, color: "foreground", online: 89 },
   { icon: Palette, name: "Design Corner", desc: "Share design work, get feedback, discuss trends", threads: 890, posts: 5670, color: "court-blue", online: 42 },
   { icon: Code, name: "Dev Talk", desc: "Programming, architecture, and tech discussions", threads: 1100, posts: 7240, color: "skill-green", online: 67 },
