@@ -231,7 +231,51 @@ const recentActivity = [
   { user: "Dev_Riku", action: "replied to", target: "API webhooks tutorial", time: "30m ago" },
 ];
 
-const ForumsPage = () => {
+const debateOfTheWeek = {
+  title: "Should SkillSwappr allow AI-generated deliverables?",
+  description: "A heated debate on whether AI-assisted or fully AI-generated work should be accepted on the platform. Both sides have strong arguments.",
+  forCount: 234,
+  againstCount: 189,
+  author: "Mod Team",
+  comments: 312,
+  timeLeft: "3 days left",
+};
+
+const reputationLevels = [
+  { level: "Newcomer", minKarma: 0, icon: Star, color: "muted-foreground", perks: ["Post threads", "Vote", "Comment"] },
+  { level: "Regular", minKarma: 100, icon: Zap, color: "foreground", perks: ["Create polls", "Upload attachments", "Custom flair"] },
+  { level: "Contributor", minKarma: 500, icon: Award, color: "court-blue", perks: ["Highlight posts", "Pin in guilds", "Beta access"] },
+  { level: "Expert", minKarma: 2000, icon: Medal, color: "badge-gold", perks: ["Publish guides", "Moderate threads", "Verified badge"] },
+  { level: "Legend", minKarma: 10000, icon: Crown, color: "badge-gold", perks: ["Custom avatar frame", "Priority support", "Mod nominations"] },
+];
+
+const forumModerators = [
+  { name: "Sarah P.", avatar: "SP", role: "Lead Moderator", online: true, actions: 1240, joinedAs: "Aug 2024" },
+  { name: "Marcus D.", avatar: "MD", role: "Design Mod", online: true, actions: 890, joinedAs: "Nov 2024" },
+  { name: "Kim Y.", avatar: "KY", role: "Dev Mod", online: false, actions: 720, joinedAs: "Jan 2025" },
+  { name: "Andre L.", avatar: "AL", role: "Community Mod", online: true, actions: 560, joinedAs: "Mar 2025" },
+];
+
+const forumBadges = [
+  { name: "First Post", desc: "Published your first thread", icon: "✍️", rarity: "Common" },
+  { name: "Helpful Hand", desc: "10 accepted answers", icon: "🤝", rarity: "Common" },
+  { name: "Flame Starter", desc: "Thread reached 100+ upvotes", icon: "🔥", rarity: "Rare" },
+  { name: "Judge Dredd", desc: "Judged 25+ Skill Court cases", icon: "⚖️", rarity: "Rare" },
+  { name: "Guild Founder", desc: "Founded a guild with 25+ members", icon: "🏰", rarity: "Epic" },
+  { name: "Diamond Voice", desc: "Reached 10,000 karma", icon: "💎", rarity: "Legendary" },
+  { name: "Guide Author", desc: "Published 5+ community guides", icon: "📚", rarity: "Epic" },
+  { name: "Streak Master", desc: "Maintained a 30-day posting streak", icon: "⚡", rarity: "Rare" },
+];
+
+const dailyChallenge = {
+  title: "Write a mini-tutorial",
+  description: "Share a 3-step tutorial on any skill. Top voted wins 500 SP!",
+  entries: 47,
+  timeLeft: "14h left",
+  prize: "500 SP",
+};
+
+
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortType>("hot");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
