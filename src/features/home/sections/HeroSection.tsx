@@ -136,7 +136,7 @@ const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2.2, duration: 1 }}
-            className="mt-12 flex items-center gap-8"
+            className="mt-12 flex items-center gap-4 sm:gap-8 flex-wrap"
           >
             <div className="text-center">
               <span className="font-heading text-2xl font-bold text-foreground">10K+</span>
