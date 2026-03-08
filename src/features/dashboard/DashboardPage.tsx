@@ -48,21 +48,7 @@ const sidebarItems = [
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   MOCK DATA
-═══════════════════════════════════════════════════════════════════════════ */
-
-const myGigs = [
-  { id: 1, title: "Logo Design", status: "active", partner: "James T.", stage: 2, totalStages: 4, sp: 30, format: "Direct Swap", deadline: "2026-03-15" },
-  { id: 2, title: "React Dashboard", status: "pending", partner: null, stage: 0, totalStages: 3, sp: 50, format: "Auction", deadline: null },
-  { id: 3, title: "Video Editing", status: "completed", partner: "Aisha R.", stage: 3, totalStages: 3, sp: 25, format: "Direct Swap", deadline: "2026-03-10" },
-  { id: 4, title: "Brand Identity Package", status: "in-dispute", partner: "Carlos M.", stage: 2, totalStages: 5, sp: 75, format: "Co-Creation", deadline: "2026-03-20" },
-];
-
-const courtCases = [
-  { id: 101, type: "jury-duty", title: "Logo ownership dispute", parties: ["Maya K.", "Tom W."], deadline: "2026-03-12", reward: 15, status: "pending" },
-  { id: 102, type: "my-case", title: "Brand Identity Package", opponent: "Carlos M.", status: "awaiting-verdict", filed: "2026-03-08" },
-];
+/* Mock data removed — all tabs now use Supabase queries */
 
 const categories = [
   { label: "Design", icon: Palette },
@@ -112,13 +98,17 @@ const OverviewTab = ({ profile }: { profile: any }) => {
   const tier = eloTier(profile?.elo || 1000);
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [gigCount, setGigCount] = useState(0);
+  const [activeGigs, setActiveGigs] = useState<any[]>([]);
+  const [myDisputes, setMyDisputes] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      const [actRes, gigRes] = await Promise.all([
+      const [actRes, gigRes, activeRes, disputeRes] = await Promise.all([
         supabase.from("activity_log").select("action, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5),
         supabase.from("listings").select("id", { count: "exact" }).eq("user_id", user.id).eq("status", "active"),
+        supabase.from("listings").select("id, title, status, format, points").eq("user_id", user.id).in("status", ["active", "pending"]).order("created_at", { ascending: false }).limit(3),
+        supabase.from("disputes").select("id, title, status, sp_amount, created_at").or(`filed_by.eq.${user.id},filed_against.eq.${user.id}`).in("status", ["Open", "In Review"]).limit(3),
       ]);
       if (actRes.data?.length) {
         setRecentActivity(actRes.data.map((a: any) => ({
@@ -129,19 +119,20 @@ const OverviewTab = ({ profile }: { profile: any }) => {
         })));
       } else {
         setRecentActivity([
-          { action: "Completed gig: Logo Redesign", time: "2 hours ago", icon: Award, color: "text-skill-green" },
-          { action: "Earned 250 SP from auction win", time: "5 hours ago", icon: Zap, color: "text-badge-gold" },
-          { action: "Jury duty completed (+15 SP)", time: "1 day ago", icon: Scale, color: "text-court-blue" },
+          { action: "Welcome to SkillSwap!", time: "Just now", icon: Award, color: "text-skill-green" },
         ]);
       }
       setGigCount(gigRes.count || 0);
+      setActiveGigs(activeRes.data || []);
+      setMyDisputes(disputeRes.data || []);
     };
     load();
   }, [user]);
+
   const quickStats = [
     { label: "Skill Points", value: profile?.sp?.toLocaleString() || "100", icon: Zap, color: "text-badge-gold" },
     { label: "ELO Rating", value: profile?.elo?.toLocaleString() || "1,000", icon: TrendingUp, color: "text-skill-green" },
-    { label: "Gigs Completed", value: profile?.total_gigs_completed || gigCount.toString(), icon: Trophy, color: "text-court-blue" },
+    { label: "Gigs Completed", value: (profile?.total_gigs_completed || gigCount).toString(), icon: Trophy, color: "text-court-blue" },
     { label: "Current Streak", value: `${profile?.streak_days || 0}d`, icon: Calendar, color: "text-foreground" },
   ];
 
@@ -194,21 +185,25 @@ const OverviewTab = ({ profile }: { profile: any }) => {
         <div className="rounded-xl border border-border bg-card p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-heading text-lg font-bold text-foreground">Active Gigs</h3>
-            <span className="text-xs text-muted-foreground">{myGigs.filter(g => g.status === "active").length} active</span>
+            <span className="text-xs text-muted-foreground">{activeGigs.length} active</span>
           </div>
           <div className="space-y-3">
-            {myGigs.filter(g => g.status === "active" || g.status === "in-dispute").slice(0, 3).map((gig) => (
-              <div key={gig.id} className="flex items-center gap-3 rounded-lg border border-border bg-surface-1 p-3">
+            {activeGigs.length > 0 ? activeGigs.map((gig) => (
+              <Link key={gig.id} to={`/workspace/${gig.id}`} className="flex items-center gap-3 rounded-lg border border-border bg-surface-1 p-3 hover:border-foreground/20 transition-colors">
                 <div className="flex-1">
                   <p className="text-sm font-medium text-foreground">{gig.title}</p>
-                  <p className="text-xs text-muted-foreground">with {gig.partner}</p>
+                  <p className="text-xs text-muted-foreground">{gig.format}</p>
                 </div>
                 <div className="text-right">
                   <Badge className={`text-[10px] ${statusColor(gig.status)}`}>{gig.status}</Badge>
-                  <p className="text-[10px] text-muted-foreground mt-1">Stage {gig.stage}/{gig.totalStages}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">{gig.points} SP</p>
                 </div>
+              </Link>
+            )) : (
+              <div className="py-6 text-center">
+                <p className="text-sm text-muted-foreground">No active gigs. <Link to="/dashboard?tab=create-gig" className="text-foreground hover:underline">Create one!</Link></p>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
@@ -218,23 +213,26 @@ const OverviewTab = ({ profile }: { profile: any }) => {
             <h3 className="font-heading text-lg font-bold text-foreground flex items-center gap-2">
               <Scale size={16} className="text-court-blue" /> Skill Court
             </h3>
-            {courtCases.length > 0 && (
-              <Badge className="bg-alert-red/10 text-alert-red border-none">{courtCases.length} pending</Badge>
+            {myDisputes.length > 0 && (
+              <Badge className="bg-alert-red/10 text-alert-red border-none">{myDisputes.length} pending</Badge>
             )}
           </div>
           <div className="space-y-3">
-            {courtCases.map((c) => (
-              <div key={c.id} className={`rounded-lg border p-3 ${c.type === 'jury-duty' ? 'border-court-blue/20 bg-court-blue/5' : 'border-alert-red/20 bg-alert-red/5'}`}>
+            {myDisputes.length > 0 ? myDisputes.map((d) => (
+              <div key={d.id} className="rounded-lg border border-alert-red/20 bg-alert-red/5 p-3">
                 <div className="flex items-center justify-between mb-1">
-                  <span className={`text-[10px] font-bold uppercase tracking-wider ${c.type === 'jury-duty' ? 'text-court-blue' : 'text-alert-red'}`}>
-                    {c.type === 'jury-duty' ? 'Jury Duty' : 'Your Case'}
-                  </span>
-                  {c.type === 'jury-duty' && <span className="text-xs font-bold text-skill-green">+{c.reward} SP</span>}
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-alert-red">Dispute</span>
+                  <span className="text-xs text-muted-foreground">{d.sp_amount} SP</span>
                 </div>
-                <p className="text-sm font-medium text-foreground">{c.title}</p>
-                <p className="text-xs text-muted-foreground">{c.type === 'jury-duty' ? `Due: ${c.deadline}` : `Status: ${c.status}`}</p>
+                <p className="text-sm font-medium text-foreground">{d.title}</p>
+                <p className="text-xs text-muted-foreground">Status: {d.status}</p>
               </div>
-            ))}
+            )) : (
+              <div className="py-6 text-center">
+                <Shield size={24} className="mx-auto mb-2 text-skill-green/50" />
+                <p className="text-sm text-muted-foreground">No disputes — all clear!</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -627,7 +625,38 @@ const CreateGigTab = () => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const SkillCourtTab = () => {
-  const [activeCase, setActiveCase] = useState<typeof courtCases[0] | null>(null);
+  const { user } = useAuth();
+  const [myDisputes, setMyDisputes] = useState<any[]>([]);
+  const [juryDisputes, setJuryDisputes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [courtStats, setCourtStats] = useState({ judged: 0, earned: 0 });
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      setLoading(true);
+      // My disputes
+      const { data: mine } = await supabase
+        .from("disputes")
+        .select("*")
+        .or(`filed_by.eq.${user.id},filed_against.eq.${user.id}`)
+        .order("created_at", { ascending: false });
+      setMyDisputes(mine || []);
+
+      // All open disputes for jury duty (not involving this user)
+      const { data: open } = await supabase
+        .from("disputes")
+        .select("*")
+        .eq("status", "Open")
+        .neq("filed_by", user.id)
+        .neq("filed_against", user.id)
+        .limit(10);
+      setJuryDisputes(open || []);
+
+      setLoading(false);
+    };
+    load();
+  }, [user]);
 
   return (
     <div className="space-y-6">
@@ -645,20 +674,19 @@ const SkillCourtTab = () => {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         <div className="rounded-xl border border-border bg-card p-4 text-center">
-          <p className="font-heading text-2xl font-black text-court-blue">12</p>
+          <p className="font-heading text-2xl font-black text-court-blue">{courtStats.judged}</p>
           <p className="text-xs text-muted-foreground">Cases Judged</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 text-center">
-          <p className="font-heading text-2xl font-black text-skill-green">180</p>
+          <p className="font-heading text-2xl font-black text-skill-green">{courtStats.earned}</p>
           <p className="text-xs text-muted-foreground">SP Earned</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 text-center">
-          <p className="font-heading text-2xl font-black text-badge-gold">92%</p>
-          <p className="text-xs text-muted-foreground">Accuracy</p>
+          <p className="font-heading text-2xl font-black text-badge-gold">{myDisputes.length}</p>
+          <p className="text-xs text-muted-foreground">My Cases</p>
         </div>
       </div>
 
-      {/* Tabs */}
       <Tabs defaultValue="jury" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="jury">Jury Duty</TabsTrigger>
@@ -674,24 +702,27 @@ const SkillCourtTab = () => {
             <p className="text-xs text-muted-foreground">Free tier members must complete jury duty to maintain platform access. Premium members earn bonus SP.</p>
           </div>
 
-          {courtCases.filter(c => c.type === 'jury-duty').map((c) => (
+          {loading ? (
+            <div className="py-12 text-center">
+              <div className="h-5 w-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin mx-auto" />
+            </div>
+          ) : juryDisputes.length > 0 ? juryDisputes.map((d) => (
             <motion.div
-              key={c.id}
+              key={d.id}
               className="rounded-2xl border border-border bg-card overflow-hidden"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="flex items-center justify-between border-b border-border/50 px-4 py-3 bg-surface-1">
                 <Badge className="bg-court-blue/10 text-court-blue border-none">Jury Duty</Badge>
-                <span className="text-xs font-bold text-skill-green">+{c.reward} SP</span>
+                <span className="text-xs font-bold text-skill-green">+15 SP</span>
               </div>
               <div className="p-4">
-                <h4 className="text-base font-bold text-foreground mb-2">{c.title}</h4>
-                <p className="text-xs text-muted-foreground mb-3">Parties: {c.parties?.join(" vs ")}</p>
-                
+                <h4 className="text-base font-bold text-foreground mb-2">{d.title}</h4>
+                <p className="text-xs text-muted-foreground mb-3">{d.sp_amount} SP at stake</p>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock size={10} /> Due: {c.deadline}
+                    <Clock size={10} /> Filed {new Date(d.created_at).toLocaleDateString()}
                   </span>
                   <button className="rounded-lg bg-court-blue px-4 py-2 text-xs font-semibold text-white hover:bg-court-blue/90 transition-colors">
                     Review Case
@@ -699,9 +730,7 @@ const SkillCourtTab = () => {
                 </div>
               </div>
             </motion.div>
-          ))}
-
-          {courtCases.filter(c => c.type === 'jury-duty').length === 0 && (
+          )) : (
             <div className="py-12 text-center">
               <CheckCircle2 size={32} className="mx-auto mb-3 text-skill-green" />
               <p className="text-foreground font-medium">No pending jury duty</p>
@@ -711,15 +740,19 @@ const SkillCourtTab = () => {
         </TabsContent>
 
         <TabsContent value="my-cases" className="space-y-4">
-          {courtCases.filter(c => c.type === 'my-case').map((c) => (
-            <div key={c.id} className="rounded-2xl border border-alert-red/20 bg-card overflow-hidden">
+          {loading ? (
+            <div className="py-12 text-center">
+              <div className="h-5 w-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin mx-auto" />
+            </div>
+          ) : myDisputes.length > 0 ? myDisputes.map((d) => (
+            <div key={d.id} className="rounded-2xl border border-alert-red/20 bg-card overflow-hidden">
               <div className="flex items-center justify-between border-b border-border/50 px-4 py-3 bg-alert-red/5">
                 <Badge className="bg-alert-red/10 text-alert-red border-none">Dispute</Badge>
-                <span className="text-xs text-muted-foreground">{c.status}</span>
+                <span className="text-xs text-muted-foreground">{d.status}</span>
               </div>
               <div className="p-4">
-                <h4 className="text-base font-bold text-foreground mb-2">{c.title}</h4>
-                <p className="text-xs text-muted-foreground mb-3">vs {c.opponent} · Filed {c.filed}</p>
+                <h4 className="text-base font-bold text-foreground mb-2">{d.title}</h4>
+                <p className="text-xs text-muted-foreground mb-3">{d.sp_amount} SP · Filed {new Date(d.created_at).toLocaleDateString()}</p>
                 
                 <div className="rounded-xl bg-surface-1 p-3 mb-3">
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground/60 mb-1">Verdict Breakdown</p>
@@ -739,14 +772,18 @@ const SkillCourtTab = () => {
                   </div>
                 </div>
 
+                {d.outcome && (
+                  <div className="rounded-xl bg-skill-green/5 border border-skill-green/20 p-3 mb-3">
+                    <p className="text-xs font-medium text-skill-green">Outcome: {d.outcome}</p>
+                  </div>
+                )}
+
                 <button className="w-full rounded-lg border border-border py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
                   View Case Details
                 </button>
               </div>
             </div>
-          ))}
-
-          {courtCases.filter(c => c.type === 'my-case').length === 0 && (
+          )) : (
             <div className="py-12 text-center">
               <Shield size={32} className="mx-auto mb-3 text-muted-foreground/30" />
               <p className="text-foreground font-medium">No active disputes</p>
@@ -926,7 +963,24 @@ const WalletTab = ({ profile }: { profile: any }) => {
    SETTINGS TAB
 ═══════════════════════════════════════════════════════════════════════════ */
 
-const SettingsTab = ({ profile, updateProfile }: { profile: any; updateProfile: (data: any) => void }) => {
+const SettingsTab = ({ profile, updateProfile }: { profile: any; updateProfile: (data: any) => Promise<{ success: boolean; error?: string }> }) => {
+  const [displayName, setDisplayName] = useState(profile?.display_name || "");
+  const [bio, setBio] = useState(profile?.bio || "");
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const result = await updateProfile({ display_name: displayName, bio });
+    setSaving(false);
+    if (result?.success) {
+      const { toast } = await import("sonner");
+      toast.success("Profile updated!");
+    } else {
+      const { toast } = await import("sonner");
+      toast.error(result?.error || "Failed to save");
+    }
+  };
+
   return (
     <div className="max-w-2xl space-y-6">
       <h2 className="font-heading text-2xl font-bold text-foreground">Settings</h2>
@@ -938,20 +992,22 @@ const SettingsTab = ({ profile, updateProfile }: { profile: any; updateProfile: 
             <label className="block text-sm text-muted-foreground mb-1">Display Name</label>
             <input
               type="text"
-              defaultValue={profile?.display_name || ""}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
               className="w-full rounded-lg border border-border bg-surface-1 px-4 py-2.5 text-foreground focus:outline-none focus:border-foreground/20"
             />
           </div>
           <div>
             <label className="block text-sm text-muted-foreground mb-1">Bio</label>
             <textarea
-              defaultValue={profile?.bio || ""}
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
               rows={3}
               className="w-full rounded-lg border border-border bg-surface-1 px-4 py-2.5 text-foreground focus:outline-none focus:border-foreground/20 resize-none"
             />
           </div>
-          <button className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background">
-            Save Changes
+          <button onClick={handleSave} disabled={saving} className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-50">
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>
@@ -1018,9 +1074,7 @@ const DashboardSidebar = ({ activeTab, setActiveTab, profile }: { activeTab: str
                   >
                     <item.icon size={18} />
                     {!collapsed && <span>{item.label}</span>}
-                    {!collapsed && item.id === "skill-court" && courtCases.length > 0 && (
-                      <Badge className="ml-auto bg-alert-red/10 text-alert-red border-none text-[9px]">{courtCases.length}</Badge>
-                    )}
+                    {/* Court badge removed - now uses real data inside the tab */}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
