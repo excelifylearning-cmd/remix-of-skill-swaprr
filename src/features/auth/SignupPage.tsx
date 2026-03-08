@@ -191,11 +191,9 @@ const SignupPage = () => {
   const strengthColor = passedCount <= 1 ? "bg-destructive" : passedCount <= 3 ? "bg-badge-gold" : "bg-skill-green";
   const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
   const passwordsMismatch = confirmPassword.length > 0 && password !== confirmPassword;
-  const isTestCreds = email === "AdminTester123";
   const emailError = useMemo(() => {
-    if (isTestCreds) return "";
     return email.trim() ? (validateEmail(email) === true ? "" : validateEmail(email) as string) : "";
-  }, [email, isTestCreds]);
+  }, [email]);
   const canContinueStep1 = name.trim() && email.trim() && !emailError && passedCount >= 4 && passwordsMatch;
 
   const toggleSkill = (s: string) => setSkills((prev) => prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]);
