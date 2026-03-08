@@ -428,7 +428,7 @@ const SuccessStoriesPage = () => {
                 >
                   <div className="mb-4 flex items-center gap-3">
                     <span className="rounded-xl bg-surface-2 px-4 py-2 text-xs font-semibold text-muted-foreground">{journey.from}</span>
-                    <ArrowRight size={16} className="text-badge-gold" />
+                    <ArrowRight size={16} className="text-skill-green" />
                     <span className="rounded-xl bg-skill-green/10 px-4 py-2 text-xs font-semibold text-skill-green">{journey.to}</span>
                   </div>
                   <div className="mb-3 flex items-center gap-4 text-xs text-muted-foreground">
