@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          name: string
+          threshold: number | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          name: string
+          threshold?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          threshold?: number | null
+        }
+        Relationships: []
+      }
       activity_log: {
         Row: {
           action: string
@@ -47,6 +77,33 @@ export type Database = {
           metadata?: Json | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      badges: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          name: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }
@@ -199,6 +256,60 @@ export type Database = {
           view_count?: number | null
         }
         Relationships: []
+      }
+      disputes: {
+        Row: {
+          created_at: string
+          description: string
+          filed_against: string
+          filed_by: string
+          id: string
+          outcome: string | null
+          resolved_at: string | null
+          sp_amount: number
+          status: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          filed_against: string
+          filed_by: string
+          id?: string
+          outcome?: string | null
+          resolved_at?: string | null
+          sp_amount?: number
+          status?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          filed_against?: string
+          filed_by?: string
+          id?: string
+          outcome?: string | null
+          resolved_at?: string | null
+          sp_amount?: number
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disputes_filed_against_profiles_fkey"
+            columns: ["filed_against"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "disputes_filed_by_profiles_fkey"
+            columns: ["filed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       forum_categories: {
         Row: {
@@ -391,6 +502,233 @@ export type Database = {
           },
         ]
       }
+      guild_achievements: {
+        Row: {
+          achievement_id: string
+          completed: boolean
+          completed_at: string | null
+          guild_id: string
+          id: string
+          progress: number
+        }
+        Insert: {
+          achievement_id: string
+          completed?: boolean
+          completed_at?: string | null
+          guild_id: string
+          id?: string
+          progress?: number
+        }
+        Update: {
+          achievement_id?: string
+          completed?: boolean
+          completed_at?: string | null
+          guild_id?: string
+          id?: string
+          progress?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guild_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guild_achievements_guild_id_fkey"
+            columns: ["guild_id"]
+            isOneToOne: false
+            referencedRelation: "guilds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guild_badges: {
+        Row: {
+          awarded_at: string
+          badge_id: string
+          guild_id: string
+          id: string
+        }
+        Insert: {
+          awarded_at?: string
+          badge_id: string
+          guild_id: string
+          id?: string
+        }
+        Update: {
+          awarded_at?: string
+          badge_id?: string
+          guild_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guild_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guild_badges_guild_id_fkey"
+            columns: ["guild_id"]
+            isOneToOne: false
+            referencedRelation: "guilds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guild_members: {
+        Row: {
+          guild_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          guild_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          guild_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guild_members_guild_id_fkey"
+            columns: ["guild_id"]
+            isOneToOne: false
+            referencedRelation: "guilds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guild_members_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      guilds: {
+        Row: {
+          avatar_url: string | null
+          avg_elo: number
+          category: string
+          created_at: string
+          created_by: string
+          description: string
+          id: string
+          is_public: boolean
+          name: string
+          perks: string[] | null
+          rank: number
+          requirements: string[] | null
+          slogan: string
+          total_gigs: number
+          total_sp: number
+          updated_at: string
+          win_rate: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          avg_elo?: number
+          category?: string
+          created_at?: string
+          created_by: string
+          description?: string
+          id?: string
+          is_public?: boolean
+          name: string
+          perks?: string[] | null
+          rank?: number
+          requirements?: string[] | null
+          slogan?: string
+          total_gigs?: number
+          total_sp?: number
+          updated_at?: string
+          win_rate?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          avg_elo?: number
+          category?: string
+          created_at?: string
+          created_by?: string
+          description?: string
+          id?: string
+          is_public?: boolean
+          name?: string
+          perks?: string[] | null
+          rank?: number
+          requirements?: string[] | null
+          slogan?: string
+          total_gigs?: number
+          total_sp?: number
+          updated_at?: string
+          win_rate?: number
+        }
+        Relationships: []
+      }
+      listings: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          inquiries: number
+          price: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+          views: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          inquiries?: number
+          price?: string
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+          views?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          inquiries?: number
+          price?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listings_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           availability: string | null
@@ -528,6 +866,87 @@ export type Database = {
           youtube_url?: string | null
         }
         Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          progress: number
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          progress?: number
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          progress?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_achievements_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      user_badges: {
+        Row: {
+          awarded_at: string
+          badge_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          awarded_at?: string
+          badge_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          awarded_at?: string
+          badge_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_badges_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
