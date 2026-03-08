@@ -340,7 +340,7 @@ const EventsPage = () => {
         <section className="py-16 px-6 bg-surface-1">
           <div className="max-w-6xl mx-auto">
             <motion.div className="text-center mb-12" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <span className="mb-3 inline-block rounded-full border border-badge-gold/30 bg-badge-gold/10 px-4 py-1.5 font-mono text-xs text-badge-gold">
+              <span className="mb-3 inline-block rounded-full border border-skill-green/30 bg-skill-green/10 px-4 py-1.5 font-mono text-xs text-skill-green">
                 <Gift size={12} className="inline mr-1.5 -mt-0.5" /> Rewards
               </span>
               <h2 className="font-heading text-3xl sm:text-4xl font-bold text-foreground">Why Participate?</h2>
