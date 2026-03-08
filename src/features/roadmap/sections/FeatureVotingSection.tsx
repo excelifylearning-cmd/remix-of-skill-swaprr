@@ -74,14 +74,16 @@ const FeatureVotingSection = () => {
     if (!user) { setShowLogin(true); return; }
 
     const isVoted = votedIds.has(id);
+    const feature = features.find(f => f.id === id);
 
     if (isVoted) {
       await supabase.from("feature_votes").delete().eq("feature_id", id).eq("user_id", user.id);
-      // Decrement vote count
-      await supabase.from("feature_requests").update({ votes: features.find(f => f.id === id)!.votes - 1 }).eq("id", id);
+      await supabase.from("feature_requests").update({ votes: feature!.votes - 1 }).eq("id", id);
+      logInteraction("feature_unvote", { feature_id: id, feature_title: feature?.title });
     } else {
       await supabase.from("feature_votes").insert({ feature_id: id, user_id: user.id });
-      await supabase.from("feature_requests").update({ votes: features.find(f => f.id === id)!.votes + 1 }).eq("id", id);
+      await supabase.from("feature_requests").update({ votes: feature!.votes + 1 }).eq("id", id);
+      logInteraction("feature_vote", { feature_id: id, feature_title: feature?.title });
     }
 
     // Optimistic update

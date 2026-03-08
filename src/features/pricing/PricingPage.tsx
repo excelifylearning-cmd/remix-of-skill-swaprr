@@ -205,13 +205,14 @@ const PricingPage = () => {
 
   const handleEnterpriseQuote = async () => {
     if (!entCompany.trim() || !entEmail.trim()) { toast.error("Please fill company name and email"); return; }
-    const { error } = await supabase.from("enterprise_quotes").insert({
+    const { data, error } = await supabase.from("enterprise_quotes").insert({
       company_name: entCompany.trim(),
       email: entEmail.trim(),
       team_size: entTeamSize || "Not specified",
       source: "pricing",
-    });
+    }).select("id").single();
     if (error) { toast.error("Failed to submit. Please try again."); return; }
+    logFormSubmission("enterprise_quote", { company_name: entCompany.trim(), email: entEmail.trim(), team_size: entTeamSize, source: "pricing" }, "enterprise_quote", data?.id);
     setEntSubmitted(true);
     toast.success("Quote request submitted! We'll be in touch.");
   };

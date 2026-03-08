@@ -222,6 +222,7 @@ const HelpPage = () => {
 
   const handleBountyLookup = async () => {
     if (!bountyCode.trim()) return;
+    logInteraction("bounty_lookup", { code: bountyCode.toUpperCase().trim() });
     const { data, error } = await supabase
       .from("bug_bounty_submissions")
       .select("code, title, severity, status, reward")
@@ -229,8 +230,10 @@ const HelpPage = () => {
       .maybeSingle();
     if (data) {
       setBountyResult(data as any);
+      logInteraction("bounty_lookup_found", { code: data.code, severity: data.severity, status: data.status });
     } else {
       setBountyResult("not_found");
+      logInteraction("bounty_lookup_not_found", { code: bountyCode.toUpperCase().trim() });
     }
   };
 
@@ -239,20 +242,23 @@ const HelpPage = () => {
       rating,
       user_id: user?.id || null,
     });
+    logFormSubmission("help_feedback", { rating }, "help_feedback");
     setFeedbackSent(true);
   };
 
   const handleReportSubmit = async () => {
     if (!selectedReportType || !reportDescription.trim()) return;
 
-    await supabase.from("help_reports").insert({
+    const { data } = await supabase.from("help_reports").insert({
       user_id: user?.id || null,
       report_type: selectedReportType,
       priority: selectedPriority || "low",
       description: reportDescription,
       reference_id: reportRef || null,
       email: reportEmail || null,
-    });
+    }).select("id").single();
+
+    logFormSubmission("help_report", { report_type: selectedReportType, priority: selectedPriority || "low", has_reference: !!reportRef, description_length: reportDescription.length }, "help_report", data?.id);
 
     setReportSubmitted(true);
     setTimeout(() => setReportSubmitted(false), 5000);

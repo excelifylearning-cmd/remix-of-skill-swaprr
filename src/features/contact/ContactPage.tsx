@@ -102,10 +102,13 @@ const ContactPage = () => {
     if (!validateStep(2)) return;
 
     // Save to database
-    await supabase.from("contact_submissions").insert({
+    const { data } = await supabase.from("contact_submissions").insert({
       user_id: user?.id || null,
       name, email, phone: phone || null, topic, subject: subject || null, priority, message,
-    });
+    }).select("id").single();
+
+    // Log with full metadata
+    logFormSubmission("contact_form", { name, email, topic, priority, subject, message_length: message.length, has_phone: !!phone, attachments_count: attachments.length }, "contact_submission", data?.id);
 
     setSubmitted(true);
     setTimeout(() => {

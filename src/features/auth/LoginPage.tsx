@@ -35,8 +35,10 @@ const LoginPage = () => {
 
     if (result.success) {
       setSuccess(true);
+      logFormSubmission("login", { email, method: "password" }, "auth");
       setTimeout(() => navigate("/dashboard"), 800);
     } else {
+      logInteraction("login_failed", { email, error: result.error });
       setError(result.error || "Login failed. Please check your credentials.");
     }
   };

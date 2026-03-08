@@ -127,7 +127,7 @@ const EnterprisePage = () => {
 
   const handleDemoSubmit = async () => {
     if (!demoEmail.trim() || !demoFirst.trim()) { toast.error("Please fill in required fields"); return; }
-    const { error } = await supabase.from("demo_bookings").insert({
+    const { data, error } = await supabase.from("demo_bookings").insert({
       first_name: demoFirst.trim(),
       last_name: demoLast.trim(),
       email: demoEmail.trim(),
@@ -135,8 +135,9 @@ const EnterprisePage = () => {
       team_size: demoTeamSize || "Not specified",
       use_case: demoUseCase || "Not specified",
       message: demoMessage.trim(),
-    });
+    }).select("id").single();
     if (error) { toast.error("Failed to submit. Please try again."); return; }
+    logFormSubmission("demo_booking", { first_name: demoFirst.trim(), email: demoEmail.trim(), company_name: demoCompany.trim(), team_size: demoTeamSize, use_case: demoUseCase }, "demo_booking", data?.id);
     setDemoSubmitted(true);
     toast.success("Demo request submitted! We'll contact you shortly.");
   };
