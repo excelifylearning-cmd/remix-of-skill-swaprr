@@ -700,6 +700,45 @@ export type Database = {
         }
         Relationships: []
       }
+      escrow_contracts: {
+        Row: {
+          buyer_id: string
+          created_at: string
+          id: string
+          released_sp: number
+          seller_id: string
+          status: string
+          terms: Json | null
+          total_sp: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          buyer_id: string
+          created_at?: string
+          id?: string
+          released_sp?: number
+          seller_id: string
+          status?: string
+          terms?: Json | null
+          total_sp?: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          buyer_id?: string
+          created_at?: string
+          id?: string
+          released_sp?: number
+          seller_id?: string
+          status?: string
+          terms?: Json | null
+          total_sp?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
       event_registrations: {
         Row: {
           event_id: string
@@ -2386,6 +2425,191 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      workspace_deliverables: {
+        Row: {
+          created_at: string
+          description: string
+          file_urls: Json | null
+          id: string
+          reviewer_notes: string | null
+          stage_id: string | null
+          status: string
+          submitted_by: string
+          title: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          file_urls?: Json | null
+          id?: string
+          reviewer_notes?: string | null
+          stage_id?: string | null
+          status?: string
+          submitted_by: string
+          title?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          file_urls?: Json | null
+          id?: string
+          reviewer_notes?: string | null
+          stage_id?: string | null
+          status?: string
+          submitted_by?: string
+          title?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_deliverables_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_stages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_disputes: {
+        Row: {
+          created_at: string
+          evidence: Json | null
+          filed_against: string
+          filed_by: string
+          id: string
+          outcome: string | null
+          reason: string
+          resolved_at: string | null
+          status: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          evidence?: Json | null
+          filed_against: string
+          filed_by: string
+          id?: string
+          outcome?: string | null
+          reason?: string
+          resolved_at?: string | null
+          status?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          evidence?: Json | null
+          filed_against?: string
+          filed_by?: string
+          id?: string
+          outcome?: string | null
+          reason?: string
+          resolved_at?: string | null
+          status?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
+      workspace_files: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: string
+          file_type: string
+          file_url: string
+          id: string
+          uploaded_by: string
+          version: number
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name?: string
+          file_size?: string
+          file_type?: string
+          file_url?: string
+          id?: string
+          uploaded_by: string
+          version?: number
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: string
+          file_type?: string
+          file_url?: string
+          id?: string
+          uploaded_by?: string
+          version?: number
+          workspace_id?: string
+        }
+        Relationships: []
+      }
+      workspace_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          message_type: string
+          metadata: Json | null
+          sender_id: string
+          workspace_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          message_type?: string
+          metadata?: Json | null
+          sender_id: string
+          workspace_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          message_type?: string
+          metadata?: Json | null
+          sender_id?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
+      workspace_stages: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          name: string
+          order_index: number
+          sp_allocated: number
+          status: string
+          workspace_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          order_index?: number
+          sp_allocated?: number
+          status?: string
+          workspace_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          order_index?: number
+          sp_allocated?: number
+          status?: string
+          workspace_id?: string
         }
         Relationships: []
       }
