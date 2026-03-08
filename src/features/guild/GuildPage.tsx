@@ -87,7 +87,7 @@ const mockGuild = {
   ],
 };
 
-const tabs = ["Overview", "Members", "Projects", "Wars", "Management"] as const;
+const tabs = ["Overview", "Members", "Projects", "Wars"] as const;
 type Tab = typeof tabs[number];
 
 const GuildPage = () => {
