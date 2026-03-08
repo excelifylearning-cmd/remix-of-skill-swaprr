@@ -364,6 +364,7 @@ const RoadmapPage = () => {
             </motion.form>
           </div>
         </section>
+        <Footer />
       </div>
     </PageTransition>
   );

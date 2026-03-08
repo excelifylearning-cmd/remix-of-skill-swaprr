@@ -1019,6 +1019,7 @@ const HelpPage = () => {
             </div>
           </div>
         </section>
+        <Footer />
       </div>
     </PageTransition>
   );

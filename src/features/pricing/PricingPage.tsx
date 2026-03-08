@@ -654,6 +654,7 @@ const PricingPage = () => {
             </div>
           </div>
         </section>
+        <Footer />
       </div>
     </PageTransition>
   );

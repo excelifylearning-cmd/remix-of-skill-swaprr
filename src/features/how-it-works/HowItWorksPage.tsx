@@ -700,6 +700,7 @@ const HowItWorksPage = () => {
           </motion.div>
         </section>
 
+        <Footer />
       </div>
     </PageTransition>
   );

@@ -1438,6 +1438,7 @@ const ForumsPage = () => {
             </div>
           </div>
         </section>
+        <Footer />
       </div>
     </PageTransition>
   );
