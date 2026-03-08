@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail, MessageSquare, MapPin, Clock, Send, Building2, Users, HelpCircle,
   Phone, Paperclip, X, ChevronDown, CheckCircle2, Twitter, Linkedin,
-  Github, Globe, Headphones, Zap, ArrowRight, Bot, User
+  Github, Globe, Headphones, Zap, ArrowRight
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
