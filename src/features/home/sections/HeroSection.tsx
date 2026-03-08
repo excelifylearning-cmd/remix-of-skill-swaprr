@@ -82,7 +82,7 @@ const HeroSection = () => {
             </span>
           </motion.div>
 
-          <h1 className="mb-6 font-heading text-5xl font-black leading-[1.1] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+          <h1 className="mb-6 font-heading text-4xl font-black leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-7xl">
             {headlineWords.map((word, i) => (
               <motion.span
                 key={i}
