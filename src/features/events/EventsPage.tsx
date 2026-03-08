@@ -204,7 +204,7 @@ const EventsPage = () => {
                 <Calendar size={12} className="inline mr-1.5 -mt-0.5" /> Platform Events
               </span>
               <h1 className="font-heading text-5xl sm:text-7xl font-black text-foreground mt-4">
-                Events &<br /><span className="text-badge-gold">Tournaments</span>
+                Events &<br /><span className="text-court-blue">Tournaments</span>
               </h1>
               <p className="text-muted-foreground mt-4 max-w-xl text-lg">
                 Compete, connect, and level up. From global tournaments to local meetups — there's always something happening.
