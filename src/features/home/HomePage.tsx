@@ -37,7 +37,6 @@ const HomePage = () => {
         <GuildSection />
         <UniversityPartnersSection />
         <SuccessStoriesSection />
-        <PricingQuickSection />
         <CTAFooterSection />
       </div>
     </PageTransition>
