@@ -349,7 +349,10 @@ const MyGigsTab = () => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const CreateGigTab = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [saving, setSaving] = useState(false);
   const [gigData, setGigData] = useState({
     title: "",
     offering: "",
@@ -361,6 +364,10 @@ const CreateGigTab = () => {
     spBonus: 0,
     attachments: [] as string[],
   });
+
+  const formatMap: Record<string, string> = {
+    direct: "Direct Swap", auction: "Auction", cocreation: "Co-Creation", fusion: "Skill Fusion",
+  };
 
   const updateField = (field: string, value: any) => {
     setGigData(prev => ({ ...prev, [field]: value }));
