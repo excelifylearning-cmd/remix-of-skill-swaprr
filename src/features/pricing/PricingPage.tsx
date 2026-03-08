@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Check, X, Sparkles, Building2, Zap, Coins, Shield, Trophy,
   Award, Star, ArrowRight, Users, Target, TrendingUp, Flame,
-  BarChart3, Clock, Eye, Crown, Gem, Medal, CircleDot, Activity
+  BarChart3, Clock, Eye, Crown, Gem, Medal, CircleDot, Activity,
+  Calculator, Layers, GraduationCap
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
