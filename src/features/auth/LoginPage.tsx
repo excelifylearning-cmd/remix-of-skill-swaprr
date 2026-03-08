@@ -13,20 +13,25 @@ const LoginPage = () => {
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const { login } = useAuth();
 
   const emailError = useMemo(() => {
     return email.trim() ? (validateEmail(email) === true ? "" : validateEmail(email) as string) : "";
   }, [email]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (!email.trim() || !password.trim()) { setError("Please fill in all fields."); return; }
     if (emailError) { setError(emailError); return; }
 
-    const result = login(email, password);
+    setLoading(true);
+    const result = await login(email, password);
+    setLoading(false);
+
     if (result.success) {
       setSuccess(true);
       setTimeout(() => navigate("/dashboard"), 800);
@@ -93,12 +98,12 @@ const LoginPage = () => {
 
                 <motion.button
                   type="submit"
-                  disabled={success}
-                  className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all ${success ? "bg-skill-green text-background" : "bg-foreground text-background"}`}
-                  whileHover={!success ? { scale: 1.01 } : {}}
-                  whileTap={!success ? { scale: 0.99 } : {}}
+                  disabled={success || loading}
+                  className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all ${success ? "bg-skill-green text-background" : "bg-foreground text-background"} ${loading ? "opacity-70" : ""}`}
+                  whileHover={!success && !loading ? { scale: 1.01 } : {}}
+                  whileTap={!success && !loading ? { scale: 0.99 } : {}}
                 >
-                  {success ? "✓ Logged In" : <>Log In <ArrowRight size={16} /></>}
+                  {loading ? "Logging in..." : success ? "✓ Logged In" : <>Log In <ArrowRight size={16} /></>}
                 </motion.button>
               </form>
 

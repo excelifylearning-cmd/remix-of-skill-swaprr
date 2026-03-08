@@ -37,7 +37,7 @@ const quickLinks = [
 ];
 
 const DashboardPage = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, profile, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,11 +59,11 @@ const DashboardPage = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Welcome back,</p>
-                <h1 className="font-heading text-3xl sm:text-4xl font-black text-foreground">{user.name}</h1>
+                <h1 className="font-heading text-3xl sm:text-4xl font-black text-foreground">{profile?.display_name || profile?.full_name || "Swapper"}</h1>
                 <div className="flex items-center gap-3 mt-2">
-                  <span className="rounded-full bg-badge-gold/10 border border-badge-gold/20 px-3 py-1 text-xs font-mono text-badge-gold">{user.tier}</span>
-                  <span className="rounded-full bg-skill-green/10 border border-skill-green/20 px-3 py-1 text-xs font-mono text-skill-green">{user.role === "admin" ? "Admin" : "Member"}</span>
-                  <span className="text-xs text-muted-foreground">Member since {new Date(user.joinedAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</span>
+                  <span className="rounded-full bg-badge-gold/10 border border-badge-gold/20 px-3 py-1 text-xs font-mono text-badge-gold">{profile?.tier || "Bronze"}</span>
+                  <span className="rounded-full bg-skill-green/10 border border-skill-green/20 px-3 py-1 text-xs font-mono text-skill-green">Member</span>
+                  <span className="text-xs text-muted-foreground">Member since {profile?.created_at ? new Date(profile.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "—"}</span>
                 </div>
               </div>
               <div className="flex gap-2">

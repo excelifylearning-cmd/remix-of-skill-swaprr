@@ -20,7 +20,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, profile, isAuthenticated, logout } = useAuth();
 
   useEffect(() => {
     const stored = localStorage.getItem("theme");
@@ -110,7 +110,7 @@ const Navbar = () => {
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-2 border border-border">
                   <User size={13} className="text-foreground" />
                 </div>
-                <span className="hidden xl:inline">{user?.name}</span>
+                <span className="hidden xl:inline">{profile?.display_name || profile?.full_name || user?.email}</span>
               </Link>
               <button
                 onClick={() => { logout(); navigate("/"); }}

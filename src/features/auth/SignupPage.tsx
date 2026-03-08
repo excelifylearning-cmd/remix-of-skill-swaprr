@@ -119,7 +119,7 @@ const SignupPage = () => {
   const [step, setStep] = useState(1);
   const [signupError, setSignupError] = useState("");
   const navigate = useNavigate();
-  const { signup } = useAuth();
+  const { signup, updateProfile } = useAuth();
 
   // Step 1: Account
   const [name, setName] = useState("");
@@ -1034,9 +1034,41 @@ const SignupPage = () => {
                   <div className="flex gap-3">
                     <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
                     <motion.button
-                      onClick={() => {
-                        const result = signup(name, email, password);
+                      onClick={async () => {
+                        setSignupError("");
+                        const result = await signup(email, password, name);
                         if (result.success) {
+                          // Save all onboarding data to profile
+                          await updateProfile({
+                            display_name: displayName || name,
+                            bio,
+                            slogan,
+                            avatar_emoji: selectedDefaultAvatar ? defaultAvatars.find(a => a.id === selectedDefaultAvatar)?.emoji : undefined,
+                            university,
+                            location,
+                            languages: selectedLanguages,
+                            portfolio_url: portfolioUrl,
+                            linkedin_url: linkedinUrl,
+                            github_url: githubUrl,
+                            twitter_url: twitterUrl,
+                            instagram_url: instagramUrl,
+                            youtube_url: youtubeUrl,
+                            personal_website: personalWebsite,
+                            skills,
+                            skill_levels: skillLevel,
+                            interests,
+                            needs: selectedNeeds,
+                            work_history: workHistory as unknown as import("@/integrations/supabase/types").Json,
+                            education_history: educationHistory as unknown as import("@/integrations/supabase/types").Json,
+                            availability,
+                            response_time: responseTime,
+                            preferred_comm: preferredComm,
+                            hourly_rate: hourlyRate,
+                            timezone,
+                            referral_code: referralCode,
+                            id_verified: idUploaded,
+                            onboarding_complete: true,
+                          });
                           navigate("/dashboard");
                         } else {
                           setSignupError(result.error || "Signup failed.");
