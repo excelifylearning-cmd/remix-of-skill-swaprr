@@ -56,9 +56,6 @@ const ContactPage = () => {
 
   const maxMsg = 1000;
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatMessages, typing]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,18 +63,6 @@ const ContactPage = () => {
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 4000);
     setName(""); setEmail(""); setPhone(""); setSubject(""); setMessage(""); setAttachment(null);
-  };
-
-  const sendChat = () => {
-    if (!chatInput.trim()) return;
-    setChatMessages((prev) => [...prev, { from: "user", text: chatInput }]);
-    setChatInput("");
-    setTyping(true);
-    setTimeout(() => {
-      setTyping(false);
-      const resp = chatBotResponses[Math.floor(Math.random() * chatBotResponses.length)];
-      setChatMessages((prev) => [...prev, { from: "bot", text: resp }]);
-    }, 1200);
   };
 
   return (
