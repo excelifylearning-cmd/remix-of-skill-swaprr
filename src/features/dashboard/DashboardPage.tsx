@@ -965,7 +965,7 @@ const WalletTab = ({ profile }: { profile: any }) => {
    SETTINGS TAB
 ═══════════════════════════════════════════════════════════════════════════ */
 
-const SettingsTab = ({ profile, updateProfile }: { profile: any; updateProfile: (data: any) => void }) => {
+const SettingsTab = ({ profile, updateProfile }: { profile: any; updateProfile: (data: any) => Promise<{ success: boolean; error?: string }> }) => {
   const [displayName, setDisplayName] = useState(profile?.display_name || "");
   const [bio, setBio] = useState(profile?.bio || "");
   const [saving, setSaving] = useState(false);
