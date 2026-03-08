@@ -92,7 +92,8 @@ const SignupPage = () => {
   const strengthColor = passedCount <= 1 ? "bg-destructive" : passedCount <= 3 ? "bg-badge-gold" : "bg-skill-green";
   const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
   const passwordsMismatch = confirmPassword.length > 0 && password !== confirmPassword;
-  const canContinueStep1 = name.trim() && email.trim() && passedCount >= 4 && passwordsMatch;
+  const emailError = useMemo(() => email.trim() ? (validateEmail(email) === true ? "" : validateEmail(email) as string) : "", [email]);
+  const canContinueStep1 = name.trim() && email.trim() && !emailError && passedCount >= 4 && passwordsMatch;
 
   const toggleSkill = (s: string) => setSkills((prev) => prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]);
   const toggleLanguage = (l: string) => setSelectedLanguages((prev) => prev.includes(l) ? prev.filter((x) => x !== l) : [...prev, l]);
