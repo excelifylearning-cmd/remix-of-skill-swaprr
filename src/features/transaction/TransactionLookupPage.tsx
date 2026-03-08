@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Search, CheckCircle2, Clock, Shield, FileText, ArrowRight, Flag,
   Star, User, Coins, AlertTriangle, Eye, MessageSquare, Video, PenTool,
@@ -246,22 +247,68 @@ const TransactionLookupPage = () => {
   const [code, setCode] = useState("");
   const [searching, setSearching] = useState(false);
   const [found, setFound] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+  const [txnData, setTxnData] = useState<any>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "details" | "security">("overview");
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!code.trim()) return;
     setSearching(true);
     setFound(false);
-    setTimeout(() => {
-      setSearching(false);
+    setNotFound(false);
+    setTxnData(null);
+
+    const { data, error } = await supabase
+      .from("transactions")
+      .select("*")
+      .eq("code", code.trim())
+      .maybeSingle();
+
+    setSearching(false);
+    if (data && !error) {
+      // Map DB columns to the shape used in the UI
+      setTxnData({
+        code: data.code,
+        status: data.status,
+        gig: data.gig_title,
+        format: data.format,
+        category: data.category,
+        date: new Date(data.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+        completedDate: data.completed_date ? new Date(data.completed_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—",
+        duration: data.duration,
+        seller: data.seller_data,
+        buyer: data.buyer_data,
+        points: data.points,
+        stages: data.stages,
+        quality: data.quality,
+        workspace: data.workspace,
+        deliverables: data.deliverables,
+        escrow: data.escrow,
+        security: data.security_data,
+        compliance: data.compliance,
+        skillImpact: data.skill_impact,
+        performance: data.performance,
+        recommendations: data.recommendations,
+        communicationHeatmap: data.communication_heatmap,
+        deviceInfo: data.device_info,
+        aiInsights: data.ai_insights,
+        comments: data.comments,
+        timeline: data.timeline,
+        fingerprint: data.fingerprint,
+        blockchainHash: data.blockchain_hash,
+        disputeHistory: data.dispute_history,
+        satisfactionSurvey: data.satisfaction_survey,
+      });
       setFound(true);
-    }, 1500);
+    } else {
+      setNotFound(true);
+    }
   };
 
   const toggleSection = (s: string) => setExpandedSection(expandedSection === s ? null : s);
-  const fmt = formatTemplates[mockTransaction.format];
-  const txn = mockTransaction;
+  const fmt = txnData ? formatTemplates[txnData.format] || formatTemplates["Direct Swap"] : formatTemplates["Direct Swap"];
+  const txn = txnData || mockTransaction;
 
   return (
     <PageTransition>
@@ -305,6 +352,17 @@ const TransactionLookupPage = () => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="py-16 text-center">
               <motion.div className="mx-auto mb-4 h-12 w-12 rounded-full border-2 border-border border-t-foreground" animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
               <p className="text-sm text-muted-foreground">Verifying transaction on-chain...</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Not Found */}
+        <AnimatePresence>
+          {notFound && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="py-16 text-center">
+              <AlertTriangle size={40} className="mx-auto mb-4 text-muted-foreground" />
+              <p className="text-lg font-semibold text-foreground">Transaction Not Found</p>
+              <p className="text-sm text-muted-foreground mt-1">No transaction found with code "{code}". Try "TXN-2026-0305-AK7B".</p>
             </motion.div>
           )}
         </AnimatePresence>

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import {
   TrendingUp, Users, Coins, ArrowLeftRight, Trophy, Shield, Globe,
@@ -204,8 +205,35 @@ const contentMetrics = [
 const AnalyticsPage = () => {
   const [activeQuarter, setActiveQuarter] = useState("q1-2026");
   const [chartMetric, setChartMetric] = useState<"users" | "gigs">("users");
+  const [dbQuarters, setDbQuarters] = useState<any[]>([]);
+  const [dbMetrics, setDbMetrics] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const [qRes, mRes] = await Promise.all([
+        supabase.from("quarterly_reports").select("*").order("quarter_id"),
+        supabase.from("platform_metrics").select("*").order("metric_date", { ascending: false }).limit(1),
+      ]);
+      if (qRes.data?.length) setDbQuarters(qRes.data);
+      if (mRes.data?.length) setDbMetrics(mRes.data[0]);
+    };
+    fetchData();
+  }, []);
+
+  const displayQuarters = dbQuarters.length > 0 ? dbQuarters.map((q) => ({
+    id: q.quarter_id,
+    label: q.label,
+    period: q.period,
+    status: q.status,
+    kpis: q.kpis as any,
+    growth: q.growth as any,
+    highlights: q.highlights as string[],
+    monthlyBreakdown: q.monthly_breakdown as any[],
+    topSkills: q.top_skills as any[],
+  })) : quarters;
+
   const maxVal = Math.max(...growthTimeline.map((d) => d[chartMetric]));
-  const currentQuarter = quarters.find((q) => q.id === activeQuarter)!;
+  const currentQuarter = displayQuarters.find((q) => q.id === activeQuarter) || displayQuarters[0];
 
   return (
     <PageTransition>
@@ -259,7 +287,7 @@ const AnalyticsPage = () => {
                 <p className="text-sm text-muted-foreground mt-1">Select a quarter to view detailed analytics</p>
               </div>
               <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1">
-                {quarters.map((q) => (
+                {displayQuarters.map((q) => (
                   <button key={q.id} onClick={() => setActiveQuarter(q.id)} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${activeQuarter === q.id ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}>
                     {q.label}{q.status === "projected" && <span className="ml-1 text-[8px] opacity-60">*</span>}
                   </button>
