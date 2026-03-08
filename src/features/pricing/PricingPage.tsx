@@ -188,6 +188,27 @@ const calcSkills = [
 const PricingPage = () => {
   const [annual, setAnnual] = useState(false);
   const [animatedStats, setAnimatedStats] = useState(liveStats.map(() => 0));
+  const [calcSkill, setCalcSkill] = useState(calcSkills[0].name);
+  const [calcGigs, setCalcGigs] = useState(8);
+  const [calcComplexity, setCalcComplexity] = useState(3);
+  const [calcTier, setCalcTier] = useState<"free" | "pro">("free");
+  const [calcGuild, setCalcGuild] = useState(false);
+  const [calcMembers, setCalcMembers] = useState(5);
+
+  const calcResult = useMemo(() => {
+    const skill = calcSkills.find((s) => s.name === calcSkill) || calcSkills[0];
+    const baseEarnings = calcGigs * skill.avgRate * (calcComplexity / 3);
+    const taxRate = calcGuild ? 0.02 : calcTier === "pro" ? 0.03 : 0.05;
+    const tax = baseEarnings * taxRate;
+    const net = baseEarnings - tax;
+    const tierCost = calcTier === "pro" ? (annual ? 10 : 12) : 0;
+    const guildCost = calcGuild ? (annual ? 23 : 29) : 0;
+    const monthlyCost = tierCost + guildCost;
+    const proSavings = calcTier === "free" ? baseEarnings * 0.02 : 0; // what they'd save upgrading
+    const recommended = calcGigs > 5 ? "Pro" : "Free";
+    const guildValue = calcGuild ? calcMembers * net * 0.1 : 0;
+    return { baseEarnings: Math.round(baseEarnings), tax: Math.round(tax), net: Math.round(net), taxRate: Math.round(taxRate * 100), monthlyCost, proSavings: Math.round(proSavings), recommended, guildValue: Math.round(guildValue) };
+  }, [calcSkill, calcGigs, calcComplexity, calcTier, calcGuild, calcMembers, annual]);
 
   // Animate stat counters on mount
   useEffect(() => {
