@@ -6,13 +6,16 @@ import {
   Phone, Globe, Award, ExternalLink, ChevronDown, ChevronRight, Users,
   Lightbulb, Star, TrendingUp, Lock, Eye, Cpu, Headphones, LifeBuoy,
   Sparkles, Target, Gift, BookMarked, Layers, Play, Terminal, Copy,
-  ThumbsUp, ThumbsDown, Send, Bot, Wrench, GraduationCap, Rocket
+  ThumbsUp, ThumbsDown, Send, Bot, Wrench, GraduationCap, Rocket,
+  Activity, Server, Database, Wifi, WifiOff, BarChart3, RefreshCw,
+  AlertCircle, MonitorSmartphone, XCircle, CircleDot, Hash, Fingerprint,
+  ShieldCheck, Upload, Paperclip, ChevronUp, Monitor, Smartphone, Laptop,
+  HardDrive, Cloud, Timer, TrendingDown, Package, Settings, Key
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
-import CTAFooterSection from "@/features/home/sections/CTAFooterSection";
 
 const kbCategories = [
   { icon: BookOpen, title: "Getting Started", desc: "Account setup, profile creation, and first gig", articles: 24, popular: ["Create your account", "Set up your profile", "Post your first gig", "Earn your first SP"] },
@@ -38,14 +41,18 @@ const apiEndpoints = [
 ];
 
 const services = [
-  { name: "Marketplace", status: "operational", uptime: 99.98, latency: "42ms" },
-  { name: "Messenger", status: "operational", uptime: 99.95, latency: "18ms" },
-  { name: "Video Calls", status: "operational", uptime: 99.90, latency: "65ms" },
-  { name: "Skill Court", status: "operational", uptime: 99.99, latency: "31ms" },
-  { name: "API Gateway", status: "operational", uptime: 99.97, latency: "12ms" },
-  { name: "Payments", status: "operational", uptime: 99.99, latency: "89ms" },
-  { name: "File Storage", status: "operational", uptime: 99.96, latency: "55ms" },
-  { name: "Auth Service", status: "operational", uptime: 99.99, latency: "8ms" },
+  { name: "Marketplace", status: "operational", uptime: 99.98, latency: "42ms", icon: Package, region: "Global" },
+  { name: "Messenger", status: "operational", uptime: 99.95, latency: "18ms", icon: MessageSquare, region: "US-East, EU-West" },
+  { name: "Video Calls", status: "degraded", uptime: 99.90, latency: "65ms", icon: Video, region: "Global" },
+  { name: "Skill Court", status: "operational", uptime: 99.99, latency: "31ms", icon: Shield, region: "US-East" },
+  { name: "API Gateway", status: "operational", uptime: 99.97, latency: "12ms", icon: Server, region: "Multi-region" },
+  { name: "SP Payments", status: "operational", uptime: 99.99, latency: "89ms", icon: Zap, region: "Global" },
+  { name: "File Storage", status: "operational", uptime: 99.96, latency: "55ms", icon: HardDrive, region: "US-East, AP-South" },
+  { name: "Auth Service", status: "operational", uptime: 99.99, latency: "8ms", icon: Key, region: "Global" },
+  { name: "Search & Index", status: "operational", uptime: 99.94, latency: "35ms", icon: Search, region: "US-East" },
+  { name: "Notifications", status: "operational", uptime: 99.92, latency: "22ms", icon: Activity, region: "Global" },
+  { name: "CDN / Assets", status: "operational", uptime: 99.99, latency: "6ms", icon: Cloud, region: "200+ PoPs" },
+  { name: "Database", status: "operational", uptime: 99.99, latency: "3ms", icon: Database, region: "US-East (primary)" },
 ];
 
 const bountyTiers = [
@@ -73,11 +80,66 @@ const communityResources = [
   { icon: Star, title: "Ambassador Program", desc: "Become a community leader and earn exclusive rewards", tag: "Apply" },
 ];
 
-const troubleshootingSteps = [
-  { issue: "Can't log in", steps: ["Clear browser cache & cookies", "Try incognito/private mode", "Reset password via email", "Check if account is suspended", "Contact support with error code"] },
-  { issue: "SP not received", steps: ["Wait 5 minutes for processing", "Check transaction history", "Verify gig completion status", "Check for pending disputes", "Contact support with gig ID"] },
-  { issue: "Video call failing", steps: ["Check camera/mic permissions", "Test internet speed (min 5Mbps)", "Try a different browser", "Disable VPN/proxy", "Update browser to latest version"] },
-  { issue: "Gig not appearing", steps: ["Verify gig is published (not draft)", "Check category selection", "Ensure profile is complete", "Review content guidelines", "Allow 10 min for indexing"] },
+const troubleshootingGuides = [
+  {
+    category: "Account & Login",
+    icon: Key,
+    color: "court-blue",
+    issues: [
+      { issue: "Can't log in to my account", steps: ["Clear browser cache & cookies", "Try incognito/private mode", "Reset password via email link", "Check if account is suspended (check email for notices)", "Try a different browser or device", "Disable browser extensions temporarily", "Contact support with your error code & screenshot"] },
+      { issue: "Two-factor authentication not working", steps: ["Ensure your device clock is synced (auto time)", "Try backup codes from initial setup", "Check if authenticator app needs updating", "Clear authenticator app cache", "Contact support with your account email for manual reset"] },
+      { issue: "Account locked or suspended", steps: ["Check your email for suspension notice with reason", "Review platform Terms of Service for violations", "Submit appeal via the Account Recovery form", "Provide any requested verification documents", "Allow 48-72 hours for review"] },
+      { issue: "Email verification link expired", steps: ["Request new verification email from login page", "Check spam/junk folder", "Add noreply@skillswappr.com to safe senders", "Try with a different email if original is unreachable", "Contact support if issue persists after 3 attempts"] },
+    ],
+  },
+  {
+    category: "Skill Points & Transactions",
+    icon: Zap,
+    color: "badge-gold",
+    issues: [
+      { issue: "SP not received after completing a gig", steps: ["Wait up to 10 minutes for processing", "Check transaction history in Dashboard → SP tab", "Verify gig completion was confirmed by both parties", "Check for pending disputes blocking release", "Look for SP in 'Pending' balance vs 'Available'", "Contact support with Gig ID and Transaction Code"] },
+      { issue: "SP transfer failed", steps: ["Verify recipient username/ID is correct", "Check your available balance (pending SP can't be transferred)", "Ensure you haven't hit daily transfer limits", "Check if recipient account is in good standing", "Try a smaller amount to test", "Report with transaction reference number"] },
+      { issue: "SP balance showing incorrectly", steps: ["Hard refresh the page (Ctrl+Shift+R / Cmd+Shift+R)", "Clear local storage: Settings → Clear Cache", "Check for pending transactions that may be held", "Review recent tax deductions in SP History", "Compare with email transaction receipts", "Report discrepancy with screenshots of expected vs actual"] },
+    ],
+  },
+  {
+    category: "Gig Workspace Issues",
+    icon: MessageSquare,
+    color: "skill-green",
+    issues: [
+      { issue: "Video call failing or poor quality", steps: ["Check camera/mic permissions in browser settings", "Test internet speed — minimum 5 Mbps recommended", "Close other tabs and applications using bandwidth", "Try a different browser (Chrome/Firefox recommended)", "Disable VPN or proxy connections", "Update browser to latest version", "Switch to audio-only mode if video keeps dropping", "Use the built-in connection test at Settings → Diagnostics"] },
+      { issue: "Files not uploading", steps: ["Check file size — max 50MB per file", "Verify file format is supported (see docs for list)", "Clear browser cache and retry", "Try drag-and-drop instead of file picker (or vice versa)", "Check if storage quota is reached (Dashboard → Storage)", "Disable content blockers or ad-block extensions", "Try uploading from a different network"] },
+      { issue: "Whiteboard not loading", steps: ["Ensure WebGL is enabled in your browser", "Update your graphics drivers", "Try a Chromium-based browser (Chrome, Edge, Brave)", "Clear browser cache specifically for SkillSwappr", "Disable hardware acceleration in browser settings", "Check if your device meets minimum requirements"] },
+      { issue: "Messages not sending or delayed", steps: ["Check your internet connection", "Refresh the workspace page", "Check if the other party has blocked you", "Verify the gig workspace is still active (not archived)", "Try sending from a different device", "Report with workspace ID and timestamp of failed messages"] },
+    ],
+  },
+  {
+    category: "Skill Court & Disputes",
+    icon: Shield,
+    color: "alert-red",
+    issues: [
+      { issue: "Dispute not being processed", steps: ["Verify all required evidence has been uploaded", "Check if dispute is within the 14-day filing window", "Ensure case description meets minimum 100 character requirement", "Confirm the gig is eligible for disputes (some formats exempt)", "Check for missing required fields in your submission", "Wait 24-48 hours for initial review — cases queue during peak times"] },
+      { issue: "Want to appeal a verdict", steps: ["Appeals must be filed within 7 days of verdict", "Navigate to Skill Court → My Cases → Appeal", "Provide new evidence not included in original case", "Appeal fee is 25 SP (refunded if appeal succeeds)", "Appeals are reviewed by a different panel of judges", "Final verdict after appeal is binding"] },
+    ],
+  },
+  {
+    category: "Profile & Visibility",
+    icon: Eye,
+    color: "foreground",
+    issues: [
+      { issue: "Gig not appearing in search", steps: ["Verify gig status is 'Published' not 'Draft'", "Check that all required fields are filled", "Ensure gig doesn't violate content guidelines", "Allow up to 30 minutes for search indexing", "Add relevant category tags and keywords", "Complete your profile to 80%+ for better visibility", "Check if gig is restricted to certain regions"] },
+      { issue: "Profile changes not saving", steps: ["Check internet connection", "Ensure all fields meet validation requirements", "Try a different browser", "Clear cache and re-login", "Check for special characters causing issues", "Contact support if error persists after multiple attempts"] },
+    ],
+  },
+  {
+    category: "Browser & Device",
+    icon: Monitor,
+    color: "court-blue",
+    issues: [
+      { issue: "Page not loading or blank screen", steps: ["Hard refresh: Ctrl+Shift+R (Windows) / Cmd+Shift+R (Mac)", "Clear browser cache and cookies for skillswappr.com", "Disable all browser extensions and test", "Try incognito/private browsing mode", "Check browser console for errors (F12 → Console tab)", "Ensure JavaScript is enabled", "Try Chrome, Firefox, or Edge (latest versions)", "Check our Status Page for ongoing outages"] },
+      { issue: "Mobile app issues", steps: ["Update to the latest app version", "Clear app cache: Settings → Storage → Clear Cache", "Force close and reopen the app", "Check OS compatibility (iOS 15+ / Android 11+)", "Uninstall and reinstall the app", "Try the mobile web version instead", "Report with device model and OS version"] },
+    ],
+  },
 ];
 
 const slaMetrics = [
@@ -89,17 +151,85 @@ const slaMetrics = [
   { metric: "Data Recovery", free: "Best effort", pro: "24h RPO", enterprise: "1h RPO" },
 ];
 
+const recentIncidents = [
+  { date: "Mar 7, 2026", title: "Video call CDN optimization rollout", duration: "Ongoing", status: "Monitoring", severity: "minor" },
+  { date: "Mar 5, 2026", title: "Messenger latency spike — EU region", duration: "12 min", status: "Resolved", severity: "minor" },
+  { date: "Feb 28, 2026", title: "Scheduled maintenance — Database migration v4.2", duration: "45 min", status: "Completed", severity: "maintenance" },
+  { date: "Feb 15, 2026", title: "Video call CDN degradation — AP-South", duration: "28 min", status: "Resolved", severity: "minor" },
+  { date: "Feb 2, 2026", title: "Search indexing delay — new gigs", duration: "2h 15m", status: "Resolved", severity: "major" },
+  { date: "Jan 20, 2026", title: "Scheduled maintenance — Auth service upgrade", duration: "15 min", status: "Completed", severity: "maintenance" },
+];
+
+const uptimeHistory = [
+  { month: "Mar", pct: 99.96 },
+  { month: "Feb", pct: 99.97 },
+  { month: "Jan", pct: 99.98 },
+  { month: "Dec", pct: 99.99 },
+  { month: "Nov", pct: 99.95 },
+  { month: "Oct", pct: 99.98 },
+  { month: "Sep", pct: 99.97 },
+  { month: "Aug", pct: 99.99 },
+  { month: "Jul", pct: 99.94 },
+  { month: "Jun", pct: 99.98 },
+  { month: "May", pct: 99.99 },
+  { month: "Apr", pct: 99.97 },
+];
+
+const reportTypes = [
+  { value: "user", label: "Report a User", icon: Users, desc: "Harassment, scam, impersonation" },
+  { value: "gig", label: "Report a Gig", icon: Package, desc: "Fake listing, misleading content" },
+  { value: "guild", label: "Report a Guild", icon: Shield, desc: "Rule violations, toxic behavior" },
+  { value: "bug", label: "Report a Bug", icon: Bug, desc: "Something isn't working correctly" },
+  { value: "safety", label: "Safety Concern", icon: AlertTriangle, desc: "Threats, illegal activity" },
+  { value: "other", label: "Other Issue", icon: HelpCircle, desc: "Anything else we should know" },
+];
+
+const priorityLevels = [
+  { value: "low", label: "Low", desc: "Minor issue, not urgent", color: "text-muted-foreground", bg: "bg-surface-2" },
+  { value: "medium", label: "Medium", desc: "Needs attention soon", color: "text-badge-gold", bg: "bg-badge-gold/10" },
+  { value: "high", label: "High", desc: "Urgent issue", color: "text-alert-red", bg: "bg-alert-red/10" },
+  { value: "critical", label: "Critical", desc: "Safety risk / blocking", color: "text-destructive", bg: "bg-destructive/10" },
+];
+
 const HelpPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedKb, setExpandedKb] = useState<number | null>(null);
-  const [expandedTroubleshoot, setExpandedTroubleshoot] = useState<number | null>(null);
+  const [expandedTroubleshootCat, setExpandedTroubleshootCat] = useState<number | null>(0);
+  const [expandedTroubleshootIssue, setExpandedTroubleshootIssue] = useState<string | null>(null);
   const [copiedEndpoint, setCopiedEndpoint] = useState<number | null>(null);
+  const [bountyCode, setBountyCode] = useState("");
+  const [bountyResult, setBountyResult] = useState<null | "found" | "not_found">(null);
+  const [selectedReportType, setSelectedReportType] = useState("");
+  const [selectedPriority, setSelectedPriority] = useState("");
+  const [reportDescription, setReportDescription] = useState("");
+  const [reportRef, setReportRef] = useState("");
+  const [reportEmail, setReportEmail] = useState("");
+  const [reportFiles, setReportFiles] = useState<string[]>([]);
+  const [reportSubmitted, setReportSubmitted] = useState(false);
+  const [statusTab, setStatusTab] = useState<"services" | "incidents" | "uptime">("services");
 
   const handleCopy = (path: string, idx: number) => {
     navigator.clipboard.writeText(path);
     setCopiedEndpoint(idx);
     setTimeout(() => setCopiedEndpoint(null), 2000);
   };
+
+  const handleBountyLookup = () => {
+    if (!bountyCode.trim()) return;
+    // Mock lookup — in production this would hit an API
+    const mockValid = ["BB-2026-001", "BB-2026-042", "BB-2025-187", "BB-2025-203"];
+    setBountyResult(mockValid.includes(bountyCode.toUpperCase()) ? "found" : "not_found");
+  };
+
+  const handleReportSubmit = () => {
+    if (!selectedReportType || !reportDescription.trim()) return;
+    setReportSubmitted(true);
+    setTimeout(() => setReportSubmitted(false), 5000);
+  };
+
+  const operationalCount = services.filter(s => s.status === "operational").length;
+  const degradedCount = services.filter(s => s.status === "degraded").length;
+  const overallStatus = degradedCount === 0 ? "All Systems Operational" : `${degradedCount} Service${degradedCount > 1 ? "s" : ""} Degraded`;
 
   return (
     <PageTransition>
@@ -128,11 +258,10 @@ const HelpPage = () => {
                 placeholder="Search help articles, docs, FAQs..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-14 w-full rounded-2xl border border-border bg-card pl-13 pr-5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
+                className="h-14 w-full rounded-2xl border border-border bg-card pr-5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
                 style={{ paddingLeft: "3.25rem" }}
               />
             </motion.div>
-            {/* Hero Stats */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {[
                 { label: "Help Articles", value: "160+" },
@@ -174,7 +303,7 @@ const HelpPage = () => {
           </div>
         </section>
 
-        {/* Knowledge Base - Enhanced with expandable popular articles */}
+        {/* Knowledge Base */}
         <section className="bg-surface-1 py-16">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mb-8 flex items-center justify-between">
@@ -204,12 +333,7 @@ const HelpPage = () => {
                   </div>
                   <AnimatePresence>
                     {expandedKb === i && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden border-t border-border/50"
-                      >
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden border-t border-border/50">
                         <div className="p-4 space-y-1.5">
                           <p className="text-[10px] font-semibold text-muted-foreground mb-2">Popular Articles</p>
                           {cat.popular.map((article) => (
@@ -229,68 +353,99 @@ const HelpPage = () => {
           </div>
         </section>
 
-        {/* Troubleshooting Guide */}
+        {/* ═══ ENHANCED Troubleshooting Guide ═══ */}
         <section className="py-16">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mb-8 flex items-center gap-3">
-              <Wrench size={24} className="text-badge-gold" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-badge-gold/10">
+                <Wrench size={24} className="text-badge-gold" />
+              </div>
               <div>
                 <h2 className="font-heading text-2xl font-bold text-foreground">Troubleshooting Guide</h2>
-                <p className="text-xs text-muted-foreground mt-1">Step-by-step solutions for common issues</p>
+                <p className="text-sm text-muted-foreground mt-1">In-depth step-by-step solutions organized by category</p>
               </div>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {troubleshootingSteps.map((t, i) => (
-                <motion.div
-                  key={t.issue}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.06 }}
-                  className="rounded-2xl border border-border bg-card overflow-hidden"
-                >
+
+            <div className="grid gap-6 lg:grid-cols-[280px,1fr]">
+              {/* Category sidebar */}
+              <div className="space-y-1.5 lg:sticky lg:top-24 lg:self-start">
+                {troubleshootingGuides.map((cat, ci) => (
                   <button
-                    onClick={() => setExpandedTroubleshoot(expandedTroubleshoot === i ? null : i)}
-                    className="flex w-full items-center justify-between p-5"
+                    key={cat.category}
+                    onClick={() => { setExpandedTroubleshootCat(ci); setExpandedTroubleshootIssue(null); }}
+                    className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-all ${
+                      expandedTroubleshootCat === ci
+                        ? "bg-foreground text-background"
+                        : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-foreground/20"
+                    }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-alert-red/10">
-                        <AlertTriangle size={14} className="text-alert-red" />
-                      </div>
-                      <span className="font-heading text-sm font-bold text-foreground">{t.issue}</span>
+                    <cat.icon size={16} />
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs font-semibold block truncate">{cat.category}</span>
+                      <span className={`text-[10px] ${expandedTroubleshootCat === ci ? "text-background/60" : "text-muted-foreground/60"}`}>{cat.issues.length} guides</span>
                     </div>
-                    <ChevronDown size={14} className={`text-muted-foreground transition-transform ${expandedTroubleshoot === i ? "rotate-180" : ""}`} />
+                    <ChevronRight size={12} className={expandedTroubleshootCat === ci ? "text-background/60" : ""} />
                   </button>
-                  <AnimatePresence>
-                    {expandedTroubleshoot === i && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden border-t border-border/50"
-                      >
-                        <div className="p-5 space-y-2">
-                          {t.steps.map((step, si) => (
-                            <div key={si} className="flex items-start gap-3">
-                              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-surface-2 font-mono text-[10px] text-muted-foreground">{si + 1}</span>
-                              <span className="text-xs text-muted-foreground">{step}</span>
-                            </div>
-                          ))}
-                          <div className="mt-3 flex items-center gap-2 pt-2 border-t border-border/30">
-                            <span className="text-[10px] text-muted-foreground">Still stuck?</span>
-                            <button className="text-[10px] font-semibold text-court-blue hover:underline">Contact Support →</button>
-                          </div>
+                ))}
+              </div>
+
+              {/* Issue details */}
+              <div className="space-y-3">
+                {expandedTroubleshootCat !== null && troubleshootingGuides[expandedTroubleshootCat].issues.map((t, ti) => (
+                  <motion.div
+                    key={t.issue}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: ti * 0.05 }}
+                    className="rounded-2xl border border-border bg-card overflow-hidden"
+                  >
+                    <button
+                      onClick={() => setExpandedTroubleshootIssue(expandedTroubleshootIssue === t.issue ? null : t.issue)}
+                      className="flex w-full items-center justify-between p-5"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`flex h-9 w-9 items-center justify-center rounded-xl bg-${troubleshootingGuides[expandedTroubleshootCat!].color}/10`}>
+                          <AlertTriangle size={15} className={`text-${troubleshootingGuides[expandedTroubleshootCat!].color}`} />
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              ))}
+                        <span className="font-heading text-sm font-bold text-foreground text-left">{t.issue}</span>
+                      </div>
+                      <ChevronDown size={14} className={`text-muted-foreground transition-transform shrink-0 ml-3 ${expandedTroubleshootIssue === t.issue ? "rotate-180" : ""}`} />
+                    </button>
+                    <AnimatePresence>
+                      {expandedTroubleshootIssue === t.issue && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden border-t border-border/50"
+                        >
+                          <div className="p-5 space-y-3">
+                            {t.steps.map((step, si) => (
+                              <div key={si} className="flex items-start gap-3">
+                                <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-bold ${
+                                  si === t.steps.length - 1 ? "bg-court-blue/10 text-court-blue" : "bg-surface-2 text-muted-foreground"
+                                }`}>{si + 1}</span>
+                                <span className="text-xs text-muted-foreground leading-relaxed pt-0.5">{step}</span>
+                              </div>
+                            ))}
+                            <div className="mt-4 flex items-center gap-3 pt-3 border-t border-border/30">
+                              <span className="text-[10px] text-muted-foreground">Still stuck?</span>
+                              <button className="text-[10px] font-semibold text-court-blue hover:underline">Contact Support →</button>
+                              <span className="text-[10px] text-muted-foreground">•</span>
+                              <button className="text-[10px] font-semibold text-badge-gold hover:underline">View related articles →</button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        {/* API Docs Preview - Enhanced */}
+        {/* API Docs */}
         <section className="bg-surface-1 py-16">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mb-8 flex items-center justify-between">
@@ -312,39 +467,25 @@ const HelpPage = () => {
               </div>
               {apiEndpoints.map((ep, i) => (
                 <div key={i} className="flex items-center gap-4 border-b border-border/50 px-6 py-4 last:border-0 hover:bg-surface-1 transition-colors group">
-                  <span className={`rounded-md px-2.5 py-1 font-mono text-[10px] font-bold ${
-                    ep.method === "GET" ? "bg-skill-green/10 text-skill-green" : "bg-court-blue/10 text-court-blue"
-                  }`}>
-                    {ep.method}
-                  </span>
+                  <span className={`rounded-md px-2.5 py-1 font-mono text-[10px] font-bold ${ep.method === "GET" ? "bg-skill-green/10 text-skill-green" : "bg-court-blue/10 text-court-blue"}`}>{ep.method}</span>
                   <code className="flex-1 font-mono text-sm text-foreground">{ep.path}</code>
                   <span className="hidden sm:block rounded-md bg-surface-2 px-2 py-0.5 font-mono text-[9px] text-muted-foreground">{ep.auth}</span>
                   <span className="text-xs text-muted-foreground">{ep.desc}</span>
-                  <button
-                    onClick={() => handleCopy(ep.path, i)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    {copiedEndpoint === i ? (
-                      <CheckCircle2 size={14} className="text-skill-green" />
-                    ) : (
-                      <Copy size={14} className="text-muted-foreground hover:text-foreground" />
-                    )}
+                  <button onClick={() => handleCopy(ep.path, i)} className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    {copiedEndpoint === i ? <CheckCircle2 size={14} className="text-skill-green" /> : <Copy size={14} className="text-muted-foreground hover:text-foreground" />}
                   </button>
                 </div>
               ))}
             </div>
-            {/* SDK Badges */}
             <div className="mt-4 flex flex-wrap gap-2">
               {["JavaScript", "Python", "Go", "Ruby", "PHP", "cURL"].map((sdk) => (
-                <span key={sdk} className="rounded-lg border border-border bg-card px-3 py-1.5 font-mono text-[10px] text-muted-foreground hover:text-foreground hover:border-foreground/20 cursor-pointer transition-colors">
-                  {sdk}
-                </span>
+                <span key={sdk} className="rounded-lg border border-border bg-card px-3 py-1.5 font-mono text-[10px] text-muted-foreground hover:text-foreground hover:border-foreground/20 cursor-pointer transition-colors">{sdk}</span>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Contact & Support - Enhanced with SLA table */}
+        {/* Contact & SLA */}
         <section className="py-16">
           <div className="mx-auto max-w-6xl px-6">
             <h2 className="mb-8 font-heading text-2xl font-bold text-foreground">Contact & Support</h2>
@@ -364,8 +505,6 @@ const HelpPage = () => {
                 </motion.div>
               ))}
             </div>
-
-            {/* SLA Table */}
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-8 overflow-hidden rounded-2xl border border-border bg-card">
               <div className="border-b border-border/50 bg-surface-1 px-6 py-3">
                 <span className="font-heading text-xs font-bold text-foreground">Service Level Agreement (SLA) by Plan</span>
@@ -396,60 +535,182 @@ const HelpPage = () => {
           </div>
         </section>
 
-        {/* Platform Status - Enhanced */}
+        {/* ═══ ENHANCED Platform Status & Operations ═══ */}
         <section className="bg-surface-1 py-16">
           <div className="mx-auto max-w-6xl px-6">
-            <div className="mb-8 flex items-center justify-between">
+            {/* Header with live indicator */}
+            <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-3">
-                <div className="relative flex h-3 w-3 items-center justify-center">
-                  <span className="absolute h-3 w-3 animate-ping rounded-full bg-skill-green/40" />
-                  <span className="relative h-2 w-2 rounded-full bg-skill-green" />
+                <div className="relative flex h-4 w-4 items-center justify-center">
+                  <span className={`absolute h-4 w-4 animate-ping rounded-full ${degradedCount > 0 ? "bg-badge-gold/40" : "bg-skill-green/40"}`} />
+                  <span className={`relative h-2.5 w-2.5 rounded-full ${degradedCount > 0 ? "bg-badge-gold" : "bg-skill-green"}`} />
                 </div>
-                <h2 className="font-heading text-2xl font-bold text-foreground">All Systems Operational</h2>
+                <div>
+                  <h2 className="font-heading text-2xl font-bold text-foreground">{overallStatus}</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">Last checked: Just now · {operationalCount}/{services.length} services operational</p>
+                </div>
               </div>
-              <span className="rounded-full bg-skill-green/10 px-3 py-1 text-[10px] font-semibold text-skill-green">99.97% overall</span>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-skill-green/10 px-3 py-1 text-[10px] font-semibold text-skill-green">99.97% overall uptime</span>
+                <button className="flex items-center gap-1 rounded-full border border-border px-3 py-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors">
+                  <RefreshCw size={10} /> Refresh
+                </button>
+              </div>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {services.map((s, i) => (
-                <motion.div key={s.name} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.04 }} className="rounded-xl border border-border bg-card p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 size={12} className="text-skill-green" />
-                      <span className="text-xs font-medium text-foreground">{s.name}</span>
-                    </div>
-                    <span className="font-mono text-[10px] text-skill-green">{s.uptime}%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="h-1.5 flex-1 rounded-full bg-surface-2 mr-3">
-                      <div className="h-full rounded-full bg-skill-green" style={{ width: `${s.uptime}%` }} />
-                    </div>
-                    <span className="font-mono text-[9px] text-muted-foreground">{s.latency}</span>
-                  </div>
-                </motion.div>
+
+            {/* Tabs */}
+            <div className="mb-6 flex gap-1 rounded-xl bg-card border border-border p-1 w-fit">
+              {([
+                { key: "services", label: "Services", icon: Server },
+                { key: "incidents", label: "Incidents", icon: AlertTriangle },
+                { key: "uptime", label: "Uptime History", icon: BarChart3 },
+              ] as const).map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setStatusTab(tab.key)}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-medium transition-all ${
+                    statusTab === tab.key ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <tab.icon size={12} /> {tab.label}
+                </button>
               ))}
             </div>
-            {/* Incident History */}
-            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-6 rounded-2xl border border-border bg-card p-5">
-              <h3 className="mb-4 font-heading text-sm font-bold text-foreground">Recent Incidents</h3>
-              <div className="space-y-3">
-                {[
-                  { date: "Mar 5, 2026", title: "Messenger latency spike", duration: "12 min", status: "Resolved" },
-                  { date: "Feb 28, 2026", title: "Scheduled maintenance — DB migration", duration: "45 min", status: "Completed" },
-                  { date: "Feb 15, 2026", title: "Video call CDN degradation", duration: "28 min", status: "Resolved" },
-                ].map((inc) => (
-                  <div key={inc.date} className="flex items-center justify-between rounded-lg bg-surface-1 px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <span className="font-mono text-[10px] text-muted-foreground">{inc.date}</span>
-                      <span className="text-xs text-foreground">{inc.title}</span>
+
+            {/* Services Grid */}
+            {statusTab === "services" && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {services.map((s, i) => (
+                  <motion.div
+                    key={s.name}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.03 }}
+                    className="rounded-xl border border-border bg-card p-4 hover:border-foreground/10 transition-all"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-2">
+                          <s.icon size={14} className="text-muted-foreground" />
+                        </div>
+                        <div>
+                          <span className="text-xs font-semibold text-foreground block">{s.name}</span>
+                          <span className="text-[9px] text-muted-foreground/60">{s.region}</span>
+                        </div>
+                      </div>
+                      {s.status === "operational" ? (
+                        <CheckCircle2 size={14} className="text-skill-green" />
+                      ) : (
+                        <AlertCircle size={14} className="text-badge-gold" />
+                      )}
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-mono text-[10px] text-muted-foreground">{inc.duration}</span>
-                      <span className="rounded-full bg-skill-green/10 px-2 py-0.5 text-[9px] font-semibold text-skill-green">{inc.status}</span>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className={`text-[10px] font-semibold ${s.status === "operational" ? "text-skill-green" : "text-badge-gold"}`}>
+                        {s.status === "operational" ? "Operational" : "Degraded Performance"}
+                      </span>
+                      <span className="font-mono text-[10px] text-muted-foreground">{s.latency}</span>
                     </div>
-                  </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-1.5 flex-1 rounded-full bg-surface-2">
+                        <div className={`h-full rounded-full ${s.status === "operational" ? "bg-skill-green" : "bg-badge-gold"}`} style={{ width: `${Math.min(s.uptime, 100)}%` }} />
+                      </div>
+                      <span className="font-mono text-[9px] text-muted-foreground">{s.uptime}%</span>
+                    </div>
+                  </motion.div>
                 ))}
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
+
+            {/* Incidents */}
+            {statusTab === "incidents" && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-2xl border border-border bg-card overflow-hidden">
+                <div className="border-b border-border/50 bg-surface-1 px-6 py-3 flex items-center justify-between">
+                  <span className="font-heading text-xs font-bold text-foreground">Incident History — Last 90 Days</span>
+                  <span className="text-[10px] text-muted-foreground">{recentIncidents.length} events</span>
+                </div>
+                <div className="divide-y divide-border/30">
+                  {recentIncidents.map((inc, i) => (
+                    <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }} className="flex items-center justify-between px-6 py-4 hover:bg-surface-1 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                          inc.severity === "major" ? "bg-destructive/10" : inc.severity === "maintenance" ? "bg-court-blue/10" : "bg-badge-gold/10"
+                        }`}>
+                          {inc.severity === "maintenance" ? (
+                            <Settings size={14} className="text-court-blue" />
+                          ) : inc.severity === "major" ? (
+                            <XCircle size={14} className="text-destructive" />
+                          ) : (
+                            <AlertTriangle size={14} className="text-badge-gold" />
+                          )}
+                        </div>
+                        <div>
+                          <span className="text-xs font-medium text-foreground block">{inc.title}</span>
+                          <span className="text-[10px] text-muted-foreground">{inc.date} · Duration: {inc.duration}</span>
+                        </div>
+                      </div>
+                      <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-semibold ${
+                        inc.status === "Monitoring" ? "bg-badge-gold/10 text-badge-gold" :
+                        inc.status === "Resolved" ? "bg-skill-green/10 text-skill-green" :
+                        "bg-court-blue/10 text-court-blue"
+                      }`}>{inc.status}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Uptime History */}
+            {statusTab === "uptime" && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="rounded-2xl border border-border bg-card p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="font-heading text-sm font-bold text-foreground">12-Month Uptime History</h3>
+                    <span className="text-[10px] text-muted-foreground">Avg: 99.97%</span>
+                  </div>
+                  <div className="flex items-end gap-2 h-32">
+                    {uptimeHistory.map((m, i) => {
+                      const height = Math.max(((m.pct - 99.9) / 0.1) * 100, 10);
+                      return (
+                        <div key={m.month} className="flex-1 flex flex-col items-center gap-1.5">
+                          <span className="font-mono text-[8px] text-muted-foreground">{m.pct}%</span>
+                          <motion.div
+                            initial={{ height: 0 }}
+                            animate={{ height: `${height}%` }}
+                            transition={{ delay: i * 0.05, duration: 0.4 }}
+                            className={`w-full rounded-t-md ${m.pct >= 99.97 ? "bg-skill-green" : m.pct >= 99.95 ? "bg-badge-gold" : "bg-alert-red"}`}
+                          />
+                          <span className="text-[9px] text-muted-foreground">{m.month}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-4 flex items-center gap-4 pt-3 border-t border-border/30">
+                    <div className="flex items-center gap-1.5"><div className="h-2 w-2 rounded-full bg-skill-green" /><span className="text-[9px] text-muted-foreground">≥99.97%</span></div>
+                    <div className="flex items-center gap-1.5"><div className="h-2 w-2 rounded-full bg-badge-gold" /><span className="text-[9px] text-muted-foreground">99.95–99.96%</span></div>
+                    <div className="flex items-center gap-1.5"><div className="h-2 w-2 rounded-full bg-alert-red" /><span className="text-[9px] text-muted-foreground">&lt;99.95%</span></div>
+                  </div>
+                </div>
+
+                {/* Response time metrics */}
+                <div className="mt-4 grid gap-3 sm:grid-cols-4">
+                  {[
+                    { label: "Avg Response Time", value: "28ms", icon: Timer, trend: "-12%" },
+                    { label: "P99 Latency", value: "142ms", icon: Activity, trend: "-8%" },
+                    { label: "Error Rate", value: "0.02%", icon: XCircle, trend: "-15%" },
+                    { label: "Throughput", value: "12.4K/s", icon: TrendingUp, trend: "+22%" },
+                  ].map((m) => (
+                    <div key={m.label} className="rounded-xl border border-border bg-card p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <m.icon size={14} className="text-muted-foreground" />
+                        <span className="text-[9px] font-semibold text-skill-green">{m.trend}</span>
+                      </div>
+                      <p className="font-mono text-lg font-bold text-foreground">{m.value}</p>
+                      <p className="text-[10px] text-muted-foreground">{m.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
         </section>
 
@@ -465,18 +726,9 @@ const HelpPage = () => {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {communityResources.map((r, i) => (
-                <motion.div
-                  key={r.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="group cursor-pointer rounded-2xl border border-border bg-card p-6 transition-all hover:border-foreground/20"
-                >
+                <motion.div key={r.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="group cursor-pointer rounded-2xl border border-border bg-card p-6 transition-all hover:border-foreground/20">
                   <div className="mb-3 flex items-center justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 text-muted-foreground group-hover:text-foreground transition-colors">
-                      <r.icon size={18} />
-                    </div>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 text-muted-foreground group-hover:text-foreground transition-colors"><r.icon size={18} /></div>
                     <span className="rounded-full bg-surface-2 px-2.5 py-0.5 text-[9px] font-semibold text-muted-foreground">{r.tag}</span>
                   </div>
                   <h3 className="mb-1 font-heading text-sm font-bold text-foreground">{r.title}</h3>
@@ -487,16 +739,20 @@ const HelpPage = () => {
           </div>
         </section>
 
-        {/* Bug Bounty - Enhanced */}
+        {/* ═══ ENHANCED Bug Bounty + Code Lookup ═══ */}
         <section className="bg-surface-1 py-16">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mb-8 flex items-center gap-3">
-              <Bug size={24} className="text-badge-gold" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-badge-gold/10">
+                <Bug size={24} className="text-badge-gold" />
+              </div>
               <div>
                 <h2 className="font-heading text-2xl font-bold text-foreground">Bug Bounty Program</h2>
-                <p className="text-xs text-muted-foreground mt-1">Help us keep SkillSwappr secure and earn rewards</p>
+                <p className="text-sm text-muted-foreground mt-1">Help us keep SkillSwappr secure and earn rewards</p>
               </div>
             </div>
+
+            {/* Stats */}
             <div className="mb-6 grid gap-3 grid-cols-2 sm:grid-cols-4">
               {[
                 { label: "Total Paid", value: "12,400 SP" },
@@ -510,7 +766,9 @@ const HelpPage = () => {
                 </div>
               ))}
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+            {/* Tiers */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
               {bountyTiers.map((t, i) => (
                 <motion.div key={t.severity} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="rounded-2xl border border-border bg-card p-5">
                   <span className={`mb-2 inline-block rounded-full px-3 py-1 text-[10px] font-bold ${
@@ -518,16 +776,70 @@ const HelpPage = () => {
                     t.severity === "High" ? "bg-alert-red/10 text-alert-red" :
                     t.severity === "Medium" ? "bg-badge-gold/10 text-badge-gold" :
                     "bg-surface-2 text-muted-foreground"
-                  }`}>
-                    {t.severity}
-                  </span>
+                  }`}>{t.severity}</span>
                   <p className="mb-1 font-heading text-sm font-bold text-foreground">{t.reward}</p>
                   <p className="text-[10px] text-muted-foreground">{t.examples}</p>
                 </motion.div>
               ))}
             </div>
+
+            {/* Bug Bounty Code Lookup */}
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-2xl border border-badge-gold/20 bg-badge-gold/5 p-6 mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Fingerprint size={18} className="text-badge-gold" />
+                <h3 className="font-heading text-sm font-bold text-foreground">Bug Bounty Code Lookup</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4">Enter your bounty report code to check the status of your submission.</p>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Hash size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="e.g. BB-2026-001"
+                    value={bountyCode}
+                    onChange={(e) => { setBountyCode(e.target.value); setBountyResult(null); }}
+                    onKeyDown={(e) => e.key === "Enter" && handleBountyLookup()}
+                    className="h-11 w-full rounded-xl border border-border bg-card pl-10 pr-4 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
+                  />
+                </div>
+                <motion.button
+                  onClick={handleBountyLookup}
+                  disabled={!bountyCode.trim()}
+                  className="flex h-11 items-center gap-2 rounded-xl bg-foreground px-5 text-sm font-semibold text-background disabled:opacity-40"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                >
+                  <Search size={14} /> Lookup
+                </motion.button>
+              </div>
+              <AnimatePresence>
+                {bountyResult === "found" && (
+                  <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-4 rounded-xl border border-skill-green/20 bg-skill-green/5 p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle2 size={14} className="text-skill-green" />
+                      <span className="text-xs font-semibold text-skill-green">Report Found</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-xs">
+                      <div><span className="text-muted-foreground">Code:</span> <span className="font-mono text-foreground">{bountyCode.toUpperCase()}</span></div>
+                      <div><span className="text-muted-foreground">Status:</span> <span className="font-semibold text-badge-gold">Under Review</span></div>
+                      <div><span className="text-muted-foreground">Severity:</span> <span className="text-foreground">High</span></div>
+                      <div><span className="text-muted-foreground">Submitted:</span> <span className="text-foreground">Feb 12, 2026</span></div>
+                      <div><span className="text-muted-foreground">Estimated Reward:</span> <span className="font-semibold text-badge-gold">200 SP + Gold Badge</span></div>
+                      <div><span className="text-muted-foreground">ETA:</span> <span className="text-foreground">~3 business days</span></div>
+                    </div>
+                  </motion.div>
+                )}
+                {bountyResult === "not_found" && (
+                  <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-4 rounded-xl border border-destructive/20 bg-destructive/5 p-4 flex items-center gap-2">
+                    <XCircle size={14} className="text-destructive shrink-0" />
+                    <span className="text-xs text-destructive">No report found for code <span className="font-mono font-bold">{bountyCode}</span>. Double-check and try again.</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
             {/* Bounty Rules */}
-            <div className="mt-6 rounded-2xl border border-border bg-card p-5">
+            <div className="rounded-2xl border border-border bg-card p-5">
               <h3 className="mb-3 font-heading text-sm font-bold text-foreground">Program Rules</h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 {[
@@ -548,68 +860,157 @@ const HelpPage = () => {
           </div>
         </section>
 
-        {/* Report an Issue - Enhanced */}
+        {/* ═══ ENHANCED Report an Issue ═══ */}
         <section className="py-16">
-          <div className="mx-auto max-w-xl px-6 text-center">
-            <Flag size={32} className="mx-auto mb-4 text-muted-foreground" />
-            <h2 className="mb-3 font-heading text-2xl font-bold text-foreground">Report an Issue</h2>
-            <p className="mb-6 text-sm text-muted-foreground">
-              Report a user, gig, or guild violation. Attach evidence for faster resolution.
-            </p>
-            <div className="space-y-3 text-left">
-              <select className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-muted-foreground focus:border-ring focus:outline-none">
-                <option>Select report type</option>
-                <option>Report a User</option>
-                <option>Report a Gig</option>
-                <option>Report a Guild</option>
-                <option>Report a Bug</option>
-                <option>Safety Concern</option>
-                <option>Other</option>
-              </select>
-              <select className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-muted-foreground focus:border-ring focus:outline-none">
-                <option>Priority Level</option>
-                <option>Low — Minor issue</option>
-                <option>Medium — Needs attention</option>
-                <option>High — Urgent</option>
-                <option>Critical — Safety risk</option>
-              </select>
-              <input
-                type="text"
-                placeholder="Reference ID (optional — gig ID, user ID, etc.)"
-                className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
-              />
-              <textarea placeholder="Describe the issue in detail..." className="h-28 w-full rounded-xl border border-border bg-card p-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none resize-none" />
-              <div className="rounded-xl border border-dashed border-border bg-surface-1 p-4 text-center cursor-pointer hover:border-foreground/20 transition-colors">
-                <FileText size={18} className="mx-auto mb-1 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground">Drag & drop evidence or click to upload (max 10MB)</span>
+          <div className="mx-auto max-w-2xl px-6">
+            <div className="rounded-2xl border border-border bg-card p-8">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10">
+                  <Flag size={20} className="text-destructive" />
+                </div>
+                <div>
+                  <h2 className="font-heading text-xl font-bold text-foreground">Report an Issue</h2>
+                  <p className="text-xs text-muted-foreground">Help us keep the platform safe and fair</p>
+                </div>
               </div>
-              <motion.button className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                Submit Report <Send size={16} />
-              </motion.button>
+
+              <AnimatePresence mode="wait">
+                {reportSubmitted ? (
+                  <motion.div key="submitted" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="py-12 text-center">
+                    <CheckCircle2 size={48} className="mx-auto mb-4 text-skill-green" />
+                    <h3 className="font-heading text-lg font-bold text-foreground mb-2">Report Submitted</h3>
+                    <p className="text-sm text-muted-foreground mb-1">Reference: <span className="font-mono font-bold text-foreground">RPT-2026-{Math.floor(Math.random() * 9000 + 1000)}</span></p>
+                    <p className="text-xs text-muted-foreground">We'll review within 24-48 hours and follow up via email.</p>
+                  </motion.div>
+                ) : (
+                  <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 space-y-5">
+                    {/* Report Type */}
+                    <div>
+                      <p className="mb-2.5 text-xs font-semibold text-foreground">What are you reporting?</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {reportTypes.map((rt) => (
+                          <button
+                            key={rt.value}
+                            onClick={() => setSelectedReportType(rt.value)}
+                            className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition-all ${
+                              selectedReportType === rt.value
+                                ? "border-foreground bg-foreground/5"
+                                : "border-border hover:border-foreground/20"
+                            }`}
+                          >
+                            <rt.icon size={14} className={selectedReportType === rt.value ? "text-foreground" : "text-muted-foreground"} />
+                            <div>
+                              <span className={`text-[10px] font-semibold block ${selectedReportType === rt.value ? "text-foreground" : "text-muted-foreground"}`}>{rt.label}</span>
+                              <span className="text-[9px] text-muted-foreground/60">{rt.desc}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Priority */}
+                    <div>
+                      <p className="mb-2.5 text-xs font-semibold text-foreground">Priority level</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {priorityLevels.map((p) => (
+                          <button
+                            key={p.value}
+                            onClick={() => setSelectedPriority(p.value)}
+                            className={`rounded-xl border py-2.5 text-center transition-all ${
+                              selectedPriority === p.value
+                                ? `border-foreground ${p.bg}`
+                                : "border-border hover:border-foreground/20"
+                            }`}
+                          >
+                            <span className={`text-[10px] font-bold block ${selectedPriority === p.value ? p.color : "text-muted-foreground"}`}>{p.label}</span>
+                            <span className="text-[8px] text-muted-foreground/60">{p.desc}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Reference & Email */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="relative">
+                        <Hash size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                        <input type="text" placeholder="Reference ID (gig, user, etc.)" value={reportRef} onChange={(e) => setReportRef(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-10 pr-4 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                      </div>
+                      <div className="relative">
+                        <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                        <input type="email" placeholder="Your email for follow-up" value={reportEmail} onChange={(e) => setReportEmail(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-10 pr-4 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                      <textarea
+                        placeholder="Describe the issue in detail — include what happened, when it occurred, and any steps to reproduce..."
+                        value={reportDescription}
+                        onChange={(e) => setReportDescription(e.target.value)}
+                        maxLength={1000}
+                        className="h-32 w-full rounded-xl border border-border bg-surface-1 p-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none resize-none"
+                      />
+                      <p className="mt-1 text-right text-[9px] text-muted-foreground">{reportDescription.length}/1000</p>
+                    </div>
+
+                    {/* File upload */}
+                    <div>
+                      <p className="mb-2 text-xs font-semibold text-foreground flex items-center gap-1.5"><Paperclip size={12} /> Evidence & Attachments</p>
+                      {reportFiles.length > 0 && (
+                        <div className="mb-2 space-y-1">
+                          {reportFiles.map((f, i) => (
+                            <div key={i} className="flex items-center gap-2 rounded-lg border border-skill-green/20 bg-skill-green/5 px-3 py-2">
+                              <CheckCircle2 size={11} className="text-skill-green shrink-0" />
+                              <span className="text-[10px] text-foreground flex-1 truncate">{f}</span>
+                              <button onClick={() => setReportFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive"><XCircle size={11} /></button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <label className="flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-border p-4 transition-all hover:border-foreground/20 hover:bg-surface-1">
+                        <Upload size={16} className="text-muted-foreground" />
+                        <div className="flex-1">
+                          <p className="text-xs font-medium text-foreground">Drag & drop or click to upload</p>
+                          <p className="text-[9px] text-muted-foreground">Screenshots, logs, videos · Max 10MB each · Up to 5 files</p>
+                        </div>
+                        <input type="file" multiple className="hidden" onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          setReportFiles(prev => [...prev, ...files.map(f => f.name)]);
+                        }} />
+                      </label>
+                    </div>
+
+                    {/* Submit */}
+                    <motion.button
+                      onClick={handleReportSubmit}
+                      disabled={!selectedReportType || !reportDescription.trim()}
+                      className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold text-background disabled:opacity-40 disabled:cursor-not-allowed"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      <Send size={16} /> Submit Report
+                    </motion.button>
+                    <p className="text-center text-[9px] text-muted-foreground">Reports are reviewed within 24-48 hours. Urgent safety concerns are escalated immediately.</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </section>
 
-        {/* Feedback Section */}
+        {/* Feedback */}
         <section className="bg-surface-1 py-16">
           <div className="mx-auto max-w-3xl px-6 text-center">
             <Lightbulb size={32} className="mx-auto mb-4 text-badge-gold" />
             <h2 className="mb-3 font-heading text-2xl font-bold text-foreground">Help Us Improve</h2>
-            <p className="mb-8 text-sm text-muted-foreground">
-              Was this help center useful? Share your feedback so we can make it even better.
-            </p>
+            <p className="mb-8 text-sm text-muted-foreground">Was this help center useful? Share your feedback so we can make it even better.</p>
             <div className="flex items-center justify-center gap-4">
               {[
                 { icon: ThumbsUp, label: "Very Helpful", color: "skill-green" },
                 { icon: Star, label: "Somewhat Helpful", color: "badge-gold" },
                 { icon: ThumbsDown, label: "Needs Work", color: "alert-red" },
               ].map((fb) => (
-                <motion.button
-                  key={fb.label}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`flex flex-col items-center gap-2 rounded-2xl border border-border bg-card px-6 py-4 hover:border-${fb.color}/30 transition-all`}
-                >
+                <motion.button key={fb.label} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className={`flex flex-col items-center gap-2 rounded-2xl border border-border bg-card px-6 py-4 hover:border-${fb.color}/30 transition-all`}>
                   <fb.icon size={20} className={`text-${fb.color}`} />
                   <span className="text-[10px] text-muted-foreground">{fb.label}</span>
                 </motion.button>
@@ -617,8 +1018,6 @@ const HelpPage = () => {
             </div>
           </div>
         </section>
-
-        <CTAFooterSection />
       </div>
     </PageTransition>
   );
