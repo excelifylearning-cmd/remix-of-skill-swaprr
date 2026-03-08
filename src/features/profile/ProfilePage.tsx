@@ -230,7 +230,7 @@ const ProfilePage = () => {
               <div className="sticky top-24 space-y-8 pr-10">
                 {/* Section nav */}
                 <nav className="space-y-1">
-                  {["About", "Skills", "Experience", "Education", "Portfolio", "Projects", "Activity"].map(s => (
+                  {["About", "Skills", "Experience", "Education", "Portfolio", "Listings", "Disputes", "Projects", "Activity"].map(s => (
                     <a key={s} href={`#${s.toLowerCase()}`} className="block py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
                       {s}
                     </a>
