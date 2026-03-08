@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
   Clock, ArrowRight, ArrowLeft, Tag, TrendingUp, User, Heart, MessageSquare,
   Bookmark, Share2, Eye, Calendar, ChevronRight, Search, Star, Sparkles,
@@ -7,7 +8,7 @@ import {
   ThumbsUp, Send, MoreHorizontal, Link2, Twitter, Facebook, Copy, CheckCircle2,
   ChevronDown, Play, Quote, List, Image as ImageIcon, Code, Crown, Flame,
   ArrowUp, Layers, Globe, PenTool, Lightbulb, Shield, Users, Target,
-  BarChart3, Hash, Mic, Coffee, Loader2
+  BarChart3, Hash, Mic, Coffee, Loader2, Lock
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
