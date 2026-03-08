@@ -9,6 +9,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
+  const emailError = useMemo(() => email.trim() ? (validateEmail(email) === true ? "" : validateEmail(email) as string) : "", [email]);
 
   return (
     <PageTransition>
