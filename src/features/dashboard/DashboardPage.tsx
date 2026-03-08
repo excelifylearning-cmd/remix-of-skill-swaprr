@@ -565,8 +565,32 @@ const CreateGigTab = () => {
             <button onClick={() => setStep(2)} className="flex-1 rounded-xl border border-border py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Back
             </button>
-            <button className="flex-1 rounded-xl bg-skill-green py-3.5 text-sm font-semibold text-background flex items-center justify-center gap-2">
-              <Send size={16} /> Post Gig
+            <button
+              disabled={saving}
+              onClick={async () => {
+                if (!user) return;
+                setSaving(true);
+                const { error } = await supabase.from("listings").insert({
+                  title: gigData.title,
+                  description: gigData.description,
+                  wants: gigData.seeking,
+                  category: gigData.category,
+                  format: formatMap[gigData.format] || "Direct Swap",
+                  points: gigData.spBonus,
+                  delivery_days: gigData.deliveryDays,
+                  user_id: user.id,
+                  price: `${gigData.spBonus} SP`,
+                  status: "active",
+                });
+                setSaving(false);
+                if (!error) {
+                  navigate("/dashboard?tab=my-gigs");
+                  window.location.reload();
+                }
+              }}
+              className="flex-1 rounded-xl bg-skill-green py-3.5 text-sm font-semibold text-background flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <Send size={16} /> {saving ? "Posting..." : "Post Gig"}
             </button>
           </div>
         </motion.div>
