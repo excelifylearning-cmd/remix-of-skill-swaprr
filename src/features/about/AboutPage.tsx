@@ -12,6 +12,7 @@ import TeamSection from "./sections/TeamSection";
 import CommunityStatsSection from "./sections/CommunityStatsSection";
 import ValuesCultureSection from "./sections/ValuesCultureSection";
 import AboutCTASection from "./sections/AboutCTASection";
+import CTAFooterSection from "@/features/home/sections/CTAFooterSection";
 
 const AboutPage = () => (
   <PageTransition>
@@ -29,6 +30,7 @@ const AboutPage = () => (
       <CommunityStatsSection />
       <ValuesCultureSection />
       <AboutCTASection />
+      <CTAFooterSection />
     </div>
   </PageTransition>
 );
