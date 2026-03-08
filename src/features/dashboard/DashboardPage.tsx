@@ -1038,6 +1038,7 @@ const DashboardSidebar = ({ activeTab, setActiveTab, profile }: { activeTab: str
 
 const DashboardPage = () => {
   const { user, profile, isAuthenticated, logout, updateProfile } = useAuth();
+  const { notifications, unreadCount, markAsRead, markAllRead } = useNotifications();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "overview");
