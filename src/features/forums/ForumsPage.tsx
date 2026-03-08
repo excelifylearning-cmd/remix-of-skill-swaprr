@@ -29,6 +29,10 @@ const forumCategories = [
   { icon: Hash, name: "Feature Requests", desc: "Suggest and vote on new features", threads: 430, posts: 2900, color: "skill-green", online: 23 },
   { icon: BarChart3, name: "Marketplace Meta", desc: "Pricing strategies, gig optimization, and market trends", threads: 310, posts: 1800, color: "badge-gold", online: 19 },
   { icon: Globe, name: "Off-Topic Lounge", desc: "Anything goes — memes, random chats, and vibes", threads: 950, posts: 6100, color: "muted-foreground", online: 76 },
+  { icon: Lightbulb, name: "Freelancer Hub", desc: "Client management, invoicing, and freelance strategies", threads: 470, posts: 3100, color: "badge-gold", online: 31 },
+  { icon: Video, name: "Streams & Content", desc: "Live streams, video tutorials, and content creation", threads: 280, posts: 1540, color: "court-blue", online: 18 },
+  { icon: GraduationCap, name: "University Corner", desc: "Student collabs, campus events, and academic projects", threads: 390, posts: 2200, color: "skill-green", online: 22 },
+  { icon: Bot, name: "AI & Automation", desc: "AI tools, prompt engineering, and workflow automation", threads: 520, posts: 3600, color: "foreground", online: 48 },
 ];
 
 const announcements = [
@@ -121,6 +125,38 @@ const allThreads: Thread[] = [
     content: "We're planning the next gig format and want YOUR input! Vote on your favorite option and tell us why in the comments.\n\nEach option has been discussed internally but we want the community to have the final say.",
     awards: [{ icon: "📌", count: 1 }],
   },
+  {
+    id: "8", title: "Just hit Diamond tier — my 6-month journey documented", author: "Wei L.", authorAvatar: "WL", authorFlair: "Diamond Creator",
+    authorKarma: 7800, authorJoined: "Sep 2025", authorGigs: 210, replies: 92, views: 3200, upvotes: 287, downvotes: 4, hot: true, category: "Achievements & Milestones", timeAgo: "3h ago",
+    tags: ["diamond", "journey", "milestone"], hasImage: true, hasPoll: false, hasCode: false, hasAttachment: true,
+    locked: false, sticky: false,
+    content: "Six months ago I signed up knowing nobody. Today I hit Diamond. Here's every single thing I did, week by week, with screenshots and SP graphs.\n\nTL;DR: Consistency > Talent. Showing up daily beats occasional brilliance every time.",
+    awards: [{ icon: "💎", count: 5 }, { icon: "🔥", count: 3 }, { icon: "⭐", count: 8 }],
+  },
+  {
+    id: "9", title: "AI tools that actually help with skill swaps (2026 edition)", author: "Priya M.", authorAvatar: "PM", authorFlair: "Top Contributor",
+    authorKarma: 3400, authorJoined: "Feb 2025", authorGigs: 56, replies: 41, views: 1800, upvotes: 134, downvotes: 7, hot: true, category: "AI & Automation", timeAgo: "5h ago",
+    tags: ["ai", "tools", "productivity"], hasImage: false, hasPoll: false, hasCode: true, hasAttachment: false,
+    locked: false, sticky: false,
+    content: "I've tested 20+ AI tools for various aspects of skill swapping — from proposal writing to code review to design feedback. Here are the 7 that actually made a difference.\n\nIncludes prompt templates and workflow examples.",
+    awards: [{ icon: "📚", count: 4 }, { icon: "⭐", count: 2 }],
+  },
+  {
+    id: "10", title: "Freelancer tax guide for skill swap income — USA/UK/EU", author: "Sophie B.", authorAvatar: "SB", authorFlair: "Verified Expert",
+    authorKarma: 2100, authorJoined: "Apr 2025", authorGigs: 38, replies: 56, views: 2400, upvotes: 178, downvotes: 2, hot: false, category: "Freelancer Hub", timeAgo: "1d ago",
+    tags: ["taxes", "freelance", "legal"], hasImage: false, hasPoll: false, hasCode: false, hasAttachment: true,
+    locked: false, sticky: false,
+    content: "I'm a certified accountant and SkillSwappr user. Here's a comprehensive guide to reporting skill swap income, tracking expenses, and common deductions.\n\nCovers USA (W-9/1099), UK (Self Assessment), and EU (VAT rules).",
+    awards: [{ icon: "📚", count: 6 }, { icon: "⭐", count: 3 }],
+  },
+  {
+    id: "11", title: "Live coding stream every Friday — come build with me!", author: "Jake W.", authorAvatar: "JW", authorFlair: "Streamer",
+    authorKarma: 1560, authorJoined: "Nov 2025", authorGigs: 28, replies: 23, views: 780, upvotes: 89, downvotes: 1, hot: false, category: "Streams & Content", timeAgo: "6h ago",
+    tags: ["stream", "coding", "weekly"], hasImage: true, hasPoll: false, hasCode: false, hasAttachment: false,
+    locked: false, sticky: false,
+    content: "Every Friday at 4PM UTC I stream live coding sessions where I build real projects from SkillSwappr gigs. Come watch, ask questions, or just hang out.\n\nLast week we built a full Figma-to-React pipeline in 2 hours!",
+    awards: [{ icon: "🎬", count: 2 }],
+  },
 ];
 
 const threadReplies: Record<string, { author: string; avatar: string; flair: string; time: string; text: string; upvotes: number; downvotes: number; replies: number; awards: { icon: string; count: number }[]; nested?: { author: string; avatar: string; flair: string; time: string; text: string; upvotes: number }[] }[]> = {
@@ -151,6 +187,9 @@ const topContributors = [
   { name: "Aisha R.", avatar: "AR", flair: "Top Contributor", posts: 234, karma: 2890, streak: 21, rank: 3, badge: "⭐" },
   { name: "Lena S.", avatar: "LS", flair: "Diamond Creator", posts: 198, karma: 6780, streak: 35, rank: 4, badge: "💎" },
   { name: "Dev_Riku", avatar: "DR", flair: "Beta Tester", posts: 176, karma: 1890, streak: 7, rank: 5, badge: "🔧" },
+  { name: "Wei L.", avatar: "WL", flair: "Diamond Creator", posts: 165, karma: 7800, streak: 42, rank: 6, badge: "💎" },
+  { name: "Priya M.", avatar: "PM", flair: "Top Contributor", posts: 148, karma: 3400, streak: 18, rank: 7, badge: "⭐" },
+  { name: "Sophie B.", avatar: "SB", flair: "Verified Expert", posts: 132, karma: 2100, streak: 12, rank: 8, badge: "✅" },
 ];
 
 const forumRules = [
@@ -191,6 +230,50 @@ const recentActivity = [
   { user: "Rio D.", action: "earned badge", target: "🔥 7-Day Streak", time: "25m ago" },
   { user: "Dev_Riku", action: "replied to", target: "API webhooks tutorial", time: "30m ago" },
 ];
+
+const debateOfTheWeek = {
+  title: "Should SkillSwappr allow AI-generated deliverables?",
+  description: "A heated debate on whether AI-assisted or fully AI-generated work should be accepted on the platform. Both sides have strong arguments.",
+  forCount: 234,
+  againstCount: 189,
+  author: "Mod Team",
+  comments: 312,
+  timeLeft: "3 days left",
+};
+
+const reputationLevels = [
+  { level: "Newcomer", minKarma: 0, icon: Star, color: "muted-foreground", perks: ["Post threads", "Vote", "Comment"] },
+  { level: "Regular", minKarma: 100, icon: Zap, color: "foreground", perks: ["Create polls", "Upload attachments", "Custom flair"] },
+  { level: "Contributor", minKarma: 500, icon: Award, color: "court-blue", perks: ["Highlight posts", "Pin in guilds", "Beta access"] },
+  { level: "Expert", minKarma: 2000, icon: Medal, color: "badge-gold", perks: ["Publish guides", "Moderate threads", "Verified badge"] },
+  { level: "Legend", minKarma: 10000, icon: Crown, color: "badge-gold", perks: ["Custom avatar frame", "Priority support", "Mod nominations"] },
+];
+
+const forumModerators = [
+  { name: "Sarah P.", avatar: "SP", role: "Lead Moderator", online: true, actions: 1240, joinedAs: "Aug 2024" },
+  { name: "Marcus D.", avatar: "MD", role: "Design Mod", online: true, actions: 890, joinedAs: "Nov 2024" },
+  { name: "Kim Y.", avatar: "KY", role: "Dev Mod", online: false, actions: 720, joinedAs: "Jan 2025" },
+  { name: "Andre L.", avatar: "AL", role: "Community Mod", online: true, actions: 560, joinedAs: "Mar 2025" },
+];
+
+const forumBadges = [
+  { name: "First Post", desc: "Published your first thread", icon: "✍️", rarity: "Common" },
+  { name: "Helpful Hand", desc: "10 accepted answers", icon: "🤝", rarity: "Common" },
+  { name: "Flame Starter", desc: "Thread reached 100+ upvotes", icon: "🔥", rarity: "Rare" },
+  { name: "Judge Dredd", desc: "Judged 25+ Skill Court cases", icon: "⚖️", rarity: "Rare" },
+  { name: "Guild Founder", desc: "Founded a guild with 25+ members", icon: "🏰", rarity: "Epic" },
+  { name: "Diamond Voice", desc: "Reached 10,000 karma", icon: "💎", rarity: "Legendary" },
+  { name: "Guide Author", desc: "Published 5+ community guides", icon: "📚", rarity: "Epic" },
+  { name: "Streak Master", desc: "Maintained a 30-day posting streak", icon: "⚡", rarity: "Rare" },
+];
+
+const dailyChallenge = {
+  title: "Write a mini-tutorial",
+  description: "Share a 3-step tutorial on any skill. Top voted wins 500 SP!",
+  entries: 47,
+  timeLeft: "14h left",
+  prize: "500 SP",
+};
 
 const ForumsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -1031,14 +1114,52 @@ const ForumsPage = () => {
                   </AnimatePresence>
                 </div>
 
+                {/* Daily Challenge */}
+                <div className="rounded-2xl border border-badge-gold/20 bg-badge-gold/5 p-5">
+                  <h3 className="mb-2 flex items-center gap-2 font-heading text-xs font-bold text-foreground">
+                    <Target size={12} className="text-badge-gold" /> Daily Challenge
+                  </h3>
+                  <p className="text-xs font-medium text-foreground mb-1">{dailyChallenge.title}</p>
+                  <p className="text-[9px] text-muted-foreground mb-3">{dailyChallenge.description}</p>
+                  <div className="flex items-center justify-between text-[9px] text-muted-foreground mb-3">
+                    <span className="flex items-center gap-1"><Users size={9} /> {dailyChallenge.entries} entries</span>
+                    <span className="flex items-center gap-1"><Clock size={9} /> {dailyChallenge.timeLeft}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs font-bold text-badge-gold">{dailyChallenge.prize}</span>
+                    <button className="rounded-full bg-foreground px-4 py-1.5 text-[10px] font-semibold text-background">Enter</button>
+                  </div>
+                </div>
+
                 {/* Trending Tags */}
                 <div className="rounded-2xl border border-border bg-card p-5">
                   <h3 className="mb-3 font-heading text-xs font-bold text-foreground flex items-center gap-2">
                     <TrendingUp size={12} className="text-skill-green" /> Trending Tags
                   </h3>
                   <div className="flex flex-wrap gap-1.5">
-                    {["guild-wars", "tier-up", "auction", "co-creation", "court-tips", "sp-earning", "design", "api", "webhooks", "mentorship", "portfolio", "review"].map((tag) => (
+                    {["guild-wars", "tier-up", "auction", "co-creation", "court-tips", "sp-earning", "design", "api", "webhooks", "mentorship", "portfolio", "review", "ai-tools", "freelance", "streaming"].map((tag) => (
                       <span key={tag} className="rounded-md border border-border bg-surface-1 px-2 py-1 text-[9px] text-muted-foreground hover:text-foreground hover:border-foreground/20 cursor-pointer transition-colors">#{tag}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Moderators Mini */}
+                <div className="rounded-2xl border border-border bg-card p-5">
+                  <h3 className="mb-3 font-heading text-xs font-bold text-foreground flex items-center gap-2">
+                    <Shield size={12} className="text-court-blue" /> Moderators
+                  </h3>
+                  <div className="space-y-2">
+                    {forumModerators.map((mod) => (
+                      <div key={mod.name} className="flex items-center gap-2">
+                        <div className="relative">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-2 font-mono text-[9px] font-bold text-foreground">{mod.avatar}</div>
+                          <span className={`absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border border-card ${mod.online ? "bg-skill-green" : "bg-muted-foreground/30"}`} />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-semibold text-foreground">{mod.name}</p>
+                          <p className="text-[8px] text-muted-foreground">{mod.role}</p>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -1128,6 +1249,168 @@ const ForumsPage = () => {
                   <div>
                     <p className="text-xs font-semibold text-foreground">{k.action}</p>
                     <p className={`font-mono text-sm font-bold ${k.color}`}>{k.points} karma</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* DEBATE OF THE WEEK */}
+        <section className="border-t border-border py-16">
+          <div className="mx-auto max-w-4xl px-6">
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8">
+              <span className="mb-3 inline-block rounded-full border border-destructive/20 bg-destructive/5 px-4 py-1.5 font-mono text-xs text-destructive">
+                <Flame size={12} className="inline mr-1.5 -mt-0.5" /> Hot Debate
+              </span>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">Debate of the Week</h2>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+              <h3 className="font-heading text-lg font-bold text-foreground mb-2">{debateOfTheWeek.title}</h3>
+              <p className="text-sm text-muted-foreground mb-6">{debateOfTheWeek.description}</p>
+              
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="rounded-xl border border-skill-green/20 bg-skill-green/5 p-4 text-center">
+                  <ChevronUp size={20} className="mx-auto mb-1 text-skill-green" />
+                  <p className="font-heading text-2xl font-black text-skill-green">{debateOfTheWeek.forCount}</p>
+                  <p className="text-xs text-muted-foreground mt-1">For</p>
+                  <button className="mt-3 rounded-full border border-skill-green/30 px-4 py-1.5 text-xs font-medium text-skill-green hover:bg-skill-green/10 transition-colors">Vote For</button>
+                </div>
+                <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-center">
+                  <ChevronDown size={20} className="mx-auto mb-1 text-destructive" />
+                  <p className="font-heading text-2xl font-black text-destructive">{debateOfTheWeek.againstCount}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Against</p>
+                  <button className="mt-3 rounded-full border border-destructive/30 px-4 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors">Vote Against</button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span className="flex items-center gap-1"><MessageSquare size={12} /> {debateOfTheWeek.comments} comments</span>
+                <span className="flex items-center gap-1"><Clock size={12} /> {debateOfTheWeek.timeLeft}</span>
+              </div>
+
+              <div className="mt-4 w-full bg-surface-2 rounded-full h-2.5 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-skill-green"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: `${(debateOfTheWeek.forCount / (debateOfTheWeek.forCount + debateOfTheWeek.againstCount)) * 100}%` }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, delay: 0.3 }}
+                />
+              </div>
+              <div className="flex justify-between mt-1.5 text-[9px] text-muted-foreground">
+                <span>{Math.round((debateOfTheWeek.forCount / (debateOfTheWeek.forCount + debateOfTheWeek.againstCount)) * 100)}% For</span>
+                <span>{Math.round((debateOfTheWeek.againstCount / (debateOfTheWeek.forCount + debateOfTheWeek.againstCount)) * 100)}% Against</span>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* REPUTATION LEVELS */}
+        <section className="border-t border-border bg-surface-1 py-16">
+          <div className="mx-auto max-w-6xl px-6">
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">Reputation Levels</h2>
+              <p className="text-sm text-muted-foreground mt-2">Earn karma to unlock new abilities and perks</p>
+            </motion.div>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              {reputationLevels.map((level, i) => (
+                <motion.div
+                  key={level.level}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="rounded-2xl border border-border bg-card p-5 text-center hover:border-foreground/20 transition-colors"
+                >
+                  <level.icon size={22} className={`mx-auto mb-2 text-${level.color}`} />
+                  <h3 className="font-heading text-sm font-bold text-foreground">{level.level}</h3>
+                  <p className="font-mono text-[10px] text-muted-foreground mt-0.5">{level.minKarma.toLocaleString()}+ karma</p>
+                  <div className="mt-3 space-y-1">
+                    {level.perks.map(perk => (
+                      <p key={perk} className="flex items-center justify-center gap-1 text-[9px] text-muted-foreground">
+                        <CheckCircle2 size={8} className={`text-${level.color}`} /> {perk}
+                      </p>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FORUM BADGES */}
+        <section className="border-t border-border py-16">
+          <div className="mx-auto max-w-6xl px-6">
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
+              <span className="mb-3 inline-block rounded-full border border-badge-gold/30 bg-badge-gold/10 px-4 py-1.5 font-mono text-xs text-badge-gold">
+                <Award size={12} className="inline mr-1.5 -mt-0.5" /> Collectibles
+              </span>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">Forum Badges</h2>
+              <p className="text-sm text-muted-foreground mt-2">Earn badges through participation and achievements</p>
+            </motion.div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {forumBadges.map((badge, i) => (
+                <motion.div
+                  key={badge.name}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="rounded-xl border border-border bg-card p-4 flex items-start gap-3 hover:border-foreground/20 transition-colors"
+                >
+                  <span className="text-2xl">{badge.icon}</span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xs font-bold text-foreground">{badge.name}</h3>
+                      <span className={`rounded-full px-1.5 py-0.5 text-[7px] font-bold ${
+                        badge.rarity === "Common" ? "bg-surface-2 text-muted-foreground" :
+                        badge.rarity === "Rare" ? "bg-court-blue/10 text-court-blue" :
+                        badge.rarity === "Epic" ? "bg-skill-green/10 text-skill-green" :
+                        "bg-badge-gold/10 text-badge-gold"
+                      }`}>{badge.rarity}</span>
+                    </div>
+                    <p className="text-[9px] text-muted-foreground mt-0.5">{badge.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* MODERATORS */}
+        <section className="border-t border-border bg-surface-1 py-16">
+          <div className="mx-auto max-w-4xl px-6">
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">Forum Moderators</h2>
+              <p className="text-sm text-muted-foreground mt-2">The team keeping our community safe and productive</p>
+            </motion.div>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {forumModerators.map((mod, i) => (
+                <motion.div
+                  key={mod.name}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="rounded-2xl border border-border bg-card p-5 text-center"
+                >
+                  <div className="relative mx-auto mb-3 w-fit">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-surface-2 font-heading text-sm font-bold text-foreground ring-2 ring-border">
+                      {mod.avatar}
+                    </div>
+                    <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-card ${mod.online ? "bg-skill-green" : "bg-muted-foreground/30"}`} />
+                  </div>
+                  <h3 className="text-xs font-bold text-foreground">{mod.name}</h3>
+                  <p className="text-[10px] text-court-blue font-medium">{mod.role}</p>
+                  <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-muted-foreground">
+                    <span>{mod.actions} actions</span>
+                    <span>Since {mod.joinedAs}</span>
                   </div>
                 </motion.div>
               ))}
