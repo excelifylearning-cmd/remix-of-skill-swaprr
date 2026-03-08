@@ -738,16 +738,6 @@ const LeaderboardPage = () => {
             </div>
           </div>
         </section>
-const getTimeAgo = (dateStr: string) => {
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diff = Math.floor((now.getTime() - d.getTime()) / 86400000);
-  if (diff === 0) return "today";
-  if (diff === 1) return "1 day ago";
-  if (diff < 7) return `${diff} days ago`;
-  if (diff < 14) return "1 week ago";
-  return `${Math.floor(diff / 7)} weeks ago`;
-};
 
 
       </div>
