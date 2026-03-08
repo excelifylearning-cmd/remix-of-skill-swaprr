@@ -589,6 +589,67 @@ const HelpPage = () => {
                 <span key={sdk} className="rounded-lg border border-border bg-card px-3 py-1.5 font-mono text-[10px] text-muted-foreground hover:text-foreground hover:border-foreground/20 cursor-pointer transition-colors">{sdk}</span>
               ))}
             </div>
+
+            {/* Code Example */}
+            <div className="mt-6 grid gap-4 lg:grid-cols-2">
+              <div className="rounded-2xl border border-border bg-card overflow-hidden">
+                <div className="border-b border-border/50 bg-surface-1 px-5 py-2.5 flex items-center gap-2">
+                  <div className="flex gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-alert-red/60" /><div className="h-2.5 w-2.5 rounded-full bg-badge-gold/60" /><div className="h-2.5 w-2.5 rounded-full bg-skill-green/60" /></div>
+                  <span className="font-mono text-[10px] text-muted-foreground ml-2">example.js</span>
+                </div>
+                <pre className="p-5 text-xs text-muted-foreground overflow-x-auto leading-relaxed">
+                  <code>{`// Fetch gigs with filters
+const response = await fetch(
+  'https://api.skillswappr.com/v1/gigs?category=design&format=auction',
+  {
+    headers: {
+      'Authorization': 'Bearer YOUR_TOKEN',
+      'Content-Type': 'application/json'
+    }
+  }
+);
+
+const { data, meta } = await response.json();
+console.log(\`Found \${meta.total} gigs\`);`}</code>
+                </pre>
+              </div>
+              <div className="rounded-2xl border border-border bg-card overflow-hidden">
+                <div className="border-b border-border/50 bg-surface-1 px-5 py-2.5 flex items-center gap-2">
+                  <div className="flex gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-alert-red/60" /><div className="h-2.5 w-2.5 rounded-full bg-badge-gold/60" /><div className="h-2.5 w-2.5 rounded-full bg-skill-green/60" /></div>
+                  <span className="font-mono text-[10px] text-muted-foreground ml-2">response.json</span>
+                </div>
+                <pre className="p-5 text-xs text-muted-foreground overflow-x-auto leading-relaxed">
+                  <code>{`{
+  "data": [
+    {
+      "id": "gig_abc123",
+      "title": "UI/UX Design Sprint",
+      "format": "auction",
+      "current_bid": 45,
+      "seller": { "elo": 1780, "tier": "Gold" },
+      "ends_at": "2026-03-15T18:00:00Z"
+    }
+  ],
+  "meta": { "total": 142, "page": 1, "per_page": 20 }
+}`}</code>
+                </pre>
+              </div>
+            </div>
+
+            {/* Authentication & Rate Limits */}
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
+              {[
+                { title: "Authentication", desc: "Use API keys for read-only access. Bearer tokens (JWT) for write operations. Tokens expire after 1 hour.", icon: Key },
+                { title: "Rate Limiting", desc: "1,000 requests/min for API keys. 5,000 requests/min for Enterprise. 429 status on limit exceeded with Retry-After header.", icon: Timer },
+                { title: "Webhooks", desc: "Subscribe to events: gig.completed, dispute.filed, sp.transferred, user.verified. HMAC-SHA256 signature verification.", icon: Zap },
+              ].map((item) => (
+                <div key={item.title} className="rounded-xl border border-border bg-card p-5">
+                  <item.icon size={16} className="mb-2 text-court-blue" />
+                  <h4 className="text-xs font-bold text-foreground mb-1">{item.title}</h4>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
