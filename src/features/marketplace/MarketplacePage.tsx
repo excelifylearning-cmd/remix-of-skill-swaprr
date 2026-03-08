@@ -1484,6 +1484,91 @@ const MarketplacePage = () => {
               </div>
             </section>
 
+            {/* ═══ SP ONLY SECTION ═══ */}
+            <section id="mp-sp-only" className="mb-12">
+              <div className="mb-5 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-badge-gold/10">
+                    <CircleDollarSign size={16} className="text-badge-gold" />
+                  </div>
+                  <div>
+                    <h2 className="font-heading text-lg font-bold text-foreground">SP Only</h2>
+                    <p className="text-[11px] text-muted-foreground">Pay with Skill Points — no skill swap required</p>
+                  </div>
+                  <Badge className="ml-2 text-[9px] bg-badge-gold/10 text-badge-gold border-badge-gold/20">BUYER MODE</Badge>
+                </div>
+                <Link to="#" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
+                  View All <ArrowRight size={12} />
+                </Link>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {spOnlyGigs.slice(0, 8).map((gig) => {
+                  const tier = eloTier(gig.elo);
+                  return (
+                    <motion.div
+                      key={gig.id}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                      className={`cursor-pointer rounded-2xl border border-border bg-card transition-all duration-300 hover:border-badge-gold/30 hover:shadow-[0_12px_48px_-12px_hsl(var(--badge-gold)/0.15)] ${tier.glow}`}
+                    >
+                      {/* Header */}
+                      <div className="flex items-center justify-between border-b border-border/50 px-4 py-2.5">
+                        <span className="flex items-center gap-1.5 rounded-full bg-badge-gold/10 border border-badge-gold/20 px-2 py-0.5 text-[10px] font-semibold text-badge-gold">
+                          <CircleDollarSign size={10} /> SP Only
+                        </span>
+                        {gig.hot && (
+                          <span className="flex items-center gap-1 rounded-full bg-alert-red/10 px-1.5 py-0.5 text-[10px] text-alert-red font-medium">
+                            <Flame size={9} className="animate-pulse" /> Hot
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Body */}
+                      <div className="p-4">
+                        <h3 className="text-sm font-bold text-foreground mb-2">{gig.skill}</h3>
+                        <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{gig.desc}</p>
+
+                        {/* Seller */}
+                        <div className="flex items-center gap-2.5 mb-3">
+                          <div className={`flex h-8 w-8 items-center justify-center rounded-lg border ${tier.border} ${tier.bg} font-mono text-[10px] font-bold ${tier.color}`}>
+                            {gig.avatar}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="flex items-center gap-1 text-xs font-medium text-foreground truncate">
+                              {gig.seller}
+                              {gig.verified && <CheckCircle2 size={10} className="text-skill-green shrink-0" />}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground">{gig.uni} · {tier.label}</p>
+                          </div>
+                        </div>
+
+                        {/* Price & Stats */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <Coins size={14} className="text-badge-gold" />
+                            <span className="text-lg font-black text-badge-gold">{gig.spPrice}</span>
+                            <span className="text-xs text-muted-foreground">SP</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                            <span className="flex items-center gap-1"><Clock size={9} /> {gig.deliveryDays}d</span>
+                            <span className="flex items-center gap-1"><Star size={9} className="text-badge-gold" /> {gig.rating}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="border-t border-border/50 px-4 py-2.5 bg-surface-1">
+                        <button className="w-full rounded-lg bg-badge-gold py-2 text-xs font-semibold text-background hover:opacity-90 transition-opacity">
+                          Buy with SP
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </section>
+
             {/* ═══ REQUEST BOARD ═══ */}
             <section id="mp-requests" className="mb-12">
               <div className="mb-5 flex items-center justify-between">
