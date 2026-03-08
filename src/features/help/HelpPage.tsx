@@ -687,7 +687,9 @@ const HelpPage = () => {
             {/* Services Grid */}
             {statusTab === "services" && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {services.map((s, i) => (
+                {activeServices.map((s: any, i: number) => {
+                  const IconComp = iconLookup[s.icon] || Server;
+                  return (
                   <motion.div
                     key={s.name}
                     initial={{ opacity: 0, y: 10 }}
