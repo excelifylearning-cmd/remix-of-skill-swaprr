@@ -573,7 +573,7 @@ const EventsPage = () => {
         </section>
 
         <Footer />
-        <LoginPrompt open={showLogin} onClose={() => setShowLogin(false)} />
+        <LoginPrompt open={showLogin} onOpenChange={setShowLogin} />
       </div>
     </PageTransition>
   );
