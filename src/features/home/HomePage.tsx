@@ -27,7 +27,7 @@ const HomePage = () => {
         <HeroSection />
         <WhatIsSection />
         <HowSwappingWorksSection />
-        <PlatformHighlightsSection />
+        
         <SkillPointsSection />
         <MarketplacePreviewSection />
         <PlatformFormatsSection />
