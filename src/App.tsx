@@ -7,6 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import { lazy, Suspense } from "react";
 import ScrollToTop from "@/components/shared/ScrollToTop";
 import LoadingScreen from "@/components/shared/LoadingScreen";
+import LiveChatWidget from "@/components/shared/LiveChatWidget";
 import CookieConsent from "@/components/shared/CookieConsent";
 
 const HomePage = lazy(() => import("./features/home/HomePage"));
@@ -83,6 +84,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <AnimatedRoutes />
+        <LiveChatWidget />
         <CookieConsent />
       </BrowserRouter>
     </TooltipProvider>
