@@ -623,8 +623,6 @@ const ForumsPage = () => {
               </div>
             </div>
           </section>
-
-          <CTAFooterSection />
         </div>
       </PageTransition>
     );
