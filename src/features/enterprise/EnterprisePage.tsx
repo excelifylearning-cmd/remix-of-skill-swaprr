@@ -455,8 +455,6 @@ const EnterprisePage = () => {
             </div>
           </div>
         </section>
-
-        <CTAFooterSection />
       </div>
     </PageTransition>
   );

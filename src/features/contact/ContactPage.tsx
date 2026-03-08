@@ -544,8 +544,6 @@ const ContactPage = () => {
             </div>
           </div>
         </section>
-
-        <CTAFooterSection />
       </div>
     </PageTransition>
   );

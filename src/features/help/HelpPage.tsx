@@ -617,8 +617,6 @@ const HelpPage = () => {
             </div>
           </div>
         </section>
-
-        <CTAFooterSection />
       </div>
     </PageTransition>
   );

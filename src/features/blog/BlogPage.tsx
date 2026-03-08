@@ -952,8 +952,6 @@ const BlogPage = () => {
             </motion.div>
           </div>
         </section>
-
-        <CTAFooterSection />
       </div>
     </PageTransition>
   );

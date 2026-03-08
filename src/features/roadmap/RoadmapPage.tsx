@@ -363,8 +363,6 @@ const RoadmapPage = () => {
             </motion.form>
           </div>
         </section>
-
-        <CTAFooterSection />
       </div>
     </PageTransition>
   );

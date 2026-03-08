@@ -653,8 +653,6 @@ const PricingPage = () => {
             </div>
           </div>
         </section>
-
-        <CTAFooterSection />
       </div>
     </PageTransition>
   );
