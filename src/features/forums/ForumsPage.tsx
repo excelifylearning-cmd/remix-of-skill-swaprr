@@ -518,6 +518,7 @@ const ForumsPage = () => {
   };
 
   const toggleBookmark = (id: string) => {
+    if (!user) { setShowLoginPrompt(true); return; }
     setBookmarkedThreads((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
