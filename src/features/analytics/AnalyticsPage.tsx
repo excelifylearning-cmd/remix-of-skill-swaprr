@@ -13,6 +13,7 @@ import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
+import Footer from "@/components/shared/Footer";
 
 const useCountUp = (end: number, duration = 2000) => {
   const [count, setCount] = useState(0);
