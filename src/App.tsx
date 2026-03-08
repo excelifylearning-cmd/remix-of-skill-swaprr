@@ -73,6 +73,9 @@ const AnimatedRoutes = () => {
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/workspace/:id" element={<WorkspacePage />} />
+          <Route path="/profile/:userId" element={<ProfilePage />} />
+          <Route path="/guild/:guildId" element={<GuildPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/coming-soon" element={<ComingSoonPage />} />
           <Route path="/500" element={<ServerErrorPage />} />
