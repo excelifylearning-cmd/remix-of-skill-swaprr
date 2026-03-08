@@ -215,7 +215,7 @@ const SuccessStoriesPage = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    className={`w-full text-left rounded-2xl border p-5 transition-all ${activeStory === i ? "border-badge-gold bg-badge-gold/5" : "border-border bg-card hover:border-foreground/20"}`}
+                    className={`w-full text-left rounded-2xl border p-5 transition-all ${activeStory === i ? "border-foreground/30 bg-foreground/5" : "border-border bg-card hover:border-foreground/20"}`}
                   >
                     <div className="flex items-center gap-4">
                       <img src={story.image} alt={story.name} className="h-14 w-14 rounded-full object-cover ring-2 ring-border" />
