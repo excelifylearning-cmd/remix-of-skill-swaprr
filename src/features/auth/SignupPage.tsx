@@ -1034,8 +1034,8 @@ const SignupPage = () => {
                   <div className="flex gap-3">
                     <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
                     <motion.button
-                      onClick={() => {
-                        const result = signup(name, email, password);
+                      onClick={async () => {
+                        const result = await signup(email, password, name);
                         if (result.success) {
                           navigate("/dashboard");
                         } else {
