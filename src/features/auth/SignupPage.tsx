@@ -7,12 +7,13 @@ import {
   Circle, AlertCircle, Camera, Globe, Briefcase, Tag, Link2, Shield, Play, SkipForward,
   Upload, Award, Users, MessageSquare, Zap, BookOpen, Star, Sparkles, FileText, IdCard,
   MapPin, Languages, Clock, Heart, ChevronRight, Plus, X, FolderOpen, FileBadge, Image,
-  ShoppingCart, Wrench, Package
+  ShoppingCart, Wrench, Package, Building2, Calendar, Trash2, Hash, Palette, Music,
+  Dumbbell, Gamepad2, Plane, Coffee, PenTool, Code, Megaphone, Trophy, Instagram, Twitter, Youtube
 } from "lucide-react";
 import PageTransition from "@/components/shared/PageTransition";
 import { useAuth } from "@/lib/auth-context";
 
-const TOTAL_STEPS = 9;
+const TOTAL_STEPS = 12;
 
 const passwordCriteria = [
   { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
@@ -65,6 +66,25 @@ const defaultAvatars = [
   { id: "av8", bg: "bg-badge-gold/20", text: "text-badge-gold", emoji: "📊" },
 ];
 
+const interestOptions = [
+  { label: "Art & Design", icon: Palette },
+  { label: "Music", icon: Music },
+  { label: "Fitness", icon: Dumbbell },
+  { label: "Gaming", icon: Gamepad2 },
+  { label: "Travel", icon: Plane },
+  { label: "Photography", icon: Camera },
+  { label: "Cooking", icon: Coffee },
+  { label: "Writing", icon: PenTool },
+  { label: "Coding", icon: Code },
+  { label: "Entrepreneurship", icon: Megaphone },
+  { label: "Sports", icon: Trophy },
+  { label: "Reading", icon: BookOpen },
+  { label: "Volunteering", icon: Heart },
+  { label: "Film & TV", icon: Play },
+  { label: "Science", icon: Sparkles },
+  { label: "Fashion", icon: Star },
+];
+
 const platformTourSteps = [
   { icon: Briefcase, title: "Post & Browse Gigs", desc: "List your skills or find what you need. Choose from 7 gig formats including auctions and co-creation." },
   { icon: Zap, title: "Earn Skill Points", desc: "Complete gigs to earn SP — our cashless currency. No wallets, no fees, just skills." },
@@ -73,6 +93,27 @@ const platformTourSteps = [
   { icon: Users, title: "Join Guilds", desc: "Team up with like-minded swappers, compete in Guild Wars, and build your reputation together." },
   { icon: Award, title: "Level Up & Earn Badges", desc: "Progress through tiers, unlock achievements, and showcase your expertise with verified badges." },
 ];
+
+interface WorkEntry {
+  title: string;
+  company: string;
+  startYear: string;
+  endYear: string;
+  current: boolean;
+  description: string;
+}
+
+interface EducationEntry {
+  degree: string;
+  institution: string;
+  field: string;
+  startYear: string;
+  endYear: string;
+  current: boolean;
+}
+
+const emptyWork: WorkEntry = { title: "", company: "", startYear: "", endYear: "", current: false, description: "" };
+const emptyEdu: EducationEntry = { degree: "", institution: "", field: "", startYear: "", endYear: "", current: false };
 
 const SignupPage = () => {
   const [step, setStep] = useState(1);
@@ -102,29 +143,47 @@ const SignupPage = () => {
   const [customLanguage, setCustomLanguage] = useState("");
   const [portfolioUrl, setPortfolioUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
+  const [twitterUrl, setTwitterUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [personalWebsite, setPersonalWebsite] = useState("");
 
-  // Step 4: Skills (what you CAN offer)
+  // Step 4: Work History
+  const [workHistory, setWorkHistory] = useState<WorkEntry[]>([{ ...emptyWork }]);
+
+  // Step 5: Education History
+  const [educationHistory, setEducationHistory] = useState<EducationEntry[]>([{ ...emptyEdu }]);
+
+  // Step 6: Skills (what you CAN offer)
   const [skills, setSkills] = useState<string[]>([]);
   const [skillLevel, setSkillLevel] = useState<Record<string, string>>({});
   const [customSkill, setCustomSkill] = useState("");
 
-  // Step 5: What you NEED (not "want to learn")
+  // Step 7: What you NEED
   const [selectedNeeds, setSelectedNeeds] = useState<string[]>([]);
   const [customNeed, setCustomNeed] = useState("");
 
-  // Step 6: Portfolio & Certificates
+  // Step 8: Portfolio & Certificates
   const [certificates, setCertificates] = useState<{ name: string; file: string }[]>([]);
   const [portfolioItems, setPortfolioItems] = useState<{ name: string; file: string; type: string }[]>([]);
 
-  // Step 7: Preferences
+  // Step 9: Interests & Hobbies
+  const [interests, setInterests] = useState<string[]>([]);
+  const [customInterest, setCustomInterest] = useState("");
+
+  // Step 10: Preferences
   const [availability, setAvailability] = useState("Part-time");
   const [responseTime, setResponseTime] = useState("Within 24 hours");
   const [referralCode, setReferralCode] = useState("");
+  const [timezone, setTimezone] = useState("");
+  const [hourlyRate, setHourlyRate] = useState("");
+  const [preferredComm, setPreferredComm] = useState("Chat");
 
-  // Step 8: Verification (skippable)
+  // Step 11: Verification (skippable)
   const [idUploaded, setIdUploaded] = useState(false);
 
-  // Step 9: Platform tour
+  // Step 12: Platform tour
 
   const criteriaMet = useMemo(() => passwordCriteria.map((c) => c.test(password)), [password]);
   const passedCount = criteriaMet.filter(Boolean).length;
@@ -142,6 +201,7 @@ const SignupPage = () => {
   const toggleSkill = (s: string) => setSkills((prev) => prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]);
   const toggleLanguage = (l: string) => setSelectedLanguages((prev) => prev.includes(l) ? prev.filter((x) => x !== l) : [...prev, l]);
   const toggleNeed = (n: string) => setSelectedNeeds((prev) => prev.includes(n) ? prev.filter((x) => x !== n) : [...prev, n]);
+  const toggleInterest = (i: string) => setInterests((prev) => prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]);
 
   const addCustomSkill = () => {
     const trimmed = customSkill.trim();
@@ -156,6 +216,14 @@ const SignupPage = () => {
     if (trimmed && !selectedLanguages.includes(trimmed)) {
       setSelectedLanguages((prev) => [...prev, trimmed]);
       setCustomLanguage("");
+    }
+  };
+
+  const addCustomInterest = () => {
+    const trimmed = customInterest.trim();
+    if (trimmed && !interests.includes(trimmed)) {
+      setInterests((prev) => [...prev, trimmed]);
+      setCustomInterest("");
     }
   };
 
@@ -197,8 +265,25 @@ const SignupPage = () => {
     }
   };
 
+  const updateWork = (idx: number, field: keyof WorkEntry, value: string | boolean) => {
+    setWorkHistory(prev => prev.map((w, i) => i === idx ? { ...w, [field]: value } : w));
+  };
+
+  const addWorkEntry = () => setWorkHistory(prev => [...prev, { ...emptyWork }]);
+  const removeWorkEntry = (idx: number) => setWorkHistory(prev => prev.filter((_, i) => i !== idx));
+
+  const updateEdu = (idx: number, field: keyof EducationEntry, value: string | boolean) => {
+    setEducationHistory(prev => prev.map((e, i) => i === idx ? { ...e, [field]: value } : e));
+  };
+
+  const addEduEntry = () => setEducationHistory(prev => [...prev, { ...emptyEdu }]);
+  const removeEduEntry = (idx: number) => setEducationHistory(prev => prev.filter((_, i) => i !== idx));
+
   const next = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS));
   const back = () => setStep((s) => Math.max(s - 1, 1));
+
+  const inputClass = "h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none";
+  const inputClassShort = "h-10 w-full rounded-lg border border-border bg-surface-1 px-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none";
 
   return (
     <PageTransition>
@@ -212,7 +297,7 @@ const SignupPage = () => {
           </div>
 
           {/* Progress */}
-          <div className="mb-2 flex gap-1.5">
+          <div className="mb-2 flex gap-1">
             {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
               <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i < step ? "bg-foreground" : "bg-border"}`} />
             ))}
@@ -234,7 +319,7 @@ const SignupPage = () => {
                   <div className="space-y-3">
                     <div className="relative">
                       <User size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                      <input type="text" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                      <input type="text" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
                     </div>
                     <div className="relative">
                       <Mail size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -304,7 +389,6 @@ const SignupPage = () => {
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Customize your profile</h1>
                   <p className="mb-6 text-sm text-muted-foreground">Make a great first impression on other swappers.</p>
                   <div className="space-y-4">
-                    {/* Avatar: Upload or Default */}
                     <div className="flex flex-col items-center gap-3">
                       <label className="group relative cursor-pointer">
                         <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-border bg-surface-1 transition-colors group-hover:border-foreground/30">
@@ -324,7 +408,6 @@ const SignupPage = () => {
                       <p className="text-[10px] text-muted-foreground">Upload a photo or pick a default below</p>
                     </div>
 
-                    {/* Default Avatar Grid */}
                     <div>
                       <p className="mb-2 text-xs font-medium text-muted-foreground">Quick pick</p>
                       <div className="flex flex-wrap gap-2 justify-center">
@@ -344,12 +427,12 @@ const SignupPage = () => {
 
                     <div className="relative">
                       <User size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                      <input type="text" placeholder="Display name (public)" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                      <input type="text" placeholder="Display name (public)" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={inputClass} />
                     </div>
 
                     <div className="relative">
                       <Sparkles size={15} className="absolute left-4 top-3 text-muted-foreground" />
-                      <input type="text" placeholder='Tagline (e.g. "Design wizard ✨")' value={slogan} onChange={(e) => setSlogan(e.target.value)} maxLength={60} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                      <input type="text" placeholder='Tagline (e.g. "Design wizard ✨")' value={slogan} onChange={(e) => setSlogan(e.target.value)} maxLength={60} className={inputClass} />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">{slogan.length}/60</span>
                     </div>
 
@@ -368,31 +451,58 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 3: Details + Custom Languages ═══ */}
+              {/* ═══ STEP 3: Details + Social Links ═══ */}
               {step === 3 && (
                 <motion.div key="s3" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-                  <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Your details</h1>
+                  <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Your details & socials</h1>
                   <p className="mb-6 text-sm text-muted-foreground">Help us connect you with the right community.</p>
-                  <div className="space-y-3">
-                    <div className="relative">
-                      <GraduationCap size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                      <input type="text" placeholder="University (optional — get a verified badge)" value={university} onChange={(e) => setUniversity(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
-                    </div>
+                  <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-hide pr-1">
                     <div className="relative">
                       <MapPin size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                      <input type="text" placeholder="Location (city, country)" value={location} onChange={(e) => setLocation(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                      <input type="text" placeholder="Location (city, country)" value={location} onChange={(e) => setLocation(e.target.value)} className={inputClass} />
                     </div>
                     <div className="relative">
-                      <Globe size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                      <input type="url" placeholder="Portfolio website (optional)" value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
-                    </div>
-                    <div className="relative">
-                      <Link2 size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                      <input type="url" placeholder="LinkedIn profile (optional)" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                      <GraduationCap size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <input type="text" placeholder="University (optional — get a verified badge)" value={university} onChange={(e) => setUniversity(e.target.value)} className={inputClass} />
                     </div>
 
-                    {/* Languages with custom add */}
-                    <div>
+                    {/* Social links section */}
+                    <div className="pt-2">
+                      <p className="mb-2 text-xs font-medium text-foreground flex items-center gap-1.5"><Link2 size={13} /> Social & Portfolio Links</p>
+                      <div className="space-y-2">
+                        <div className="relative">
+                          <Globe size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <input type="url" placeholder="Personal website" value={personalWebsite} onChange={(e) => setPersonalWebsite(e.target.value)} className={inputClass} />
+                        </div>
+                        <div className="relative">
+                          <Briefcase size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <input type="url" placeholder="Portfolio URL" value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} className={inputClass} />
+                        </div>
+                        <div className="relative">
+                          <Link2 size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <input type="url" placeholder="LinkedIn profile" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} className={inputClass} />
+                        </div>
+                        <div className="relative">
+                          <Github size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <input type="url" placeholder="GitHub profile" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} className={inputClass} />
+                        </div>
+                        <div className="relative">
+                          <Twitter size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <input type="url" placeholder="Twitter / X profile" value={twitterUrl} onChange={(e) => setTwitterUrl(e.target.value)} className={inputClass} />
+                        </div>
+                        <div className="relative">
+                          <Instagram size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <input type="url" placeholder="Instagram profile" value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} className={inputClass} />
+                        </div>
+                        <div className="relative">
+                          <Youtube size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <input type="url" placeholder="YouTube channel" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} className={inputClass} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Languages */}
+                    <div className="pt-2">
                       <p className="mb-2 text-xs font-medium text-foreground flex items-center gap-1.5"><Languages size={13} /> Languages you speak</p>
                       <div className="flex flex-wrap gap-1.5 mb-2">
                         {defaultLanguages.map((l) => (
@@ -400,7 +510,6 @@ const SignupPage = () => {
                             {selectedLanguages.includes(l) && <CheckCircle2 size={10} className="inline mr-1" />}{l}
                           </button>
                         ))}
-                        {/* Show custom-added languages */}
                         {selectedLanguages.filter(l => !defaultLanguages.includes(l)).map((l) => (
                           <button key={l} onClick={() => toggleLanguage(l)} className="rounded-full px-3 py-1.5 text-[10px] font-medium bg-court-blue/10 text-court-blue border border-court-blue/20">
                             <CheckCircle2 size={10} className="inline mr-1" />{l}
@@ -409,34 +518,153 @@ const SignupPage = () => {
                         ))}
                       </div>
                       <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="Add another language..."
-                          value={customLanguage}
-                          onChange={(e) => setCustomLanguage(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && addCustomLanguage()}
-                          className="h-9 flex-1 rounded-lg border border-border bg-surface-1 px-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
-                        />
+                        <input type="text" placeholder="Add another language..." value={customLanguage} onChange={(e) => setCustomLanguage(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addCustomLanguage()} className="h-9 flex-1 rounded-lg border border-border bg-surface-1 px-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
                         <button onClick={addCustomLanguage} disabled={!customLanguage.trim()} className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground disabled:opacity-30">
                           <Plus size={14} />
                         </button>
                       </div>
                     </div>
-
-                    <div className="flex gap-3 pt-2">
-                      <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
-                      <motion.button onClick={next} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                        Continue <ArrowRight size={15} />
-                      </motion.button>
-                    </div>
-                    <button onClick={next} className="w-full text-center text-[10px] text-muted-foreground hover:text-foreground">Skip for now</button>
                   </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
+                    <motion.button onClick={next} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                      Continue <ArrowRight size={15} />
+                    </motion.button>
+                  </div>
+                  <button onClick={next} className="mt-2 w-full text-center text-[10px] text-muted-foreground hover:text-foreground">Skip for now</button>
                 </motion.div>
               )}
 
-              {/* ═══ STEP 4: Skills (what you OFFER) + Custom ═══ */}
+              {/* ═══ STEP 4: Work History ═══ */}
               {step === 4 && (
                 <motion.div key="s4" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+                  <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Work experience</h1>
+                  <p className="mb-6 text-sm text-muted-foreground">Share your professional background — freelance, full-time, or side projects all count.</p>
+
+                  <div className="space-y-4 max-h-[55vh] overflow-y-auto scrollbar-hide pr-1">
+                    {workHistory.map((work, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="rounded-xl border border-border bg-surface-1 p-4 space-y-2.5 relative"
+                      >
+                        {workHistory.length > 1 && (
+                          <button onClick={() => removeWorkEntry(idx)} className="absolute top-3 right-3 text-muted-foreground hover:text-destructive">
+                            <Trash2 size={13} />
+                          </button>
+                        )}
+                        <p className="text-[10px] font-semibold text-muted-foreground">Position {idx + 1}</p>
+                        <div className="relative">
+                          <Briefcase size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <input type="text" placeholder="Job title (e.g. Freelance Designer)" value={work.title} onChange={(e) => updateWork(idx, "title", e.target.value)} className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                        </div>
+                        <div className="relative">
+                          <Building2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <input type="text" placeholder="Company / Client / Self-employed" value={work.company} onChange={(e) => updateWork(idx, "company", e.target.value)} className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="relative">
+                            <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                            <input type="text" placeholder="Start year" value={work.startYear} onChange={(e) => updateWork(idx, "startYear", e.target.value)} className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                          </div>
+                          <div className="relative">
+                            <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                            <input type="text" placeholder={work.current ? "Present" : "End year"} value={work.current ? "Present" : work.endYear} onChange={(e) => updateWork(idx, "endYear", e.target.value)} disabled={work.current} className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none disabled:opacity-50" />
+                          </div>
+                        </div>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input type="checkbox" checked={work.current} onChange={(e) => updateWork(idx, "current", e.target.checked)} className="rounded border-border" />
+                          <span className="text-[10px] text-muted-foreground">I currently work here</span>
+                        </label>
+                        <textarea placeholder="Brief description of your role, responsibilities, or achievements..." value={work.description} onChange={(e) => updateWork(idx, "description", e.target.value)} maxLength={200} className="h-16 w-full resize-none rounded-lg border border-border bg-background p-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                        <p className="text-right text-[9px] text-muted-foreground">{work.description.length}/200</p>
+                      </motion.div>
+                    ))}
+
+                    <button onClick={addWorkEntry} className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-xs text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors">
+                      <Plus size={14} /> Add another position
+                    </button>
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
+                    <motion.button onClick={next} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                      Continue <ArrowRight size={15} />
+                    </motion.button>
+                  </div>
+                  <button onClick={next} className="mt-2 w-full text-center text-[10px] text-muted-foreground hover:text-foreground">Skip for now</button>
+                </motion.div>
+              )}
+
+              {/* ═══ STEP 5: Education History ═══ */}
+              {step === 5 && (
+                <motion.div key="s5" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+                  <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Education</h1>
+                  <p className="mb-6 text-sm text-muted-foreground">Degrees, bootcamps, online courses — anything that shaped your skills.</p>
+
+                  <div className="space-y-4 max-h-[55vh] overflow-y-auto scrollbar-hide pr-1">
+                    {educationHistory.map((edu, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="rounded-xl border border-border bg-surface-1 p-4 space-y-2.5 relative"
+                      >
+                        {educationHistory.length > 1 && (
+                          <button onClick={() => removeEduEntry(idx)} className="absolute top-3 right-3 text-muted-foreground hover:text-destructive">
+                            <Trash2 size={13} />
+                          </button>
+                        )}
+                        <p className="text-[10px] font-semibold text-muted-foreground">Education {idx + 1}</p>
+                        <div className="relative">
+                          <GraduationCap size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <input type="text" placeholder="Degree / Certificate (e.g. B.Sc. Computer Science)" value={edu.degree} onChange={(e) => updateEdu(idx, "degree", e.target.value)} className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                        </div>
+                        <div className="relative">
+                          <Building2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <input type="text" placeholder="Institution (e.g. MIT, Coursera, Le Wagon)" value={edu.institution} onChange={(e) => updateEdu(idx, "institution", e.target.value)} className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                        </div>
+                        <div className="relative">
+                          <BookOpen size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <input type="text" placeholder="Field of study" value={edu.field} onChange={(e) => updateEdu(idx, "field", e.target.value)} className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="relative">
+                            <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                            <input type="text" placeholder="Start year" value={edu.startYear} onChange={(e) => updateEdu(idx, "startYear", e.target.value)} className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                          </div>
+                          <div className="relative">
+                            <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                            <input type="text" placeholder={edu.current ? "Present" : "End year"} value={edu.current ? "Present" : edu.endYear} onChange={(e) => updateEdu(idx, "endYear", e.target.value)} disabled={edu.current} className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none disabled:opacity-50" />
+                          </div>
+                        </div>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input type="checkbox" checked={edu.current} onChange={(e) => updateEdu(idx, "current", e.target.checked)} className="rounded border-border" />
+                          <span className="text-[10px] text-muted-foreground">Currently enrolled</span>
+                        </label>
+                      </motion.div>
+                    ))}
+
+                    <button onClick={addEduEntry} className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-xs text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors">
+                      <Plus size={14} /> Add another education
+                    </button>
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
+                    <motion.button onClick={next} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                      Continue <ArrowRight size={15} />
+                    </motion.button>
+                  </div>
+                  <button onClick={next} className="mt-2 w-full text-center text-[10px] text-muted-foreground hover:text-foreground">Skip for now</button>
+                </motion.div>
+              )}
+
+              {/* ═══ STEP 6: Skills (what you OFFER) ═══ */}
+              {step === 6 && (
+                <motion.div key="s6" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">What can you offer?</h1>
                   <p className="mb-4 text-sm text-muted-foreground">Select skills you can provide to others. Pick at least 1.</p>
 
@@ -446,7 +674,6 @@ const SignupPage = () => {
                         {skills.includes(s) && <CheckCircle2 size={10} className="inline mr-1" />}{s}
                       </button>
                     ))}
-                    {/* Custom skills */}
                     {skills.filter(s => !allSkills.includes(s)).map((s) => (
                       <button key={s} onClick={() => toggleSkill(s)} className="rounded-full px-3 py-1.5 text-[10px] font-medium bg-badge-gold/10 text-badge-gold border border-badge-gold/20">
                         <CheckCircle2 size={10} className="inline mr-1" />{s} <X size={10} className="inline ml-1" />
@@ -454,22 +681,13 @@ const SignupPage = () => {
                     ))}
                   </div>
 
-                  {/* Add custom skill */}
                   <div className="flex gap-2 mb-4">
-                    <input
-                      type="text"
-                      placeholder="Add a custom skill..."
-                      value={customSkill}
-                      onChange={(e) => setCustomSkill(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && addCustomSkill()}
-                      className="h-9 flex-1 rounded-lg border border-border bg-surface-1 px-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
-                    />
+                    <input type="text" placeholder="Add a custom skill..." value={customSkill} onChange={(e) => setCustomSkill(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addCustomSkill()} className="h-9 flex-1 rounded-lg border border-border bg-surface-1 px-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
                     <button onClick={addCustomSkill} disabled={!customSkill.trim()} className="flex h-9 items-center gap-1 rounded-lg border border-border px-3 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30">
                       <Plus size={12} /> Add
                     </button>
                   </div>
 
-                  {/* Skill levels */}
                   {skills.length > 0 && (
                     <div className="mb-4 space-y-2 rounded-xl border border-border bg-surface-1 p-4">
                       <p className="text-[10px] font-semibold text-muted-foreground mb-2">Rate your proficiency</p>
@@ -497,9 +715,9 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 5: What You NEED (reframed) ═══ */}
-              {step === 5 && (
-                <motion.div key="s5" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+              {/* ═══ STEP 7: What You NEED ═══ */}
+              {step === 7 && (
+                <motion.div key="s7" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">What do you need?</h1>
                   <p className="mb-6 text-sm text-muted-foreground">Tell us what you're looking for — we'll match you with people who can deliver.</p>
                   <div className="mb-4 grid grid-cols-2 gap-2 max-h-72 overflow-y-auto scrollbar-hide">
@@ -520,16 +738,9 @@ const SignupPage = () => {
                     ))}
                   </div>
 
-                  {/* Custom need */}
                   {selectedNeeds.includes("Something else") && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mb-4">
-                      <input
-                        type="text"
-                        placeholder="Describe what you need..."
-                        value={customNeed}
-                        onChange={(e) => setCustomNeed(e.target.value)}
-                        className="h-10 w-full rounded-lg border border-border bg-surface-1 px-4 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
-                      />
+                      <input type="text" placeholder="Describe what you need..." value={customNeed} onChange={(e) => setCustomNeed(e.target.value)} className="h-10 w-full rounded-lg border border-border bg-surface-1 px-4 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
                     </motion.div>
                   )}
 
@@ -543,32 +754,27 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 6: Portfolio & Certificates ═══ */}
-              {step === 6 && (
-                <motion.div key="s6" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+              {/* ═══ STEP 8: Portfolio & Certificates ═══ */}
+              {step === 8 && (
+                <motion.div key="s8" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Showcase your work</h1>
-                  <p className="mb-6 text-sm text-muted-foreground">Upload certificates, portfolio pieces, or proof of past work. This builds trust and credibility.</p>
+                  <p className="mb-6 text-sm text-muted-foreground">Upload certificates, portfolio pieces, or proof of past work.</p>
 
                   <div className="space-y-5">
-                    {/* Certificates */}
                     <div>
                       <p className="mb-2 text-xs font-medium text-foreground flex items-center gap-1.5"><FileBadge size={13} /> Certificates & Credentials</p>
                       <p className="mb-3 text-[10px] text-muted-foreground">Google certs, Coursera, university transcripts, etc.</p>
-
                       {certificates.length > 0 && (
                         <div className="mb-3 space-y-1.5">
                           {certificates.map((cert, i) => (
                             <div key={i} className="flex items-center gap-2 rounded-lg border border-skill-green/20 bg-skill-green/5 p-2.5">
                               <CheckCircle2 size={12} className="text-skill-green shrink-0" />
                               <span className="text-xs text-foreground truncate flex-1">{cert.name}</span>
-                              <button onClick={() => setCertificates(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive">
-                                <X size={12} />
-                              </button>
+                              <button onClick={() => setCertificates(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive"><X size={12} /></button>
                             </div>
                           ))}
                         </div>
                       )}
-
                       <label className="flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-border p-4 text-center transition-all hover:border-foreground/20 hover:bg-surface-1">
                         <Upload size={16} className="text-muted-foreground mx-auto" />
                         <div className="text-left flex-1">
@@ -579,11 +785,9 @@ const SignupPage = () => {
                       </label>
                     </div>
 
-                    {/* Portfolio Items */}
                     <div>
                       <p className="mb-2 text-xs font-medium text-foreground flex items-center gap-1.5"><FolderOpen size={13} /> Portfolio Pieces</p>
-                      <p className="mb-3 text-[10px] text-muted-foreground">Screenshots, case studies, designs, code samples — anything that shows your skills.</p>
-
+                      <p className="mb-3 text-[10px] text-muted-foreground">Screenshots, case studies, designs, code samples.</p>
                       {portfolioItems.length > 0 && (
                         <div className="mb-3 grid grid-cols-2 gap-2">
                           {portfolioItems.map((item, i) => (
@@ -591,22 +795,14 @@ const SignupPage = () => {
                               {item.type === "image" ? (
                                 <img src={item.file} alt={item.name} className="h-20 w-full rounded object-cover" />
                               ) : (
-                                <div className="flex h-20 items-center justify-center rounded bg-surface-2">
-                                  <FileText size={24} className="text-muted-foreground" />
-                                </div>
+                                <div className="flex h-20 items-center justify-center rounded bg-surface-2"><FileText size={24} className="text-muted-foreground" /></div>
                               )}
                               <p className="mt-1 text-[9px] text-muted-foreground truncate">{item.name}</p>
-                              <button
-                                onClick={() => setPortfolioItems(prev => prev.filter((_, idx) => idx !== i))}
-                                className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background/80 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive"
-                              >
-                                <X size={10} />
-                              </button>
+                              <button onClick={() => setPortfolioItems(prev => prev.filter((_, idx) => idx !== i))} className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background/80 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive"><X size={10} /></button>
                             </div>
                           ))}
                         </div>
                       )}
-
                       <label className="flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-border p-4 text-center transition-all hover:border-foreground/20 hover:bg-surface-1">
                         <Image size={16} className="text-muted-foreground mx-auto" />
                         <div className="text-left flex-1">
@@ -628,11 +824,62 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 7: Preferences ═══ */}
-              {step === 7 && (
-                <motion.div key="s7" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-                  <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Almost there!</h1>
-                  <p className="mb-6 text-sm text-muted-foreground">Set your availability and preferences.</p>
+              {/* ═══ STEP 9: Interests & Hobbies ═══ */}
+              {step === 9 && (
+                <motion.div key="s9" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+                  <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Interests & hobbies</h1>
+                  <p className="mb-6 text-sm text-muted-foreground">Help us find your tribe — what are you passionate about outside of work?</p>
+
+                  <div className="mb-4 grid grid-cols-2 gap-2">
+                    {interestOptions.map((interest) => (
+                      <button
+                        key={interest.label}
+                        onClick={() => toggleInterest(interest.label)}
+                        className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition-all ${
+                          interests.includes(interest.label)
+                            ? "border-foreground bg-foreground/5"
+                            : "border-border hover:border-foreground/20"
+                        }`}
+                      >
+                        <interest.icon size={16} className={interests.includes(interest.label) ? "text-foreground" : "text-muted-foreground"} />
+                        <span className={`text-xs font-medium ${interests.includes(interest.label) ? "text-foreground" : "text-muted-foreground"}`}>{interest.label}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Custom added interests */}
+                  {interests.filter(i => !interestOptions.find(o => o.label === i)).length > 0 && (
+                    <div className="mb-3 flex flex-wrap gap-1.5">
+                      {interests.filter(i => !interestOptions.find(o => o.label === i)).map((i) => (
+                        <button key={i} onClick={() => toggleInterest(i)} className="rounded-full px-3 py-1.5 text-[10px] font-medium bg-court-blue/10 text-court-blue border border-court-blue/20">
+                          <CheckCircle2 size={10} className="inline mr-1" />{i} <X size={10} className="inline ml-1" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 mb-4">
+                    <input type="text" placeholder="Add a custom interest..." value={customInterest} onChange={(e) => setCustomInterest(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addCustomInterest()} className="h-9 flex-1 rounded-lg border border-border bg-surface-1 px-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                    <button onClick={addCustomInterest} disabled={!customInterest.trim()} className="flex h-9 items-center gap-1 rounded-lg border border-border px-3 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30">
+                      <Plus size={12} /> Add
+                    </button>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
+                    <motion.button onClick={next} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                      Continue <ArrowRight size={15} />
+                    </motion.button>
+                  </div>
+                  <button onClick={next} className="mt-2 w-full text-center text-[10px] text-muted-foreground hover:text-foreground">Skip for now</button>
+                </motion.div>
+              )}
+
+              {/* ═══ STEP 10: Preferences ═══ */}
+              {step === 10 && (
+                <motion.div key="s10" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+                  <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Preferences</h1>
+                  <p className="mb-6 text-sm text-muted-foreground">Set your availability and communication preferences.</p>
                   <div className="space-y-4">
                     <div>
                       <p className="mb-2 text-xs font-medium text-foreground flex items-center gap-1.5"><Clock size={13} /> Availability</p>
@@ -656,9 +903,30 @@ const SignupPage = () => {
                       </div>
                     </div>
 
+                    <div>
+                      <p className="mb-2 text-xs font-medium text-foreground flex items-center gap-1.5"><Globe size={13} /> Preferred communication</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {["Chat", "Video Call", "Email"].map((c) => (
+                          <button key={c} onClick={() => setPreferredComm(c)} className={`rounded-xl border py-2.5 text-[10px] font-medium transition-all ${preferredComm === c ? "border-foreground bg-foreground/5 text-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}>
+                            {c}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="relative">
+                      <Clock size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <input type="text" placeholder="Timezone (e.g. GMT+2, EST, PST)" value={timezone} onChange={(e) => setTimezone(e.target.value)} className={inputClass} />
+                    </div>
+
+                    <div className="relative">
+                      <Hash size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <input type="text" placeholder="Hourly rate in SP (optional)" value={hourlyRate} onChange={(e) => setHourlyRate(e.target.value)} className={inputClass} />
+                    </div>
+
                     <div className="relative">
                       <Tag size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                      <input type="text" placeholder="Referral code (optional — earn bonus SP!)" value={referralCode} onChange={(e) => setReferralCode(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                      <input type="text" placeholder="Referral code (optional — earn bonus SP!)" value={referralCode} onChange={(e) => setReferralCode(e.target.value)} className={inputClass} />
                     </div>
                     {referralCode && <p className="flex items-center gap-1 text-[10px] text-skill-green"><Zap size={10} /> You'll both earn 50 bonus SP!</p>}
 
@@ -672,9 +940,9 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 8: Verification (Skippable) ═══ */}
-              {step === 8 && (
-                <motion.div key="s8" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+              {/* ═══ STEP 11: Verification (Skippable) ═══ */}
+              {step === 11 && (
+                <motion.div key="s11" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Identity verification</h1>
                   <p className="mb-6 text-sm text-muted-foreground">Optional — get a verified badge and unlock higher gig limits.</p>
 
@@ -721,9 +989,9 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 9: Platform Tour ═══ */}
-              {step === 9 && (
-                <motion.div key="s9" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+              {/* ═══ STEP 12: Platform Tour ═══ */}
+              {step === 12 && (
+                <motion.div key="s12" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Welcome to SkillSwappr!</h1>
                   <p className="mb-6 text-sm text-muted-foreground">Here's a quick rundown of how SkillSwappr works.</p>
 
