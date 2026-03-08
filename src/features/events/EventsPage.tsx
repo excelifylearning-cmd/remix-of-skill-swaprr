@@ -300,7 +300,7 @@ const EventsPage = () => {
               </div>
               <div className="mt-5 w-full bg-surface-2 rounded-full h-2 overflow-hidden">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-skill-green to-court-blue"
+                  className="h-full rounded-full bg-foreground"
                   initial={{ width: 0 }}
                   whileInView={{ width: `${(nextBigEvent.spotsFilled / nextBigEvent.spots) * 100}%` }}
                   viewport={{ once: true }}
