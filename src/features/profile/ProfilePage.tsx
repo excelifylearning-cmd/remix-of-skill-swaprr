@@ -119,7 +119,7 @@ const ProfilePage = () => {
     return (
       <PageTransition>
         <div className="min-h-screen bg-background">
-          <Navbar />
+          <AppNav />
           <div className="flex items-center justify-center pt-40">
             <p className="text-sm text-muted-foreground">Loading profile...</p>
           </div>
