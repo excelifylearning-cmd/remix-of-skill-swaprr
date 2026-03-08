@@ -38,7 +38,7 @@ const socials = [
 const Footer = () => (
   <footer className="bg-surface-1 border-t border-border">
     <div className="mx-auto max-w-7xl px-6 py-16">
-      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
+      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-1">
           <Link to="/" className="font-heading text-xl font-bold text-foreground">
             Skill<span className="text-muted-foreground">Swappr</span>

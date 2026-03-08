@@ -133,8 +133,8 @@ const SuccessStoriesSection = () => {
                   <p className="text-xs text-silver">{story.university}</p>
                 </div>
                 <div className="ml-auto flex items-center gap-1">
-                  <Star size={12} className="fill-badge-gold text-badge-gold" />
-                  <span className="font-mono text-xs text-badge-gold">{story.rating}</span>
+                  <Star size={12} className="fill-foreground text-foreground" />
+                  <span className="font-mono text-xs text-foreground">{story.rating}</span>
                 </div>
               </div>
               <p className="mb-3 text-sm leading-relaxed text-silver">"{story.quote}"</p>

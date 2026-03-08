@@ -20,8 +20,8 @@ const points = [
     icon: Coins,
     title: "Skill Point Economy",
     desc: "When a swap isn't equal, balance it with Skill Points. Earn them through gigs, referrals, and court duty.",
-    color: "text-badge-gold",
-    bg: "bg-badge-gold/10",
+    color: "text-foreground",
+    bg: "bg-surface-2",
   },
   {
     icon: Shield,
@@ -45,7 +45,7 @@ const WhatIsSection = () => (
           <Sparkles size={12} /> What is SkillSwappr?
         </span>
         <h2 className="font-heading text-4xl sm:text-5xl font-black text-foreground mt-4">
-          Fiverr, but you <span className="text-badge-gold">trade skills</span> instead of cash
+          Fiverr, but you <span className="text-foreground">trade skills</span> instead of cash
         </h2>
         <p className="text-muted-foreground mt-4 max-w-2xl mx-auto text-lg leading-relaxed">
           SkillSwappr is the first service exchange platform where students and creators barter their talents.
