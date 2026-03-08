@@ -278,9 +278,145 @@ const readingLists = [
 ];
 
 const BlogPage = () => {
+  const { user, profile } = useAuth();
   const [active, setActive] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+  const [bookmarkedPosts, setBookmarkedPosts] = useState<Set<string>>(new Set());
+  const [commentText, setCommentText] = useState("");
+  const [sortBy, setSortBy] = useState<"latest" | "popular" | "discussed">("latest");
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [email, setEmail] = useState("");
+
+  // Database state
+  const [dbPosts, setDbPosts] = useState<DbBlogPost[]>([]);
+  const [dbComments, setDbComments] = useState<DbBlogComment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Helper to format time ago
+  const formatTimeAgo = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  };
+
+  // Convert DB content format to display format
+  const parseContent = (content: any) => {
+    if (!content || !Array.isArray(content)) return [];
+    return content.map((block: any) => {
+      if (block.type === "paragraph") return { type: "paragraph", text: block.content };
+      if (block.type === "heading") return { type: "heading", text: block.content, level: block.level };
+      if (block.type === "quote") return { type: "quote", text: block.content, author: block.author };
+      if (block.type === "list") return { type: "list", items: block.items };
+      if (block.type === "code") return { type: "code", text: block.content, language: block.language || "text" };
+      return block;
+    });
+  };
+
+  // Fetch data from database
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const { data: blogPosts } = await supabase
+          .from("blog_posts")
+          .select("*")
+          .eq("is_published", true)
+          .order("created_at", { ascending: false });
+        
+        if (blogPosts) setDbPosts(blogPosts);
+      } catch (error) {
+        console.error("Error fetching blog data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Fetch comments when a post is selected
+  useEffect(() => {
+    if (!selectedPost) return;
+
+    const fetchComments = async () => {
+      const { data: comments } = await supabase
+        .from("blog_comments")
+        .select("*")
+        .eq("post_id", selectedPost)
+        .order("created_at", { ascending: true });
+      
+      if (comments) setDbComments(comments);
+    };
+
+    fetchComments();
+  }, [selectedPost]);
+
+  // Submit comment
+  const handleSubmitComment = async () => {
+    if (!user) {
+      toast.error("Please log in to comment");
+      return;
+    }
+    if (!commentText.trim() || !selectedPost) return;
+
+    const { error } = await supabase.from("blog_comments").insert({
+      post_id: selectedPost,
+      author_id: user.id,
+      author_name: profile?.display_name || profile?.full_name || "Anonymous",
+      content: commentText
+    });
+
+    if (error) {
+      toast.error("Failed to add comment");
+      console.error(error);
+    } else {
+      toast.success("Comment added!");
+      setCommentText("");
+      // Refresh comments
+      const { data: comments } = await supabase
+        .from("blog_comments")
+        .select("*")
+        .eq("post_id", selectedPost)
+        .order("created_at", { ascending: true });
+      if (comments) setDbComments(comments);
+    }
+  };
+
+  // Convert DB posts to display format
+  const allPosts = dbPosts.length > 0 
+    ? dbPosts.map(p => ({
+        id: p.id,
+        title: p.title,
+        excerpt: p.excerpt || "",
+        category: p.category,
+        author: {
+          name: p.author_name,
+          role: "Author",
+          avatar: p.author_name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase(),
+          bio: ""
+        },
+        date: formatTimeAgo(p.created_at),
+        readTime: `${p.read_time} min`,
+        featured: p.is_featured,
+        image: p.cover_image || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=400&fit=crop",
+        tags: p.tags || [],
+        likes: p.like_count,
+        comments: p.comment_count,
+        views: p.view_count,
+        bookmarks: 0,
+        series: null as string | null,
+        seriesNum: 0,
+        content: parseContent(p.content)
+      }))
+    : posts;
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Set<string>>(new Set());
   const [commentText, setCommentText] = useState("");
