@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import PageTransition from "@/components/shared/PageTransition";
 import { useAuth } from "@/lib/auth-context";
+import { logFormSubmission, logInteraction } from "@/lib/activity-logger";
 
 const TOTAL_STEPS = 12;
 
@@ -1038,6 +1039,16 @@ const SignupPage = () => {
                         setSignupError("");
                         const result = await signup(email, password, name);
                         if (result.success) {
+                          logFormSubmission("signup", {
+                            email, name, university, location,
+                            skills_count: skills.length, needs_count: selectedNeeds.length,
+                            interests_count: interests.length, languages: selectedLanguages,
+                            has_portfolio: !!portfolioUrl, has_linkedin: !!linkedinUrl,
+                            has_github: !!githubUrl, has_work_history: workHistory.some(w => w.title),
+                            has_education: educationHistory.some(e => e.degree),
+                            availability, preferred_comm: preferredComm,
+                            id_verified: idUploaded,
+                          }, "auth");
                           // Save all onboarding data to profile
                           await updateProfile({
                             display_name: displayName || name,
@@ -1071,6 +1082,7 @@ const SignupPage = () => {
                           });
                           navigate("/dashboard");
                         } else {
+                          logInteraction("signup_failed", { email, error: result.error });
                           setSignupError(result.error || "Signup failed.");
                         }
                       }}

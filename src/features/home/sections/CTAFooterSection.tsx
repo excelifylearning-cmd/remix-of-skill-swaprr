@@ -3,6 +3,7 @@ import { validateEmail } from "@/lib/email-validation";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Footer from "@/components/shared/Footer";
+import { logFormSubmission } from "@/lib/activity-logger";
 
 const CTAFooterSection = () => {
   const [email, setEmail] = useState("");
@@ -58,6 +59,7 @@ const CTAFooterSection = () => {
                 const result = validateEmail(email);
                 if (result !== true) { setEmailErr(result); return; }
                 setEmailErr("");
+                logFormSubmission("cta_email_signup", { email }, "marketing");
               }}
             >
               Get Started <ArrowRight size={16} />

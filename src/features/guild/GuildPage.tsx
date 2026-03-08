@@ -13,6 +13,7 @@ import LoginPrompt from "@/components/shared/LoginPrompt";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { logInteraction, logFormSubmission } from "@/lib/activity-logger";
 
 type GuildData = {
   id: string; name: string; description: string; slogan: string; category: string;
@@ -114,6 +115,7 @@ const GuildPage = () => {
       toast.error("Failed to join guild");
     } else {
       toast.success(guild.is_public ? "Joined guild!" : "Application submitted!");
+      logInteraction("guild_join", { guild_id: guild.id, guild_name: guild.name, is_public: guild.is_public });
       if (guildId) loadGuild(guildId);
     }
     setJoining(false);
