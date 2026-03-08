@@ -15,6 +15,8 @@ import Footer from "@/components/shared/Footer";
 
 import ChangelogSection from "@/features/roadmap/sections/ChangelogSection";
 import FeatureVotingSection from "@/features/roadmap/sections/FeatureVotingSection";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 
 const NEXT_UPDATE = new Date("2026-04-15T00:00:00");
 
