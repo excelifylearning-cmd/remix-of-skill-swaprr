@@ -29,6 +29,11 @@ const LeaderboardPage = lazy(() => import("./features/leaderboard/LeaderboardPag
 const TransactionLookupPage = lazy(() => import("./features/transaction/TransactionLookupPage"));
 const FAQPage = lazy(() => import("./features/faq/FAQPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const MaintenancePage = lazy(() => import("./pages/Maintenance"));
+const ComingSoonPage = lazy(() => import("./pages/ComingSoon"));
+const ServerErrorPage = lazy(() => import("./pages/ServerError"));
+const ForbiddenPage = lazy(() => import("./pages/Forbidden"));
+const OfflinePage = lazy(() => import("./pages/Offline"));
 
 const queryClient = new QueryClient();
 
@@ -58,6 +63,11 @@ const AnimatedRoutes = () => {
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/transaction" element={<TransactionLookupPage />} />
           <Route path="/faq" element={<FAQPage />} />
+          <Route path="/maintenance" element={<MaintenancePage />} />
+          <Route path="/coming-soon" element={<ComingSoonPage />} />
+          <Route path="/500" element={<ServerErrorPage />} />
+          <Route path="/403" element={<ForbiddenPage />} />
+          <Route path="/offline" element={<OfflinePage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
