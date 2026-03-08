@@ -253,14 +253,6 @@ const FeaturesPage = () => {
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mx-auto max-w-xl text-lg text-muted-foreground">
               9 feature categories, 60+ capabilities. Explore every tool, system, and innovation powering the SkillSwappr platform.
             </motion.p>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              {featureCategories.map((cat) => (
-                <button key={cat.id} onClick={() => setActive(cat.id)} className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${active === cat.id ? "bg-foreground text-background" : "border border-border text-muted-foreground hover:text-foreground"}`}>
-                  <cat.icon size={12} />
-                  {cat.label}
-                </button>
-              ))}
-            </motion.div>
           </div>
         </section>
 
