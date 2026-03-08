@@ -72,7 +72,10 @@ const ContactPage = () => {
     if (step === 1) {
       if (!name.trim()) newErrors.name = "Name is required";
       if (!email.trim()) newErrors.email = "Email is required";
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Invalid email address";
+      else {
+        const result = validateEmail(email);
+        if (result !== true) newErrors.email = result;
+      }
     }
     if (step === 2) {
       if (!message.trim()) newErrors.message = "Please enter a message";

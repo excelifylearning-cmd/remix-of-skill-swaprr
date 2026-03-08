@@ -42,6 +42,7 @@ const socials = [
 
 const CTAFooterSection = () => {
   const [email, setEmail] = useState("");
+  const [emailErr, setEmailErr] = useState("");
 
   return (
     <section className="relative overflow-hidden bg-surface-1">
