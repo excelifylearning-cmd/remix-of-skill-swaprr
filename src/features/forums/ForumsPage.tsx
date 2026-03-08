@@ -16,6 +16,7 @@ import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
+import LoginPrompt from "@/components/shared/LoginPrompt";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
