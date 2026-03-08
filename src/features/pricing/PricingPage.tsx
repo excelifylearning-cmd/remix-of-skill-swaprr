@@ -1,16 +1,18 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 import {
   Check, X, Sparkles, Building2, Zap, Coins, Shield, Trophy,
   Award, Star, ArrowRight, Users, Target, TrendingUp, Flame,
   BarChart3, Clock, Eye, Crown, Gem, Medal, CircleDot, Activity,
-  Calculator, Layers, GraduationCap
+  Calculator, Layers, GraduationCap, CheckCircle2
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 
 /* ─── Data ─── */
