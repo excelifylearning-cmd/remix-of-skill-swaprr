@@ -442,18 +442,6 @@ const LeaderboardPage = () => {
           </div>
         </section>
 
-        {/* Your Rank CTA */}
-        <section className="border-t border-border py-16">
-          <div className="mx-auto max-w-2xl px-6 text-center">
-            <Trophy size={32} className="mx-auto mb-4 text-badge-gold" />
-            <h2 className="mb-2 font-heading text-2xl font-bold text-foreground">Where do you rank?</h2>
-            <p className="mb-6 text-sm text-muted-foreground">Join SkillSwappr and start climbing the leaderboard today.</p>
-            <a href="/signup" className="inline-flex items-center gap-2 rounded-xl bg-foreground px-8 py-3 text-sm font-semibold text-background">
-              Get Started <ArrowUp size={16} />
-            </a>
-          </div>
-        </section>
-
         <CTAFooterSection />
       </div>
     </PageTransition>
