@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, X, Send, Bot, User } from "lucide-react";
+import { Headset, X, Send, Bot, User } from "lucide-react";
 
 const chatBotResponses = [
   "Hi! 👋 I'm SkillBot. How can I help you today?",
@@ -128,7 +128,7 @@ const LiveChatWidget = () => {
         whileTap={{ scale: 0.95 }}
         className="flex h-14 w-14 items-center justify-center rounded-full bg-foreground text-background shadow-lg"
       >
-        {chatOpen ? <X size={20} /> : <MessageSquare size={20} />}
+        {chatOpen ? <X size={20} /> : <Headset size={20} />}
       </motion.button>
     </div>
   );
