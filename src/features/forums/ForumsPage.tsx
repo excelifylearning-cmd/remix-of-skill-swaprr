@@ -275,7 +275,7 @@ const dailyChallenge = {
   prize: "500 SP",
 };
 
-
+const ForumsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortType>("hot");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
