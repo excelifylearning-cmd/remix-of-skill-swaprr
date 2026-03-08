@@ -340,6 +340,7 @@ const ForumsPage = () => {
   const [bookmarkedThreads, setBookmarkedThreads] = useState<Set<string>>(new Set());
   const [replyText, setReplyText] = useState("");
   const [showComposer, setShowComposer] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState("");
 
   // Database state
