@@ -966,6 +966,22 @@ const WalletTab = ({ profile }: { profile: any }) => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const SettingsTab = ({ profile, updateProfile }: { profile: any; updateProfile: (data: any) => void }) => {
+  const [displayName, setDisplayName] = useState(profile?.display_name || "");
+  const [bio, setBio] = useState(profile?.bio || "");
+  const [saving, setSaving] = useState(false);
+  const { toast } = { toast: (await import("sonner")).toast };
+
+  const handleSave = async () => {
+    setSaving(true);
+    const result = await updateProfile({ display_name: displayName, bio });
+    setSaving(false);
+    if (result.success) {
+      (await import("sonner")).toast.success("Profile updated!");
+    } else {
+      (await import("sonner")).toast.error(result.error || "Failed to save");
+    }
+  };
+
   return (
     <div className="max-w-2xl space-y-6">
       <h2 className="font-heading text-2xl font-bold text-foreground">Settings</h2>
@@ -977,20 +993,22 @@ const SettingsTab = ({ profile, updateProfile }: { profile: any; updateProfile: 
             <label className="block text-sm text-muted-foreground mb-1">Display Name</label>
             <input
               type="text"
-              defaultValue={profile?.display_name || ""}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
               className="w-full rounded-lg border border-border bg-surface-1 px-4 py-2.5 text-foreground focus:outline-none focus:border-foreground/20"
             />
           </div>
           <div>
             <label className="block text-sm text-muted-foreground mb-1">Bio</label>
             <textarea
-              defaultValue={profile?.bio || ""}
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
               rows={3}
               className="w-full rounded-lg border border-border bg-surface-1 px-4 py-2.5 text-foreground focus:outline-none focus:border-foreground/20 resize-none"
             />
           </div>
-          <button className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background">
-            Save Changes
+          <button onClick={handleSave} disabled={saving} className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-50">
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>

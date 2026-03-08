@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -5,18 +6,15 @@ import {
   MessageSquare, Flag, GraduationCap, CheckCircle2, Trophy, ChevronRight,
 } from "lucide-react";
 import AppNav from "@/components/shared/AppNav";
-import { gigs } from "../data/mockData";
+import { supabase } from "@/integrations/supabase/client";
+import { gigs as mockGigs } from "../data/mockData";
 import { eloTier, formatIcon, formatColor } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
 import GuildPreviewPopover from "./GuildPreviewPopover";
 import GigCard from "./GigCard";
-
-const mockReviews = [
-  { name: "Alice M.", rating: 5, text: "Excellent work, delivered early with great communication. Would definitely swap again!", time: "2 weeks ago" },
-  { name: "Bob R.", rating: 5, text: "Very professional. The quality exceeded my expectations.", time: "1 month ago" },
-  { name: "Sara K.", rating: 4, text: "Good quality, needed one revision but overall solid work.", time: "1 month ago" },
-  { name: "Dev T.", rating: 5, text: "Fast turnaround, great attention to detail. Highly recommended.", time: "2 months ago" },
-];
+import ProposalModal from "./ProposalModal";
+import LoginPrompt from "@/components/shared/LoginPrompt";
+import { useAuth } from "@/lib/auth-context";
 
 const deliveryStages = [
   { stage: "Requirements Review", days: 1 },
@@ -27,9 +25,76 @@ const deliveryStages = [
 
 export default function GigDetailPage() {
   const { gigId } = useParams();
-  const gig = gigs.find(g => g.id === Number(gigId));
+  const { user } = useAuth();
+  const [listing, setListing] = useState<any>(null);
+  const [sellerProfile, setSellerProfile] = useState<any>(null);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [proposalOpen, setProposalOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
 
-  if (!gig) {
+  // Try DB first, fallback to mock
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      // Try UUID lookup
+      const { data: dbListing } = await supabase
+        .from("listings")
+        .select("*, profiles!listings_user_id_profiles_fkey(display_name, full_name, elo, id_verified, university, total_gigs_completed, avatar_url)")
+        .eq("id", gigId!)
+        .single();
+
+      if (dbListing) {
+        setListing(dbListing);
+        setSellerProfile(dbListing.profiles);
+        // Load reviews for this seller
+        const { data: revs } = await (supabase as any)
+          .from("reviews")
+          .select("*")
+          .eq("reviewee_id", dbListing.user_id)
+          .order("created_at", { ascending: false })
+          .limit(5);
+        setReviews(revs || []);
+      } else {
+        // Fallback to mock
+        const mock = mockGigs.find(g => g.id === Number(gigId));
+        if (mock) {
+          setListing({
+            id: mock.id, title: mock.skill, description: mock.desc, wants: mock.wants,
+            category: mock.category, format: mock.format, points: mock.points,
+            delivery_days: mock.deliveryDays, views: mock.views, hot: mock.hot,
+            rating: mock.rating, user_id: mock.sellerId || "mock", price: `${mock.points} SP`,
+            _mock: true, _gig: mock,
+          });
+          setSellerProfile({
+            display_name: mock.seller, full_name: mock.seller, elo: mock.elo,
+            id_verified: mock.verified, university: mock.uni,
+            total_gigs_completed: mock.completedSwaps,
+          });
+          setReviews([
+            { reviewer_name: "Alice M.", overall_rating: 5, comment: "Excellent work, delivered early!", created_at: "2026-02-20" },
+            { reviewer_name: "Bob R.", overall_rating: 5, comment: "Very professional.", created_at: "2026-02-10" },
+            { reviewer_name: "Sara K.", overall_rating: 4, comment: "Good quality, solid work.", created_at: "2026-01-25" },
+          ]);
+        }
+      }
+      setLoading(false);
+    };
+    if (gigId) load();
+  }, [gigId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <AppNav />
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="h-5 w-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!listing) {
     return (
       <div className="min-h-screen bg-background">
         <AppNav />
@@ -45,10 +110,17 @@ export default function GigDetailPage() {
     );
   }
 
-  const tier = eloTier(gig.elo);
-  const FormatIcon = formatIcon(gig.format);
-  const fColor = formatColor(gig.format);
-  const relatedGigs = gigs.filter(g => g.category === gig.category && g.id !== gig.id).slice(0, 4);
+  const elo = sellerProfile?.elo || 1000;
+  const tier = eloTier(elo);
+  const FormatIcon = formatIcon(listing.format || "Direct Swap");
+  const fColor = formatColor(listing.format || "Direct Swap");
+  const sellerName = sellerProfile?.display_name || sellerProfile?.full_name || "User";
+  const initials = sellerName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+
+  const handlePropose = () => {
+    if (!user) { setLoginOpen(true); return; }
+    setProposalOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -63,7 +135,7 @@ export default function GigDetailPage() {
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6">
           <Link to="/marketplace" className="hover:text-foreground transition-colors">Marketplace</Link>
           <ChevronRight className="w-3 h-3" />
-          <span className="text-foreground">{gig.skill}</span>
+          <span className="text-foreground">{listing.title}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -73,41 +145,23 @@ export default function GigDetailPage() {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <span className={`flex items-center gap-1 text-xs font-mono ${fColor} bg-surface-2 px-2.5 py-1 rounded-lg`}>
-                  <FormatIcon className="w-3.5 h-3.5" />{gig.format}
+                  <FormatIcon className="w-3.5 h-3.5" />{listing.format}
                 </span>
-                {gig.hot && <span className="text-xs font-mono text-alert-red bg-alert-red/10 px-2 py-1 rounded-lg">🔥 Trending</span>}
-                <span className="text-xs text-muted-foreground font-mono ml-auto">Posted {gig.posted}</span>
+                {listing.hot && <span className="text-xs font-mono text-alert-red bg-alert-red/10 px-2 py-1 rounded-lg">🔥 Trending</span>}
               </div>
-              <h1 className="font-heading font-black text-3xl text-foreground">{gig.skill}</h1>
-              <p className="text-base text-muted-foreground mt-2 flex items-center gap-1.5">
-                <ArrowRight className="w-4 h-4" /> Looking for: <span className="text-foreground font-heading font-semibold">{gig.wants}</span>
-              </p>
+              <h1 className="font-heading font-black text-3xl text-foreground">{listing.title}</h1>
+              {listing.wants && (
+                <p className="text-base text-muted-foreground mt-2 flex items-center gap-1.5">
+                  <ArrowRight className="w-4 h-4" /> Looking for: <span className="text-foreground font-heading font-semibold">{listing.wants}</span>
+                </p>
+              )}
             </div>
 
             {/* Description */}
             <div>
               <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">About This Gig</h3>
-              <p className="text-foreground/90 leading-relaxed">{gig.desc}</p>
-              <p className="text-foreground/80 leading-relaxed mt-3">
-                This gig includes detailed project scoping, regular progress updates, and multiple revision rounds
-                to ensure your complete satisfaction. Communication throughout the process is a priority.
-              </p>
+              <p className="text-foreground/90 leading-relaxed">{listing.description}</p>
             </div>
-
-            {/* Requirements */}
-            {gig.requirements && gig.requirements.length > 0 && (
-              <div>
-                <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">Requirements</h3>
-                <div className="space-y-2">
-                  {gig.requirements.map(r => (
-                    <div key={r} className="flex items-start gap-2.5 p-3 rounded-xl bg-surface-1 border border-border">
-                      <CheckCircle2 className="w-4 h-4 text-skill-green mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-foreground/80">{r}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Delivery Stages */}
             <div>
@@ -128,91 +182,68 @@ export default function GigDetailPage() {
             {/* Reviews */}
             <div>
               <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">
-                Reviews ({mockReviews.length})
+                Reviews ({reviews.length})
               </h3>
               <div className="space-y-3">
-                {mockReviews.map(r => (
-                  <div key={r.name} className="p-4 rounded-xl bg-surface-1 border border-border">
+                {reviews.map((r, i) => (
+                  <div key={i} className="p-4 rounded-xl bg-surface-1 border border-border">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-heading font-semibold text-foreground">{r.name}</span>
+                      <span className="text-sm font-heading font-semibold text-foreground">{r.reviewer_name || "User"}</span>
                       <div className="flex items-center gap-0.5">
-                        {Array.from({ length: r.rating }).map((_, i) => (
-                          <Star key={i} className="w-3 h-3 text-badge-gold fill-current" />
+                        {Array.from({ length: r.overall_rating || 5 }).map((_, j) => (
+                          <Star key={j} className="w-3 h-3 text-badge-gold fill-current" />
                         ))}
                       </div>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1.5">{r.text}</p>
-                    <p className="text-[10px] text-muted-foreground/60 mt-2">{r.time}</p>
+                    <p className="text-sm text-muted-foreground mt-1.5">{r.comment}</p>
+                    <p className="text-[10px] text-muted-foreground/60 mt-2">{new Date(r.created_at).toLocaleDateString()}</p>
                   </div>
                 ))}
+                {reviews.length === 0 && (
+                  <p className="text-sm text-muted-foreground py-4 text-center">No reviews yet</p>
+                )}
               </div>
             </div>
-
-            {/* Related gigs */}
-            {relatedGigs.length > 0 && (
-              <div>
-                <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-4">Related Gigs</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {relatedGigs.map(g => (
-                    <GigCard key={g.id} gig={g} viewMode="grid" onClick={() => {}} />
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* Sidebar - sticky */}
+          {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
               {/* Seller card */}
               <div className={`rounded-2xl border ${tier.border} ${tier.bg} p-5 ${tier.glow}`}>
-                <UserPreviewPopover
-                  name={gig.seller} avatar={gig.avatar} elo={gig.elo} rating={gig.rating}
-                  verified={gig.verified} uni={gig.uni} completedSwaps={gig.completedSwaps} skills={gig.tags}
-                >
-                  <div className="flex items-center gap-3 cursor-pointer">
-                    <div className={`w-14 h-14 rounded-xl border ${tier.border} ${tier.bg} flex items-center justify-center font-heading font-bold text-lg ${tier.color}`}>
-                      {gig.avatar}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-heading font-bold text-foreground text-lg">{gig.seller}</span>
-                        {gig.verified && <Shield className="w-4 h-4 text-skill-green" />}
-                      </div>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className={`text-xs font-mono font-medium ${tier.color}`}>{tier.label} · {gig.elo}</span>
-                        <span className="flex items-center gap-0.5 text-xs text-badge-gold">
-                          <Star className="w-3 h-3 fill-current" />{gig.rating}
-                        </span>
-                      </div>
-                      {gig.uni && (
-                        <span className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-                          <GraduationCap className="w-3 h-3" />{gig.uni}
-                        </span>
-                      )}
-                    </div>
+                <Link to={`/profile/${listing.user_id}`} className="flex items-center gap-3">
+                  <div className={`w-14 h-14 rounded-xl border ${tier.border} ${tier.bg} flex items-center justify-center font-heading font-bold text-lg ${tier.color}`}>
+                    {initials}
                   </div>
-                </UserPreviewPopover>
-
-                {gig.guildName && gig.guildId && (
-                  <GuildPreviewPopover guildName={gig.guildName} guildId={gig.guildId}>
-                    <span className="inline-flex items-center gap-1 mt-3 text-xs text-badge-gold cursor-pointer hover:underline">
-                      <Trophy className="w-3 h-3" />{gig.guildName}
-                    </span>
-                  </GuildPreviewPopover>
-                )}
-
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-heading font-bold text-foreground text-lg">{sellerName}</span>
+                      {sellerProfile?.id_verified && <Shield className="w-4 h-4 text-skill-green" />}
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className={`text-xs font-mono font-medium ${tier.color}`}>{tier.label} · {elo}</span>
+                      <span className="flex items-center gap-0.5 text-xs text-badge-gold">
+                        <Star className="w-3 h-3 fill-current" />{listing.rating || 4.5}
+                      </span>
+                    </div>
+                    {sellerProfile?.university && (
+                      <span className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                        <GraduationCap className="w-3 h-3" />{sellerProfile.university}
+                      </span>
+                    )}
+                  </div>
+                </Link>
                 <div className="mt-3 pt-3 border-t border-border/50 text-xs text-muted-foreground">
-                  {gig.completedSwaps} completed swaps
+                  {sellerProfile?.total_gigs_completed || 0} completed swaps
                 </div>
               </div>
 
               {/* Stats */}
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { label: "Delivery", value: `${gig.deliveryDays}d`, icon: Clock },
-                  { label: "Views", value: `${gig.views}`, icon: Eye },
-                  { label: "Swaps", value: `${gig.completedSwaps}`, icon: CheckCircle2 },
+                  { label: "Delivery", value: `${listing.delivery_days || 7}d`, icon: Clock },
+                  { label: "Views", value: `${listing.views || 0}`, icon: Eye },
+                  { label: "Swaps", value: `${sellerProfile?.total_gigs_completed || 0}`, icon: CheckCircle2 },
                 ].map(s => (
                   <div key={s.label} className="rounded-xl bg-surface-1 border border-border p-3 text-center">
                     <s.icon className="w-3.5 h-3.5 text-muted-foreground mx-auto mb-1" />
@@ -223,16 +254,19 @@ export default function GigDetailPage() {
               </div>
 
               {/* SP bonus */}
-              {gig.points > 0 && (
+              {listing.points > 0 && (
                 <div className="rounded-xl bg-skill-green/5 border border-skill-green/20 p-4 text-center">
-                  <p className="text-2xl font-mono font-bold text-skill-green">+{gig.points} SP</p>
+                  <p className="text-2xl font-mono font-bold text-skill-green">+{listing.points} SP</p>
                   <p className="text-xs text-muted-foreground mt-1">Bonus SkillPoints</p>
                 </div>
               )}
 
               {/* Actions */}
               <div className="space-y-2">
-                <button className="w-full h-12 rounded-xl bg-foreground text-background font-heading font-bold text-sm hover:bg-foreground/90 transition-colors">
+                <button
+                  onClick={handlePropose}
+                  className="w-full h-12 rounded-xl bg-foreground text-background font-heading font-bold text-sm hover:bg-foreground/90 transition-colors"
+                >
                   Propose Swap
                 </button>
                 <button className="w-full h-10 rounded-xl border border-border text-foreground text-xs font-heading font-semibold hover:bg-surface-2 transition-colors flex items-center justify-center gap-1.5">
@@ -251,15 +285,6 @@ export default function GigDetailPage() {
                 </div>
               </div>
 
-              {/* Tags */}
-              {gig.tags && (
-                <div className="flex flex-wrap gap-1.5">
-                  {gig.tags.map(t => (
-                    <span key={t} className="px-2 py-0.5 bg-surface-2 text-muted-foreground text-[10px] font-mono rounded-md">{t}</span>
-                  ))}
-                </div>
-              )}
-
               <button className="w-full flex items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-alert-red transition-colors">
                 <Flag className="w-3 h-3" />Report this listing
               </button>
@@ -267,6 +292,22 @@ export default function GigDetailPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* Proposal Modal */}
+      {proposalOpen && (
+        <ProposalModal
+          listing={{
+            id: String(listing.id),
+            title: listing.title,
+            user_id: listing.user_id,
+            points: listing.points || 0,
+            price: listing.price || `${listing.points} SP`,
+          }}
+          onClose={() => setProposalOpen(false)}
+        />
+      )}
+
+      <LoginPrompt open={loginOpen} onOpenChange={setLoginOpen} />
     </div>
   );
 }
