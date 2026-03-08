@@ -136,17 +136,11 @@ const OverviewTab = ({ profile }: { profile: any }) => {
     };
     load();
   }, [user]);
+  const quickStats = [
     { label: "Skill Points", value: profile?.sp?.toLocaleString() || "100", icon: Zap, color: "text-badge-gold" },
     { label: "ELO Rating", value: profile?.elo?.toLocaleString() || "1,000", icon: TrendingUp, color: "text-skill-green" },
-    { label: "Gigs Completed", value: profile?.total_gigs_completed || "0", icon: Trophy, color: "text-court-blue" },
+    { label: "Gigs Completed", value: profile?.total_gigs_completed || gigCount.toString(), icon: Trophy, color: "text-court-blue" },
     { label: "Current Streak", value: `${profile?.streak_days || 0}d`, icon: Calendar, color: "text-foreground" },
-  ];
-
-  const recentActivity = [
-    { action: "Completed gig: Logo Redesign", time: "2 hours ago", icon: Award, color: "text-skill-green" },
-    { action: "Earned 250 SP from auction win", time: "5 hours ago", icon: Zap, color: "text-badge-gold" },
-    { action: "Jury duty completed (+15 SP)", time: "1 day ago", icon: Scale, color: "text-court-blue" },
-    { action: "Guild Wars S4 badge unlocked", time: "2 days ago", icon: Shield, color: "text-foreground" },
   ];
 
   return (
