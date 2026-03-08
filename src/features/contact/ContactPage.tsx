@@ -52,13 +52,6 @@ const ContactPage = () => {
   const [attachment, setAttachment] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState<{ from: "bot" | "user"; text: string }[]>([
-    { from: "bot", text: chatBotResponses[0] },
-  ]);
-  const [chatInput, setChatInput] = useState("");
-  const [typing, setTyping] = useState(false);
-  const chatEndRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const maxMsg = 1000;
