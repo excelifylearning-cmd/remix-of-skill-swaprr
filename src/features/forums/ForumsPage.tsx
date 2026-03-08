@@ -125,6 +125,38 @@ const allThreads: Thread[] = [
     content: "We're planning the next gig format and want YOUR input! Vote on your favorite option and tell us why in the comments.\n\nEach option has been discussed internally but we want the community to have the final say.",
     awards: [{ icon: "📌", count: 1 }],
   },
+  {
+    id: "8", title: "Just hit Diamond tier — my 6-month journey documented", author: "Wei L.", authorAvatar: "WL", authorFlair: "Diamond Creator",
+    authorKarma: 7800, authorJoined: "Sep 2025", authorGigs: 210, replies: 92, views: 3200, upvotes: 287, downvotes: 4, hot: true, category: "Achievements & Milestones", timeAgo: "3h ago",
+    tags: ["diamond", "journey", "milestone"], hasImage: true, hasPoll: false, hasCode: false, hasAttachment: true,
+    locked: false, sticky: false,
+    content: "Six months ago I signed up knowing nobody. Today I hit Diamond. Here's every single thing I did, week by week, with screenshots and SP graphs.\n\nTL;DR: Consistency > Talent. Showing up daily beats occasional brilliance every time.",
+    awards: [{ icon: "💎", count: 5 }, { icon: "🔥", count: 3 }, { icon: "⭐", count: 8 }],
+  },
+  {
+    id: "9", title: "AI tools that actually help with skill swaps (2026 edition)", author: "Priya M.", authorAvatar: "PM", authorFlair: "Top Contributor",
+    authorKarma: 3400, authorJoined: "Feb 2025", authorGigs: 56, replies: 41, views: 1800, upvotes: 134, downvotes: 7, hot: true, category: "AI & Automation", timeAgo: "5h ago",
+    tags: ["ai", "tools", "productivity"], hasImage: false, hasPoll: false, hasCode: true, hasAttachment: false,
+    locked: false, sticky: false,
+    content: "I've tested 20+ AI tools for various aspects of skill swapping — from proposal writing to code review to design feedback. Here are the 7 that actually made a difference.\n\nIncludes prompt templates and workflow examples.",
+    awards: [{ icon: "📚", count: 4 }, { icon: "⭐", count: 2 }],
+  },
+  {
+    id: "10", title: "Freelancer tax guide for skill swap income — USA/UK/EU", author: "Sophie B.", authorAvatar: "SB", authorFlair: "Verified Expert",
+    authorKarma: 2100, authorJoined: "Apr 2025", authorGigs: 38, replies: 56, views: 2400, upvotes: 178, downvotes: 2, hot: false, category: "Freelancer Hub", timeAgo: "1d ago",
+    tags: ["taxes", "freelance", "legal"], hasImage: false, hasPoll: false, hasCode: false, hasAttachment: true,
+    locked: false, sticky: false,
+    content: "I'm a certified accountant and SkillSwappr user. Here's a comprehensive guide to reporting skill swap income, tracking expenses, and common deductions.\n\nCovers USA (W-9/1099), UK (Self Assessment), and EU (VAT rules).",
+    awards: [{ icon: "📚", count: 6 }, { icon: "⭐", count: 3 }],
+  },
+  {
+    id: "11", title: "Live coding stream every Friday — come build with me!", author: "Jake W.", authorAvatar: "JW", authorFlair: "Streamer",
+    authorKarma: 1560, authorJoined: "Nov 2025", authorGigs: 28, replies: 23, views: 780, upvotes: 89, downvotes: 1, hot: false, category: "Streams & Content", timeAgo: "6h ago",
+    tags: ["stream", "coding", "weekly"], hasImage: true, hasPoll: false, hasCode: false, hasAttachment: false,
+    locked: false, sticky: false,
+    content: "Every Friday at 4PM UTC I stream live coding sessions where I build real projects from SkillSwappr gigs. Come watch, ask questions, or just hang out.\n\nLast week we built a full Figma-to-React pipeline in 2 hours!",
+    awards: [{ icon: "🎬", count: 2 }],
+  },
 ];
 
 const threadReplies: Record<string, { author: string; avatar: string; flair: string; time: string; text: string; upvotes: number; downvotes: number; replies: number; awards: { icon: string; count: number }[]; nested?: { author: string; avatar: string; flair: string; time: string; text: string; upvotes: number }[] }[]> = {
