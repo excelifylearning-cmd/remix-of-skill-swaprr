@@ -696,7 +696,7 @@ const EventsPage = () => {
                 >
                   <div className="flex gap-1 mb-3">
                     {[1, 2, 3, 4, 5].map(s => (
-                      <Star key={s} size={12} className="text-badge-gold fill-badge-gold" />
+                      <Star key={s} size={12} className="text-skill-green fill-skill-green" />
                     ))}
                   </div>
                   <p className="text-sm text-foreground leading-relaxed flex-1">"{h.quote}"</p>
