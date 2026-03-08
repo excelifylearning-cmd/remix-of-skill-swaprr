@@ -738,7 +738,7 @@ const HelpPage = () => {
                   <span className="text-[10px] text-muted-foreground">{activeIncidents.length} events</span>
                 </div>
                 <div className="divide-y divide-border/30">
-                  {recentIncidents.map((inc, i) => (
+                  {activeIncidents.map((inc: any, i: number) => (
                     <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }} className="flex items-center justify-between px-6 py-4 hover:bg-surface-1 transition-colors">
                       <div className="flex items-center gap-4">
                         <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
