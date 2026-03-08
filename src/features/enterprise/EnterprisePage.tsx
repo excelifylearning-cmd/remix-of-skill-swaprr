@@ -107,6 +107,17 @@ const results = [
 
 /* ─── Component ─── */
 
+interface ExpertProfile {
+  name: string;
+  skill: string;
+  elo: number;
+  university: string;
+  avatar: string;
+  available: boolean;
+  gigs: number;
+  specialties: string[];
+}
+
 const EnterprisePage = () => {
   const [activeUseCase, setActiveUseCase] = useState(0);
   const [demoFirst, setDemoFirst] = useState("");
@@ -117,6 +128,37 @@ const EnterprisePage = () => {
   const [demoUseCase, setDemoUseCase] = useState("");
   const [demoMessage, setDemoMessage] = useState("");
   const [demoSubmitted, setDemoSubmitted] = useState(false);
+  const [expertPool, setExpertPool] = useState<ExpertProfile[]>([]);
+  const [expertsLoading, setExpertsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadExperts = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name, full_name, elo, university, availability, skills, total_gigs_completed, avatar_emoji")
+        .gte("elo", 1500)
+        .order("elo", { ascending: false })
+        .limit(6);
+      if (data) {
+        setExpertPool(data.map((p: any) => {
+          const name = p.display_name || p.full_name || "Anonymous";
+          const initials = name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+          return {
+            name,
+            skill: (p.skills && p.skills[0]) || "Multi-Skill",
+            elo: p.elo || 1500,
+            university: p.university || "Independent",
+            avatar: initials,
+            available: p.availability === "Available" || p.availability === "available",
+            gigs: p.total_gigs_completed || 0,
+            specialties: (p.skills || []).slice(0, 3),
+          };
+        }));
+      }
+      setExpertsLoading(false);
+    };
+    loadExperts();
+  }, []);
 
   const handleDemoSubmit = async () => {
     if (!demoEmail.trim() || !demoFirst.trim()) { toast.error("Please fill in required fields"); return; }
