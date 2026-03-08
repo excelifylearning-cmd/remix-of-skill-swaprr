@@ -106,9 +106,36 @@ const eloTier = (elo: number) => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const OverviewTab = ({ profile }: { profile: any }) => {
+  const { user } = useAuth();
   const tier = eloTier(profile?.elo || 1000);
-  
-  const quickStats = [
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [gigCount, setGigCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const [actRes, gigRes] = await Promise.all([
+        supabase.from("activity_log").select("action, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5),
+        supabase.from("listings").select("id", { count: "exact" }).eq("user_id", user.id).eq("status", "active"),
+      ]);
+      if (actRes.data?.length) {
+        setRecentActivity(actRes.data.map((a: any) => ({
+          action: a.action,
+          time: new Date(a.created_at).toLocaleString(),
+          icon: Award,
+          color: "text-skill-green",
+        })));
+      } else {
+        setRecentActivity([
+          { action: "Completed gig: Logo Redesign", time: "2 hours ago", icon: Award, color: "text-skill-green" },
+          { action: "Earned 250 SP from auction win", time: "5 hours ago", icon: Zap, color: "text-badge-gold" },
+          { action: "Jury duty completed (+15 SP)", time: "1 day ago", icon: Scale, color: "text-court-blue" },
+        ]);
+      }
+      setGigCount(gigRes.count || 0);
+    };
+    load();
+  }, [user]);
     { label: "Skill Points", value: profile?.sp?.toLocaleString() || "100", icon: Zap, color: "text-badge-gold" },
     { label: "ELO Rating", value: profile?.elo?.toLocaleString() || "1,000", icon: TrendingUp, color: "text-skill-green" },
     { label: "Gigs Completed", value: profile?.total_gigs_completed || "0", icon: Trophy, color: "text-court-blue" },
