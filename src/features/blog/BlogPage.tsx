@@ -234,7 +234,7 @@ const posts = [
 const blogSeries = [
   { name: "Building Trust at Scale", count: 4, color: "text-court-blue", bg: "bg-court-blue/10", borderColor: "border-court-blue/20" },
   { name: "Engineering Deep Dives", count: 6, color: "text-skill-green", bg: "bg-skill-green/10", borderColor: "border-skill-green/20" },
-  { name: "Platform Economics", count: 3, color: "text-badge-gold", bg: "bg-badge-gold/10", borderColor: "border-badge-gold/20" },
+  { name: "Platform Economics", count: 3, color: "text-foreground", bg: "bg-surface-2", borderColor: "border-border" },
   { name: "Swapper Spotlights", count: 8, color: "text-alert-red", bg: "bg-alert-red/10", borderColor: "border-alert-red/20" },
 ];
 
