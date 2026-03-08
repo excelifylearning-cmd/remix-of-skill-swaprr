@@ -15,7 +15,6 @@ import SkillCourtSection from "./sections/SkillCourtSection";
 import GuildSection from "./sections/GuildSection";
 import UniversityPartnersSection from "./sections/UniversityPartnersSection";
 import SuccessStoriesSection from "./sections/SuccessStoriesSection";
-import PricingQuickSection from "./sections/PricingQuickSection";
 import CTAFooterSection from "./sections/CTAFooterSection";
 
 const HomePage = () => {
@@ -38,7 +37,6 @@ const HomePage = () => {
         <GuildSection />
         <UniversityPartnersSection />
         <SuccessStoriesSection />
-        <PricingQuickSection />
         <CTAFooterSection />
       </div>
     </PageTransition>
