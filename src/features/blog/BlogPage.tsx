@@ -417,14 +417,8 @@ const BlogPage = () => {
         content: parseContent(p.content)
       }))
     : posts;
-  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
-  const [bookmarkedPosts, setBookmarkedPosts] = useState<Set<string>>(new Set());
-  const [commentText, setCommentText] = useState("");
-  const [sortBy, setSortBy] = useState<"latest" | "popular" | "discussed">("latest");
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [email, setEmail] = useState("");
 
-  const filtered = (active === "All" ? posts : posts.filter((p) => p.category === active))
+  const filtered = (active === "All" ? allPosts : allPosts.filter((p) => p.category === active))
     .filter((p) => !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase())))
     .sort((a, b) => {
       if (sortBy === "popular") return b.likes - a.likes;
@@ -432,10 +426,11 @@ const BlogPage = () => {
       return 0;
     });
 
-  const featured = posts.find((p) => p.featured);
-  const openPost = posts.find((p) => p.id === selectedPost);
-  const editorsPicks = posts.filter((p) => editorsPickIds.includes(p.id));
-  const popularPosts = [...posts].sort((a, b) => b.views - a.views).slice(0, 5);
+  const featured = allPosts.find((p) => p.featured);
+  const openPost = allPosts.find((p) => p.id === selectedPost);
+  const editorsPicks = allPosts.filter((p) => editorsPickIds.includes(p.id)).slice(0, 3);
+  const popularPosts = [...allPosts].sort((a, b) => b.views - a.views).slice(0, 5);
+  const mostDiscussed = [...allPosts].sort((a, b) => b.comments - a.comments).slice(0, 4);
   const mostDiscussed = [...posts].sort((a, b) => b.comments - a.comments).slice(0, 4);
 
   const toggleLike = (id: string) => {
