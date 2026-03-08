@@ -675,6 +675,33 @@ const BlogPage = () => {
     );
   }
 
+  // ========== AUTH PROTECTION ==========
+  if (!user) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen bg-background flex flex-col">
+          <Navbar />
+          <div className="flex-1 flex items-center justify-center px-6">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-surface-2 border border-border">
+                <Lock size={32} className="text-muted-foreground" />
+              </div>
+              <h1 className="mb-3 font-heading text-3xl font-bold text-foreground">Login Required</h1>
+              <p className="mb-6 text-muted-foreground">Please log in to access the blog and community content.</p>
+              <Link to="/login" className="inline-flex items-center gap-2 rounded-full bg-foreground px-8 py-3 text-sm font-semibold text-background hover:opacity-90 transition-opacity">
+                Log In <ArrowRight size={16} />
+              </Link>
+              <p className="mt-4 text-xs text-muted-foreground">
+                Don't have an account? <Link to="/signup" className="text-foreground hover:underline">Sign up</Link>
+              </p>
+            </motion.div>
+          </div>
+          <Footer />
+        </div>
+      </PageTransition>
+    );
+  }
+
   // ========== BLOG LISTING VIEW ==========
   return (
     <PageTransition>
