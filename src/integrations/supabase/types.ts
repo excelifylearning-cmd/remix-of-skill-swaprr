@@ -1694,6 +1694,42 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          link: string | null
+          message: string
+          metadata: Json | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string
+          metadata?: Json | null
+          title?: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string
+          metadata?: Json | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       page_sessions: {
         Row: {
           clicks_count: number
@@ -1970,6 +2006,83 @@ export type Database = {
         }
         Relationships: []
       }
+      proposals: {
+        Row: {
+          accepted_at: string | null
+          cancelled_at: string | null
+          completed_at: string | null
+          counter_message: string | null
+          counter_sp: number | null
+          created_at: string
+          delivery_days: number
+          expires_at: string | null
+          id: string
+          listing_id: string
+          message: string
+          metadata: Json | null
+          offered_sp: number
+          receiver_id: string
+          rejected_at: string | null
+          requirements: string | null
+          sender_id: string
+          status: string
+          updated_at: string
+          workspace_id: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          cancelled_at?: string | null
+          completed_at?: string | null
+          counter_message?: string | null
+          counter_sp?: number | null
+          created_at?: string
+          delivery_days?: number
+          expires_at?: string | null
+          id?: string
+          listing_id: string
+          message?: string
+          metadata?: Json | null
+          offered_sp?: number
+          receiver_id: string
+          rejected_at?: string | null
+          requirements?: string | null
+          sender_id: string
+          status?: string
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          cancelled_at?: string | null
+          completed_at?: string | null
+          counter_message?: string | null
+          counter_sp?: number | null
+          created_at?: string
+          delivery_days?: number
+          expires_at?: string | null
+          id?: string
+          listing_id?: string
+          message?: string
+          metadata?: Json | null
+          offered_sp?: number
+          receiver_id?: string
+          rejected_at?: string | null
+          requirements?: string | null
+          sender_id?: string
+          status?: string
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposals_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quarterly_reports: {
         Row: {
           created_at: string
@@ -2039,6 +2152,74 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          communication_rating: number | null
+          content: string
+          created_at: string
+          helpful_count: number
+          id: string
+          is_verified: boolean
+          listing_id: string | null
+          quality_rating: number | null
+          rating: number
+          response: string | null
+          response_at: string | null
+          reviewee_id: string
+          reviewer_id: string
+          timeliness_rating: number | null
+          title: string
+          updated_at: string
+          workspace_id: string | null
+        }
+        Insert: {
+          communication_rating?: number | null
+          content?: string
+          created_at?: string
+          helpful_count?: number
+          id?: string
+          is_verified?: boolean
+          listing_id?: string | null
+          quality_rating?: number | null
+          rating?: number
+          response?: string | null
+          response_at?: string | null
+          reviewee_id: string
+          reviewer_id: string
+          timeliness_rating?: number | null
+          title?: string
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Update: {
+          communication_rating?: number | null
+          content?: string
+          created_at?: string
+          helpful_count?: number
+          id?: string
+          is_verified?: boolean
+          listing_id?: string | null
+          quality_rating?: number | null
+          rating?: number
+          response?: string | null
+          response_at?: string | null
+          reviewee_id?: string
+          reviewer_id?: string
+          timeliness_rating?: number | null
+          title?: string
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_incidents: {
         Row: {
           created_at: string
@@ -2105,6 +2286,48 @@ export type Database = {
           region?: string
           status?: string
           uptime?: number
+        }
+        Relationships: []
+      }
+      sp_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          reason: string
+          reference_id: string | null
+          reference_type: string | null
+          tax_amount: number
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          reason?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          tax_amount?: number
+          type?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          reason?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          tax_amount?: number
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }
