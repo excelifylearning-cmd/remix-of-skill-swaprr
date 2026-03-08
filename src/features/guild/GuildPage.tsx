@@ -328,7 +328,7 @@ const GuildPage = () => {
                           </div>
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
                             <span className={tier.color}>{tier.label} · {member.elo}</span>
-                            {member.joinedAt && <span>Joined {new Date(member.joinedAt).toLocaleDateString("en-US", { month: "short" })}</span>}
+                            {'joinedAt' in member && member.joinedAt && <span>Joined {new Date(member.joinedAt).toLocaleDateString("en-US", { month: "short" })}</span>}
                           </div>
                         </div>
                       </Link>
