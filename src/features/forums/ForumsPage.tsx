@@ -1218,6 +1218,168 @@ const ForumsPage = () => {
           </div>
         </section>
 
+        {/* DEBATE OF THE WEEK */}
+        <section className="border-t border-border py-16">
+          <div className="mx-auto max-w-4xl px-6">
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8">
+              <span className="mb-3 inline-block rounded-full border border-destructive/20 bg-destructive/5 px-4 py-1.5 font-mono text-xs text-destructive">
+                <Flame size={12} className="inline mr-1.5 -mt-0.5" /> Hot Debate
+              </span>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">Debate of the Week</h2>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+              <h3 className="font-heading text-lg font-bold text-foreground mb-2">{debateOfTheWeek.title}</h3>
+              <p className="text-sm text-muted-foreground mb-6">{debateOfTheWeek.description}</p>
+              
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="rounded-xl border border-skill-green/20 bg-skill-green/5 p-4 text-center">
+                  <ChevronUp size={20} className="mx-auto mb-1 text-skill-green" />
+                  <p className="font-heading text-2xl font-black text-skill-green">{debateOfTheWeek.forCount}</p>
+                  <p className="text-xs text-muted-foreground mt-1">For</p>
+                  <button className="mt-3 rounded-full border border-skill-green/30 px-4 py-1.5 text-xs font-medium text-skill-green hover:bg-skill-green/10 transition-colors">Vote For</button>
+                </div>
+                <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-center">
+                  <ChevronDown size={20} className="mx-auto mb-1 text-destructive" />
+                  <p className="font-heading text-2xl font-black text-destructive">{debateOfTheWeek.againstCount}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Against</p>
+                  <button className="mt-3 rounded-full border border-destructive/30 px-4 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors">Vote Against</button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span className="flex items-center gap-1"><MessageSquare size={12} /> {debateOfTheWeek.comments} comments</span>
+                <span className="flex items-center gap-1"><Clock size={12} /> {debateOfTheWeek.timeLeft}</span>
+              </div>
+
+              <div className="mt-4 w-full bg-surface-2 rounded-full h-2.5 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-skill-green"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: `${(debateOfTheWeek.forCount / (debateOfTheWeek.forCount + debateOfTheWeek.againstCount)) * 100}%` }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, delay: 0.3 }}
+                />
+              </div>
+              <div className="flex justify-between mt-1.5 text-[9px] text-muted-foreground">
+                <span>{Math.round((debateOfTheWeek.forCount / (debateOfTheWeek.forCount + debateOfTheWeek.againstCount)) * 100)}% For</span>
+                <span>{Math.round((debateOfTheWeek.againstCount / (debateOfTheWeek.forCount + debateOfTheWeek.againstCount)) * 100)}% Against</span>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* REPUTATION LEVELS */}
+        <section className="border-t border-border bg-surface-1 py-16">
+          <div className="mx-auto max-w-6xl px-6">
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">Reputation Levels</h2>
+              <p className="text-sm text-muted-foreground mt-2">Earn karma to unlock new abilities and perks</p>
+            </motion.div>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              {reputationLevels.map((level, i) => (
+                <motion.div
+                  key={level.level}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="rounded-2xl border border-border bg-card p-5 text-center hover:border-foreground/20 transition-colors"
+                >
+                  <level.icon size={22} className={`mx-auto mb-2 text-${level.color}`} />
+                  <h3 className="font-heading text-sm font-bold text-foreground">{level.level}</h3>
+                  <p className="font-mono text-[10px] text-muted-foreground mt-0.5">{level.minKarma.toLocaleString()}+ karma</p>
+                  <div className="mt-3 space-y-1">
+                    {level.perks.map(perk => (
+                      <p key={perk} className="flex items-center justify-center gap-1 text-[9px] text-muted-foreground">
+                        <CheckCircle2 size={8} className={`text-${level.color}`} /> {perk}
+                      </p>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FORUM BADGES */}
+        <section className="border-t border-border py-16">
+          <div className="mx-auto max-w-6xl px-6">
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
+              <span className="mb-3 inline-block rounded-full border border-badge-gold/30 bg-badge-gold/10 px-4 py-1.5 font-mono text-xs text-badge-gold">
+                <Award size={12} className="inline mr-1.5 -mt-0.5" /> Collectibles
+              </span>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">Forum Badges</h2>
+              <p className="text-sm text-muted-foreground mt-2">Earn badges through participation and achievements</p>
+            </motion.div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {forumBadges.map((badge, i) => (
+                <motion.div
+                  key={badge.name}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="rounded-xl border border-border bg-card p-4 flex items-start gap-3 hover:border-foreground/20 transition-colors"
+                >
+                  <span className="text-2xl">{badge.icon}</span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xs font-bold text-foreground">{badge.name}</h3>
+                      <span className={`rounded-full px-1.5 py-0.5 text-[7px] font-bold ${
+                        badge.rarity === "Common" ? "bg-surface-2 text-muted-foreground" :
+                        badge.rarity === "Rare" ? "bg-court-blue/10 text-court-blue" :
+                        badge.rarity === "Epic" ? "bg-skill-green/10 text-skill-green" :
+                        "bg-badge-gold/10 text-badge-gold"
+                      }`}>{badge.rarity}</span>
+                    </div>
+                    <p className="text-[9px] text-muted-foreground mt-0.5">{badge.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* MODERATORS */}
+        <section className="border-t border-border bg-surface-1 py-16">
+          <div className="mx-auto max-w-4xl px-6">
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">Forum Moderators</h2>
+              <p className="text-sm text-muted-foreground mt-2">The team keeping our community safe and productive</p>
+            </motion.div>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {forumModerators.map((mod, i) => (
+                <motion.div
+                  key={mod.name}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="rounded-2xl border border-border bg-card p-5 text-center"
+                >
+                  <div className="relative mx-auto mb-3 w-fit">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-surface-2 font-heading text-sm font-bold text-foreground ring-2 ring-border">
+                      {mod.avatar}
+                    </div>
+                    <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-card ${mod.online ? "bg-skill-green" : "bg-muted-foreground/30"}`} />
+                  </div>
+                  <h3 className="text-xs font-bold text-foreground">{mod.name}</h3>
+                  <p className="text-[10px] text-court-blue font-medium">{mod.role}</p>
+                  <div className="mt-2 flex items-center justify-center gap-3 text-[9px] text-muted-foreground">
+                    <span>{mod.actions} actions</span>
+                    <span>Since {mod.joinedAs}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* FORUM RULES EXPANDED */}
         <section className="border-t border-border py-12">
           <div className="mx-auto max-w-4xl px-6 text-center">
