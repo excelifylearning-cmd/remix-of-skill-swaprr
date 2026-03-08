@@ -194,3 +194,66 @@ export const logInteraction = (
     context: details,
   });
 };
+
+/**
+ * Tracks search actions with query and result count
+ */
+export const logSearch = (
+  query: string,
+  resultsCount: number,
+  page?: string
+) => {
+  logActivity("search", {
+    entity_type: "search",
+    context: { query, results_count: resultsCount, page: page || window.location.pathname },
+  });
+};
+
+/**
+ * Tracks navigation patterns (link click, back button, direct)
+ */
+export const logNavigation = (
+  from: string,
+  to: string,
+  method: "link" | "back" | "forward" | "direct" = "link"
+) => {
+  logActivity("navigation", {
+    entity_type: "route",
+    context: { from, to, method },
+  });
+};
+
+/**
+ * Tracks copy events
+ */
+export const logCopy = (textLength: number, page?: string) => {
+  logActivity("interaction:copy", {
+    entity_type: "ui",
+    context: { text_length: textLength, page: page || window.location.pathname },
+  });
+};
+
+/**
+ * Tracks outbound/external link clicks
+ */
+export const logExternalLink = (url: string, page?: string) => {
+  logActivity("interaction:external_link", {
+    entity_type: "link",
+    context: { url, page: page || window.location.pathname },
+  });
+};
+
+/**
+ * Logs errors to the error_log table via activity_log for correlation
+ */
+export const logError = (
+  error: Error | string,
+  context?: Record<string, any>
+) => {
+  const msg = typeof error === "string" ? error : error.message;
+  const stack = typeof error === "string" ? undefined : error.stack;
+  logActivity("error", {
+    entity_type: "error",
+    context: { message: msg, stack, ...context },
+  });
+};

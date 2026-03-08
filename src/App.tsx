@@ -9,6 +9,7 @@ import ScrollToTop from "@/components/shared/ScrollToTop";
 import LoadingScreen from "@/components/shared/LoadingScreen";
 import LiveChatWidget from "@/components/shared/LiveChatWidget";
 import CookieConsent from "@/components/shared/CookieConsent";
+import TelemetryProvider from "@/components/shared/TelemetryProvider";
 import { AuthProvider } from "@/lib/auth-context";
 
 const HomePage = lazy(() => import("./features/home/HomePage"));
