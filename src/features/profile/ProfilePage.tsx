@@ -7,8 +7,7 @@ import {
   Github, Linkedin, Twitter, Camera, X, Save,
   Scale
 } from "lucide-react";
-import Navbar from "@/components/shared/Navbar";
-import Footer from "@/components/shared/Footer";
+import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";

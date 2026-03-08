@@ -10,11 +10,8 @@ import {
   ArrowUp, Layers, Globe, PenTool, Lightbulb, Shield, Users, Target,
   BarChart3, Hash, Mic, Coffee, Loader2, Lock
 } from "lucide-react";
-import Navbar from "@/components/shared/Navbar";
-import CustomCursor from "@/components/shared/CustomCursor";
-import CursorGlow from "@/components/shared/CursorGlow";
+import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
-import Footer from "@/components/shared/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";

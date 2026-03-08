@@ -11,11 +11,8 @@ import {
   Calendar, Target, Swords, GraduationCap, BookOpen, Lightbulb, Megaphone,
   ThumbsDown, Mic, Video, PenTool, ArrowUp, ExternalLink, Medal, Wifi, Loader2
 } from "lucide-react";
-import Navbar from "@/components/shared/Navbar";
-import CustomCursor from "@/components/shared/CustomCursor";
-import CursorGlow from "@/components/shared/CursorGlow";
+import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
-import Footer from "@/components/shared/Footer";
 import LoginPrompt from "@/components/shared/LoginPrompt";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
