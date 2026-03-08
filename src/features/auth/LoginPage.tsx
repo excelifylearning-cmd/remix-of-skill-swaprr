@@ -186,7 +186,6 @@ const LoginPage = () => {
             </p>
           </div>
         </div>
-        <Footer />
       </div>
     </PageTransition>
   );
