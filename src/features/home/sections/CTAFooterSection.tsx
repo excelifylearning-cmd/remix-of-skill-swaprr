@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { validateEmail } from "@/lib/email-validation";
 import { motion } from "framer-motion";
 import { ArrowRight, Github, Twitter, Linkedin, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
