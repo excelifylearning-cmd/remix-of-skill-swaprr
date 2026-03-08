@@ -295,7 +295,7 @@ const EventsPage = () => {
               <p className="text-sm text-muted-foreground mt-3 max-w-2xl">{nextBigEvent.description}</p>
               <div className="flex flex-wrap gap-2 mt-4">
                 {nextBigEvent.tags.map(t => (
-                  <span key={t} className="rounded-full border border-skill-green/30 bg-skill-green/10 px-3 py-1 text-xs text-skill-green">{t}</span>
+                  <span key={t} className="rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-muted-foreground">{t}</span>
                 ))}
               </div>
               <div className="mt-5 w-full bg-surface-2 rounded-full h-2 overflow-hidden">
