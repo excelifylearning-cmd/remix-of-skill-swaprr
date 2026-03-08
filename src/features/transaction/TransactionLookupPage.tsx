@@ -266,9 +266,7 @@ const TransactionLookupPage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <CustomCursor />
-        <CursorGlow />
-        <Navbar />
+        <AppNav backLabel="Transaction" />
 
         {/* Hero */}
         <section className="relative pt-32 pb-16">
