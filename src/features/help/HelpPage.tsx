@@ -195,6 +195,7 @@ const priorityLevels = [
 ];
 
 const HelpPage = () => {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedKb, setExpandedKb] = useState<number | null>(null);
   const [expandedTroubleshootCat, setExpandedTroubleshootCat] = useState<number | null>(0);
