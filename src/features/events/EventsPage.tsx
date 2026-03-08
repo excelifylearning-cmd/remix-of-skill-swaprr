@@ -196,34 +196,21 @@ const EventsPage = () => {
             <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full bg-badge-gold/5 blur-3xl" />
             <div className="absolute bottom-10 right-1/4 w-80 h-80 rounded-full bg-court-blue/5 blur-3xl" />
           </div>
-          <div className="max-w-6xl mx-auto relative">
-            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="text-center mb-12">
+          <div className="max-w-7xl mx-auto relative grid grid-cols-1 lg:grid-cols-2 items-center gap-8">
+            {/* Left: Content */}
+            <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
               <span className="mb-4 inline-block rounded-full border border-border bg-surface-2 px-4 py-1.5 font-mono text-xs text-muted-foreground">
                 <Calendar size={12} className="inline mr-1.5 -mt-0.5" /> Platform Events
               </span>
               <h1 className="font-heading text-5xl sm:text-7xl font-black text-foreground mt-4">
                 Events &<br /><span className="text-badge-gold">Tournaments</span>
               </h1>
-              <p className="text-muted-foreground mt-4 max-w-xl mx-auto text-lg">
+              <p className="text-muted-foreground mt-4 max-w-xl text-lg">
                 Compete, connect, and level up. From global tournaments to local meetups — there's always something happening.
               </p>
-            </motion.div>
 
-            {/* countdown */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.7 }}
-              className="max-w-3xl mx-auto rounded-2xl border border-border bg-card p-6 sm:p-8"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <Flame size={16} className="text-destructive" />
-                <span className="font-mono text-xs text-destructive uppercase tracking-wider font-bold">Next Big Event</span>
-              </div>
-              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">{nextBigEvent.title}</h2>
-              <p className="text-sm text-muted-foreground mt-1">{nextBigEvent.subtitle}</p>
-
-              <div className="grid grid-cols-4 gap-3 mt-6">
+              {/* Countdown inline */}
+              <div className="grid grid-cols-4 gap-3 mt-8 max-w-md">
                 {[
                   { label: "Days", value: countdown.days },
                   { label: "Hours", value: countdown.hours },
@@ -231,29 +218,16 @@ const EventsPage = () => {
                   { label: "Secs", value: countdown.seconds },
                 ].map(t => (
                   <div key={t.label} className="rounded-xl bg-surface-2 border border-border p-3 text-center">
-                    <p className="font-heading text-3xl sm:text-4xl font-black text-foreground">{String(t.value).padStart(2, "0")}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{t.label}</p>
+                    <p className="font-heading text-2xl sm:text-3xl font-black text-foreground">{String(t.value).padStart(2, "0")}</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">{t.label}</p>
                   </div>
                 ))}
               </div>
 
               <div className="flex flex-wrap items-center gap-4 mt-5 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1"><Trophy size={12} className="text-badge-gold" /> {nextBigEvent.title}</span>
                 <span className="flex items-center gap-1"><MapPin size={12} /> {nextBigEvent.location}</span>
-                <span className="flex items-center gap-1"><Users size={12} /> {nextBigEvent.spotsFilled}/{nextBigEvent.spots} spots filled</span>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-4">
-                {nextBigEvent.tags.map(t => (
-                  <span key={t} className="rounded-full border border-badge-gold/30 bg-badge-gold/10 px-3 py-1 text-xs text-badge-gold">{t}</span>
-                ))}
-              </div>
-
-              <div className="mt-5 w-full bg-surface-2 rounded-full h-2 overflow-hidden">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-badge-gold to-destructive"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${(nextBigEvent.spotsFilled / nextBigEvent.spots) * 100}%` }}
-                  transition={{ delay: 0.8, duration: 1 }}
-                />
+                <span className="flex items-center gap-1"><Users size={12} /> {nextBigEvent.spotsFilled}/{nextBigEvent.spots} filled</span>
               </div>
 
               <div className="flex gap-3 mt-6">
@@ -264,6 +238,27 @@ const EventsPage = () => {
                   <Bell size={14} className="inline mr-1" /> Remind Me
                 </button>
               </div>
+            </motion.div>
+
+            {/* Right: Spline 3D Embed */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden"
+            >
+              <iframe
+                src="https://my.spline.design/eventticketanimation-e3d7f9a2b1c4d5e6f7a8b9c0d1e2f3a4/"
+                frameBorder="0"
+                width="100%"
+                height="100%"
+                className="rounded-2xl"
+                style={{ border: "none" }}
+                title="Events 3D Scene"
+                loading="lazy"
+              />
+              {/* Fallback gradient overlay in case Spline doesn't load */}
+              <div className="pointer-events-none absolute inset-0 rounded-2xl border border-border bg-gradient-to-br from-badge-gold/5 via-transparent to-court-blue/5" />
             </motion.div>
           </div>
         </section>
