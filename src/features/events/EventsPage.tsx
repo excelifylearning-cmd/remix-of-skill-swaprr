@@ -259,7 +259,7 @@ const EventsPage = () => {
                 loading="lazy"
               />
               {/* Fallback gradient overlay in case Spline doesn't load */}
-              <div className="pointer-events-none absolute inset-0 rounded-2xl border border-border bg-gradient-to-br from-badge-gold/5 via-transparent to-court-blue/5" />
+              <div className="pointer-events-none absolute inset-0 rounded-2xl border border-border bg-gradient-to-br from-skill-green/5 via-transparent to-court-blue/5" />
             </motion.div>
           </div>
         </section>
