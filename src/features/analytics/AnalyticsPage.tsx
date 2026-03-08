@@ -210,9 +210,7 @@ const AnalyticsPage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <CustomCursor />
-        <CursorGlow />
-        <Navbar />
+        <AppNav backLabel="Analytics" />
 
         {/* 1. HERO */}
         <section className="pt-32 pb-16">
