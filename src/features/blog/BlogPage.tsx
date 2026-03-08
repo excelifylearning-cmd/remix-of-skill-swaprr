@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Clock, ArrowRight, ArrowLeft, Tag, TrendingUp, User, Heart, MessageSquare,
@@ -7,13 +7,49 @@ import {
   ThumbsUp, Send, MoreHorizontal, Link2, Twitter, Facebook, Copy, CheckCircle2,
   ChevronDown, Play, Quote, List, Image as ImageIcon, Code, Crown, Flame,
   ArrowUp, Layers, Globe, PenTool, Lightbulb, Shield, Users, Target,
-  BarChart3, Hash, Mic, Coffee
+  BarChart3, Hash, Mic, Coffee, Loader2
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
+import { toast } from "sonner";
+
+// Database types
+interface DbBlogPost {
+  id: string;
+  author_id: string | null;
+  author_name: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: any;
+  cover_image: string | null;
+  category: string;
+  tags: string[];
+  read_time: number;
+  is_featured: boolean;
+  is_published: boolean;
+  view_count: number;
+  like_count: number;
+  comment_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface DbBlogComment {
+  id: string;
+  post_id: string;
+  parent_id: string | null;
+  author_id: string | null;
+  author_name: string;
+  content: string;
+  like_count: number;
+  created_at: string;
+}
 
 
 const categories = [
