@@ -689,7 +689,7 @@ const SuccessStoriesPage = () => {
                   <p className="text-xs text-muted-foreground italic">"{story.quote}"</p>
                   <div className="mt-3 flex items-center gap-1">
                     {[...Array(5)].map((_, j) => (
-                      <Star key={j} size={10} fill="currentColor" className="text-badge-gold" />
+                      <Star key={j} size={10} fill="currentColor" className="text-skill-green" />
                     ))}
                   </div>
                 </div>
