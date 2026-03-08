@@ -642,10 +642,10 @@ const SuccessStoriesPage = () => {
 
         {/* SECTION 11: SUBMIT YOUR STORY CTA */}
         <section className="py-24 border-t border-border relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--badge-gold)/0.1),transparent_70%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--skill-green)/0.1),transparent_70%)]" />
           <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-badge-gold/30 bg-badge-gold/10 px-5 py-2 font-mono text-xs text-badge-gold">
+              <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-skill-green/30 bg-skill-green/10 px-5 py-2 font-mono text-xs text-skill-green">
                 <Heart size={12} fill="currentColor" /> Your Story Matters
               </span>
               <h2 className="mb-4 font-heading text-4xl font-black text-foreground sm:text-5xl">
@@ -655,7 +655,7 @@ const SuccessStoriesPage = () => {
                 Your transformation could inspire thousands. Submit your success story and join our hall of fame.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="flex items-center gap-2 rounded-full bg-badge-gold px-8 py-4 text-sm font-semibold text-black">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="flex items-center gap-2 rounded-full bg-skill-green px-8 py-4 text-sm font-semibold text-black">
                   Share My Story <ArrowRight size={16} />
                 </motion.button>
                 <button className="flex items-center gap-2 rounded-full border border-border px-8 py-4 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
