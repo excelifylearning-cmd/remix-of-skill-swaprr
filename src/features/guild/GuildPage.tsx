@@ -95,7 +95,6 @@ const GuildPage = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("Overview");
   const guild = mockGuild;
-  const isLeader = true; // template: leader check
 
   return (
     <PageTransition>
