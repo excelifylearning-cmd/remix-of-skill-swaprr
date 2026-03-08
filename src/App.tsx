@@ -27,6 +27,7 @@ const HelpPage = lazy(() => import("./features/help/HelpPage"));
 const HistoryPage = lazy(() => import("./features/history/HistoryPage"));
 const LeaderboardPage = lazy(() => import("./features/leaderboard/LeaderboardPage"));
 const TransactionLookupPage = lazy(() => import("./features/transaction/TransactionLookupPage"));
+const FAQPage = lazy(() => import("./features/faq/FAQPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
