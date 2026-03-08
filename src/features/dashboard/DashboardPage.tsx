@@ -1,162 +1,999 @@
-import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   LogOut, Trophy, Zap, Star, Shield, Users, TrendingUp, ArrowRight,
   Calendar, MessageSquare, BookOpen, Award, Settings, Bell, ChevronRight,
+  LayoutDashboard, Briefcase, Plus, Gavel, Scale, FileText, Image,
+  Clock, CheckCircle2, XCircle, AlertTriangle, Eye, ThumbsUp, ThumbsDown,
+  Send, Paperclip, Tag, DollarSign, Layers, GitMerge, Timer, Crown,
+  ChevronLeft, User, Building2, BarChart3, Wallet, History, Heart,
+  Target, Coins, GraduationCap, MapPin, Globe, Edit3, Camera, Upload,
+  Palette, Code, PenTool, Video, Music, BarChart, Megaphone, Cpu
 } from "lucide-react";
-import Navbar from "@/components/shared/Navbar";
-import CustomCursor from "@/components/shared/CustomCursor";
-import CursorGlow from "@/components/shared/CursorGlow";
-import PageTransition from "@/components/shared/PageTransition";
-import Footer from "@/components/shared/Footer";
 import { useAuth } from "@/lib/auth-context";
-import { useEffect } from "react";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import PageTransition from "@/components/shared/PageTransition";
 
-const quickStats = [
-  { label: "Skill Points", value: "12,500", icon: Zap, color: "text-badge-gold" },
-  { label: "ELO Rating", value: "1,850", icon: TrendingUp, color: "text-skill-green" },
-  { label: "Gigs Completed", value: "47", icon: Trophy, color: "text-court-blue" },
-  { label: "Active Guilds", value: "3", icon: Users, color: "text-foreground" },
+/* ═══════════════════════════════════════════════════════════════════════════
+   SIDEBAR NAVIGATION
+═══════════════════════════════════════════════════════════════════════════ */
+
+const sidebarItems = [
+  { id: "overview", label: "Overview", icon: LayoutDashboard },
+  { id: "my-gigs", label: "My Gigs", icon: Briefcase },
+  { id: "create-gig", label: "Create Gig", icon: Plus },
+  { id: "skill-court", label: "Skill Court", icon: Scale },
+  { id: "guilds", label: "My Guilds", icon: Users },
+  { id: "wallet", label: "SP Wallet", icon: Wallet },
+  { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "settings", label: "Settings", icon: Settings },
 ];
 
-const recentActivity = [
-  { action: "Completed gig: Logo Redesign", time: "2 hours ago", icon: Award, color: "text-skill-green" },
-  { action: "Earned 250 SP from auction win", time: "5 hours ago", icon: Zap, color: "text-badge-gold" },
-  { action: "New forum reply on your thread", time: "1 day ago", icon: MessageSquare, color: "text-court-blue" },
-  { action: "Guild Wars S4 badge unlocked", time: "2 days ago", icon: Shield, color: "text-foreground" },
-  { action: "Workshop attendance: API v2", time: "3 days ago", icon: BookOpen, color: "text-muted-foreground" },
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOCK DATA
+═══════════════════════════════════════════════════════════════════════════ */
+
+const myGigs = [
+  { id: 1, title: "Logo Design", status: "active", partner: "James T.", stage: 2, totalStages: 4, sp: 30, format: "Direct Swap", deadline: "2026-03-15" },
+  { id: 2, title: "React Dashboard", status: "pending", partner: null, stage: 0, totalStages: 3, sp: 50, format: "Auction", deadline: null },
+  { id: 3, title: "Video Editing", status: "completed", partner: "Aisha R.", stage: 3, totalStages: 3, sp: 25, format: "Direct Swap", deadline: "2026-03-10" },
+  { id: 4, title: "Brand Identity Package", status: "in-dispute", partner: "Carlos M.", stage: 2, totalStages: 5, sp: 75, format: "Co-Creation", deadline: "2026-03-20" },
 ];
 
-const quickLinks = [
-  { label: "Browse Marketplace", href: "/marketplace", icon: Star },
-  { label: "My Gigs", href: "/marketplace", icon: Trophy },
-  { label: "Forums", href: "/forums", icon: MessageSquare },
-  { label: "Leaderboard", href: "/leaderboard", icon: TrendingUp },
-  { label: "Events", href: "/events", icon: Calendar },
-  { label: "Settings", href: "/dashboard", icon: Settings },
+const courtCases = [
+  { id: 101, type: "jury-duty", title: "Logo ownership dispute", parties: ["Maya K.", "Tom W."], deadline: "2026-03-12", reward: 15, status: "pending" },
+  { id: 102, type: "my-case", title: "Brand Identity Package", opponent: "Carlos M.", status: "awaiting-verdict", filed: "2026-03-08" },
 ];
+
+const categories = [
+  { label: "Design", icon: Palette },
+  { label: "Development", icon: Code },
+  { label: "Writing", icon: PenTool },
+  { label: "Video", icon: Video },
+  { label: "Music", icon: Music },
+  { label: "Marketing", icon: Megaphone },
+  { label: "Data", icon: BarChart },
+  { label: "AI/ML", icon: Cpu },
+];
+
+const formats = [
+  { id: "direct", label: "Direct Swap", desc: "1:1 skill exchange", icon: ArrowRight },
+  { id: "auction", label: "Auction", desc: "Bid with your skills", icon: Gavel },
+  { id: "cocreation", label: "Co-Creation", desc: "Team collaboration", icon: Layers },
+  { id: "fusion", label: "Skill Fusion", desc: "Multi-skill combo", icon: GitMerge },
+];
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HELPER FUNCTIONS
+═══════════════════════════════════════════════════════════════════════════ */
+
+const statusColor = (status: string) => {
+  switch (status) {
+    case "active": return "bg-skill-green/10 text-skill-green border-skill-green/20";
+    case "pending": return "bg-badge-gold/10 text-badge-gold border-badge-gold/20";
+    case "completed": return "bg-court-blue/10 text-court-blue border-court-blue/20";
+    case "in-dispute": return "bg-alert-red/10 text-alert-red border-alert-red/20";
+    default: return "bg-surface-2 text-muted-foreground border-border";
+  }
+};
+
+const eloTier = (elo: number) => {
+  if (elo >= 1700) return { label: "Diamond", color: "text-court-blue", bg: "bg-court-blue/10" };
+  if (elo >= 1500) return { label: "Gold", color: "text-badge-gold", bg: "bg-badge-gold/10" };
+  if (elo >= 1300) return { label: "Silver", color: "text-muted-foreground", bg: "bg-surface-2" };
+  return { label: "Bronze", color: "text-orange-400", bg: "bg-orange-400/10" };
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   OVERVIEW TAB
+═══════════════════════════════════════════════════════════════════════════ */
+
+const OverviewTab = ({ profile }: { profile: any }) => {
+  const tier = eloTier(profile?.elo || 1000);
+  
+  const quickStats = [
+    { label: "Skill Points", value: profile?.sp?.toLocaleString() || "100", icon: Zap, color: "text-badge-gold" },
+    { label: "ELO Rating", value: profile?.elo?.toLocaleString() || "1,000", icon: TrendingUp, color: "text-skill-green" },
+    { label: "Gigs Completed", value: profile?.total_gigs_completed || "0", icon: Trophy, color: "text-court-blue" },
+    { label: "Current Streak", value: `${profile?.streak_days || 0}d`, icon: Calendar, color: "text-foreground" },
+  ];
+
+  const recentActivity = [
+    { action: "Completed gig: Logo Redesign", time: "2 hours ago", icon: Award, color: "text-skill-green" },
+    { action: "Earned 250 SP from auction win", time: "5 hours ago", icon: Zap, color: "text-badge-gold" },
+    { action: "Jury duty completed (+15 SP)", time: "1 day ago", icon: Scale, color: "text-court-blue" },
+    { action: "Guild Wars S4 badge unlocked", time: "2 days ago", icon: Shield, color: "text-foreground" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Welcome Banner */}
+      <div className="rounded-2xl border border-border bg-gradient-to-br from-surface-1 via-card to-surface-2 p-6">
+        <div className="flex items-center gap-4">
+          <div className={`flex h-16 w-16 items-center justify-center rounded-2xl ${tier.bg} border border-border font-mono text-2xl font-bold ${tier.color}`}>
+            {profile?.avatar_emoji || profile?.display_name?.[0] || "?"}
+          </div>
+          <div className="flex-1">
+            <h2 className="font-heading text-2xl font-black text-foreground">{profile?.display_name || profile?.full_name || "Swapper"}</h2>
+            <div className="flex items-center gap-3 mt-1">
+              <Badge className={`${tier.bg} ${tier.color} border-none`}>{tier.label}</Badge>
+              <span className="text-xs text-muted-foreground">ELO {profile?.elo || 1000}</span>
+              {profile?.university && (
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <GraduationCap size={12} /> {profile.university}
+                </span>
+              )}
+            </div>
+          </div>
+          <Link to={`/profile/${profile?.user_id}`} className="rounded-xl border border-border px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            View Profile
+          </Link>
+        </div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {quickStats.map((stat, i) => (
+          <motion.div
+            key={i}
+            className="rounded-xl border border-border bg-card p-5 text-center"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+          >
+            <stat.icon size={20} className={`mx-auto mb-2 ${stat.color}`} />
+            <p className={`font-heading text-2xl font-black ${stat.color}`}>{stat.value}</p>
+            <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Active Gigs + Court Alerts */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Active Gigs */}
+        <div className="rounded-xl border border-border bg-card p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-heading text-lg font-bold text-foreground">Active Gigs</h3>
+            <span className="text-xs text-muted-foreground">{myGigs.filter(g => g.status === "active").length} active</span>
+          </div>
+          <div className="space-y-3">
+            {myGigs.filter(g => g.status === "active" || g.status === "in-dispute").slice(0, 3).map((gig) => (
+              <div key={gig.id} className="flex items-center gap-3 rounded-lg border border-border bg-surface-1 p-3">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">{gig.title}</p>
+                  <p className="text-xs text-muted-foreground">with {gig.partner}</p>
+                </div>
+                <div className="text-right">
+                  <Badge className={`text-[10px] ${statusColor(gig.status)}`}>{gig.status}</Badge>
+                  <p className="text-[10px] text-muted-foreground mt-1">Stage {gig.stage}/{gig.totalStages}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Court Alerts */}
+        <div className="rounded-xl border border-border bg-card p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-heading text-lg font-bold text-foreground flex items-center gap-2">
+              <Scale size={16} className="text-court-blue" /> Skill Court
+            </h3>
+            {courtCases.length > 0 && (
+              <Badge className="bg-alert-red/10 text-alert-red border-none">{courtCases.length} pending</Badge>
+            )}
+          </div>
+          <div className="space-y-3">
+            {courtCases.map((c) => (
+              <div key={c.id} className={`rounded-lg border p-3 ${c.type === 'jury-duty' ? 'border-court-blue/20 bg-court-blue/5' : 'border-alert-red/20 bg-alert-red/5'}`}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${c.type === 'jury-duty' ? 'text-court-blue' : 'text-alert-red'}`}>
+                    {c.type === 'jury-duty' ? 'Jury Duty' : 'Your Case'}
+                  </span>
+                  {c.type === 'jury-duty' && <span className="text-xs font-bold text-skill-green">+{c.reward} SP</span>}
+                </div>
+                <p className="text-sm font-medium text-foreground">{c.title}</p>
+                <p className="text-xs text-muted-foreground">{c.type === 'jury-duty' ? `Due: ${c.deadline}` : `Status: ${c.status}`}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h3 className="font-heading text-lg font-bold text-foreground mb-4">Recent Activity</h3>
+        <div className="space-y-2">
+          {recentActivity.map((item, i) => (
+            <div key={i} className="flex items-center gap-3 rounded-lg bg-surface-1 p-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-2">
+                <item.icon size={14} className={item.color} />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-foreground">{item.action}</p>
+                <p className="text-[10px] text-muted-foreground">{item.time}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MY GIGS TAB
+═══════════════════════════════════════════════════════════════════════════ */
+
+const MyGigsTab = () => {
+  const [filter, setFilter] = useState("all");
+  const navigate = useNavigate();
+
+  const filteredGigs = filter === "all" ? myGigs : myGigs.filter(g => g.status === filter);
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="font-heading text-2xl font-bold text-foreground">My Gigs</h2>
+        <div className="flex gap-2">
+          {["all", "active", "pending", "completed"].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${filter === f ? 'bg-foreground text-background' : 'bg-surface-1 text-muted-foreground hover:text-foreground'}`}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Gigs Grid */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        {filteredGigs.map((gig) => (
+          <motion.div
+            key={gig.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-2xl border border-border bg-card overflow-hidden cursor-pointer hover:border-foreground/20 transition-colors"
+            onClick={() => navigate(`/workspace/${gig.id}`)}
+          >
+            <div className="flex items-center justify-between border-b border-border/50 px-4 py-3">
+              <Badge className={`text-[10px] ${statusColor(gig.status)}`}>{gig.status}</Badge>
+              <span className="text-xs text-muted-foreground">{gig.format}</span>
+            </div>
+            <div className="p-4">
+              <h3 className="text-base font-bold text-foreground mb-1">{gig.title}</h3>
+              {gig.partner ? (
+                <p className="text-xs text-muted-foreground mb-3">with {gig.partner}</p>
+              ) : (
+                <p className="text-xs text-badge-gold mb-3">Awaiting match...</p>
+              )}
+
+              {gig.status === "active" && (
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] text-muted-foreground">Progress</span>
+                    <span className="text-[10px] font-medium text-foreground">{gig.stage}/{gig.totalStages}</span>
+                  </div>
+                  <Progress value={(gig.stage / gig.totalStages) * 100} className="h-1.5" />
+                </div>
+              )}
+
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1 text-xs font-bold text-skill-green">
+                  <Coins size={12} /> {gig.sp} SP
+                </span>
+                {gig.deadline && (
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Clock size={10} /> {new Date(gig.deadline).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+            </div>
+            {gig.status === "active" && (
+              <div className="border-t border-border/50 px-4 py-2.5 bg-surface-1">
+                <button className="w-full text-center text-xs font-medium text-foreground hover:text-skill-green transition-colors">
+                  Open Workspace →
+                </button>
+              </div>
+            )}
+          </motion.div>
+        ))}
+      </div>
+
+      {filteredGigs.length === 0 && (
+        <div className="py-16 text-center">
+          <Briefcase size={32} className="mx-auto mb-3 text-muted-foreground/30" />
+          <p className="text-foreground font-medium">No gigs found</p>
+          <p className="text-sm text-muted-foreground">Try a different filter or create a new gig</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CREATE GIG TAB
+═══════════════════════════════════════════════════════════════════════════ */
+
+const CreateGigTab = () => {
+  const [step, setStep] = useState(1);
+  const [gigData, setGigData] = useState({
+    title: "",
+    offering: "",
+    seeking: "",
+    category: "",
+    format: "direct",
+    description: "",
+    deliveryDays: 7,
+    spBonus: 0,
+    attachments: [] as string[],
+  });
+
+  const updateField = (field: string, value: any) => {
+    setGigData(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto space-y-6">
+      {/* Progress */}
+      <div className="flex items-center gap-2 mb-8">
+        {[1, 2, 3].map((s) => (
+          <div key={s} className="flex items-center gap-2 flex-1">
+            <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${step >= s ? 'bg-foreground text-background' : 'bg-surface-2 text-muted-foreground'}`}>
+              {s}
+            </div>
+            <span className={`text-xs ${step >= s ? 'text-foreground' : 'text-muted-foreground'}`}>
+              {s === 1 ? "Basics" : s === 2 ? "Details" : "Review"}
+            </span>
+            {s < 3 && <div className={`flex-1 h-0.5 ${step > s ? 'bg-foreground' : 'bg-surface-2'}`} />}
+          </div>
+        ))}
+      </div>
+
+      {/* Step 1: Basics */}
+      {step === 1 && (
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Gig Title</label>
+            <input
+              type="text"
+              value={gigData.title}
+              onChange={(e) => updateField("title", e.target.value)}
+              placeholder="e.g., Professional Logo Design"
+              className="w-full rounded-xl border border-border bg-surface-1 px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground/20"
+            />
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">What You're Offering</label>
+              <input
+                type="text"
+                value={gigData.offering}
+                onChange={(e) => updateField("offering", e.target.value)}
+                placeholder="e.g., Logo Design"
+                className="w-full rounded-xl border border-border bg-surface-1 px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground/20"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">What You're Seeking</label>
+              <input
+                type="text"
+                value={gigData.seeking}
+                onChange={(e) => updateField("seeking", e.target.value)}
+                placeholder="e.g., React Development"
+                className="w-full rounded-xl border border-border bg-surface-1 px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground/20"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Category</label>
+            <div className="grid grid-cols-4 gap-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat.label}
+                  onClick={() => updateField("category", cat.label)}
+                  className={`flex flex-col items-center gap-1.5 rounded-xl border p-3 transition-all ${gigData.category === cat.label ? 'border-foreground bg-foreground/5' : 'border-border hover:border-foreground/20'}`}
+                >
+                  <cat.icon size={18} className={gigData.category === cat.label ? 'text-foreground' : 'text-muted-foreground'} />
+                  <span className={`text-[10px] ${gigData.category === cat.label ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>{cat.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Format</label>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {formats.map((fmt) => (
+                <button
+                  key={fmt.id}
+                  onClick={() => updateField("format", fmt.id)}
+                  className={`flex items-center gap-3 rounded-xl border p-4 transition-all text-left ${gigData.format === fmt.id ? 'border-foreground bg-foreground/5' : 'border-border hover:border-foreground/20'}`}
+                >
+                  <fmt.icon size={20} className={gigData.format === fmt.id ? 'text-foreground' : 'text-muted-foreground'} />
+                  <div>
+                    <p className={`text-sm font-medium ${gigData.format === fmt.id ? 'text-foreground' : 'text-muted-foreground'}`}>{fmt.label}</p>
+                    <p className="text-xs text-muted-foreground">{fmt.desc}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button
+            onClick={() => setStep(2)}
+            disabled={!gigData.title || !gigData.offering || !gigData.seeking || !gigData.category}
+            className="w-full rounded-xl bg-foreground py-3.5 text-sm font-semibold text-background disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Continue
+          </button>
+        </motion.div>
+      )}
+
+      {/* Step 2: Details */}
+      {step === 2 && (
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Description</label>
+            <textarea
+              value={gigData.description}
+              onChange={(e) => updateField("description", e.target.value)}
+              placeholder="Describe what you'll deliver and what you're looking for in return..."
+              rows={5}
+              className="w-full rounded-xl border border-border bg-surface-1 px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground/20 resize-none"
+            />
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Delivery Time (days)</label>
+              <input
+                type="number"
+                value={gigData.deliveryDays}
+                onChange={(e) => updateField("deliveryDays", parseInt(e.target.value))}
+                min={1}
+                max={90}
+                className="w-full rounded-xl border border-border bg-surface-1 px-4 py-3 text-foreground focus:outline-none focus:border-foreground/20"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">SP Bonus (optional)</label>
+              <div className="relative">
+                <Coins size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="number"
+                  value={gigData.spBonus}
+                  onChange={(e) => updateField("spBonus", parseInt(e.target.value))}
+                  min={0}
+                  className="w-full rounded-xl border border-border bg-surface-1 pl-10 pr-4 py-3 text-foreground focus:outline-none focus:border-foreground/20"
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1">Add SP to attract more swappers</p>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Attachments</label>
+            <div className="rounded-xl border border-dashed border-border bg-surface-1 p-8 text-center">
+              <Upload size={24} className="mx-auto mb-2 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">Drag & drop files or click to upload</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">Portfolio samples, briefs, etc.</p>
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <button onClick={() => setStep(1)} className="flex-1 rounded-xl border border-border py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Back
+            </button>
+            <button onClick={() => setStep(3)} className="flex-1 rounded-xl bg-foreground py-3 text-sm font-semibold text-background">
+              Continue
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Step 3: Review */}
+      {step === 3 && (
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+          <div className="rounded-2xl border border-border bg-card p-6">
+            <h3 className="font-heading text-xl font-bold text-foreground mb-4">{gigData.title}</h3>
+            
+            <div className="grid sm:grid-cols-2 gap-4 mb-4">
+              <div className="rounded-xl bg-skill-green/5 border border-skill-green/15 p-4">
+                <span className="text-[10px] uppercase tracking-widest text-skill-green/70">Offering</span>
+                <p className="text-sm font-bold text-foreground">{gigData.offering}</p>
+              </div>
+              <div className="rounded-xl bg-court-blue/5 border border-court-blue/15 p-4">
+                <span className="text-[10px] uppercase tracking-widest text-court-blue/70">Seeking</span>
+                <p className="text-sm font-bold text-foreground">{gigData.seeking}</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-foreground mb-4">{gigData.description || "No description provided."}</p>
+
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="secondary">{gigData.category}</Badge>
+              <Badge variant="secondary">{formats.find(f => f.id === gigData.format)?.label}</Badge>
+              <Badge variant="secondary">{gigData.deliveryDays} days</Badge>
+              {gigData.spBonus > 0 && <Badge className="bg-skill-green/10 text-skill-green border-none">+{gigData.spBonus} SP</Badge>}
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <button onClick={() => setStep(2)} className="flex-1 rounded-xl border border-border py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Back
+            </button>
+            <button className="flex-1 rounded-xl bg-skill-green py-3.5 text-sm font-semibold text-background flex items-center justify-center gap-2">
+              <Send size={16} /> Post Gig
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SKILL COURT TAB
+═══════════════════════════════════════════════════════════════════════════ */
+
+const SkillCourtTab = () => {
+  const [activeCase, setActiveCase] = useState<typeof courtCases[0] | null>(null);
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-court-blue/10">
+          <Scale size={24} className="text-court-blue" />
+        </div>
+        <div>
+          <h2 className="font-heading text-2xl font-bold text-foreground">Skill Court</h2>
+          <p className="text-sm text-muted-foreground">Resolve disputes and earn SP through jury duty</p>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="rounded-xl border border-border bg-card p-4 text-center">
+          <p className="font-heading text-2xl font-black text-court-blue">12</p>
+          <p className="text-xs text-muted-foreground">Cases Judged</p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 text-center">
+          <p className="font-heading text-2xl font-black text-skill-green">180</p>
+          <p className="text-xs text-muted-foreground">SP Earned</p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 text-center">
+          <p className="font-heading text-2xl font-black text-badge-gold">92%</p>
+          <p className="text-xs text-muted-foreground">Accuracy</p>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <Tabs defaultValue="jury" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="jury">Jury Duty</TabsTrigger>
+          <TabsTrigger value="my-cases">My Cases</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="jury" className="space-y-4">
+          <div className="rounded-xl border border-court-blue/20 bg-court-blue/5 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle size={14} className="text-court-blue" />
+              <span className="text-sm font-medium text-foreground">Jury Duty Required</span>
+            </div>
+            <p className="text-xs text-muted-foreground">Free tier members must complete jury duty to maintain platform access. Premium members earn bonus SP.</p>
+          </div>
+
+          {courtCases.filter(c => c.type === 'jury-duty').map((c) => (
+            <motion.div
+              key={c.id}
+              className="rounded-2xl border border-border bg-card overflow-hidden"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <div className="flex items-center justify-between border-b border-border/50 px-4 py-3 bg-surface-1">
+                <Badge className="bg-court-blue/10 text-court-blue border-none">Jury Duty</Badge>
+                <span className="text-xs font-bold text-skill-green">+{c.reward} SP</span>
+              </div>
+              <div className="p-4">
+                <h4 className="text-base font-bold text-foreground mb-2">{c.title}</h4>
+                <p className="text-xs text-muted-foreground mb-3">Parties: {c.parties?.join(" vs ")}</p>
+                
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Clock size={10} /> Due: {c.deadline}
+                  </span>
+                  <button className="rounded-lg bg-court-blue px-4 py-2 text-xs font-semibold text-white hover:bg-court-blue/90 transition-colors">
+                    Review Case
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+
+          {courtCases.filter(c => c.type === 'jury-duty').length === 0 && (
+            <div className="py-12 text-center">
+              <CheckCircle2 size={32} className="mx-auto mb-3 text-skill-green" />
+              <p className="text-foreground font-medium">No pending jury duty</p>
+              <p className="text-sm text-muted-foreground">You're all caught up!</p>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="my-cases" className="space-y-4">
+          {courtCases.filter(c => c.type === 'my-case').map((c) => (
+            <div key={c.id} className="rounded-2xl border border-alert-red/20 bg-card overflow-hidden">
+              <div className="flex items-center justify-between border-b border-border/50 px-4 py-3 bg-alert-red/5">
+                <Badge className="bg-alert-red/10 text-alert-red border-none">Dispute</Badge>
+                <span className="text-xs text-muted-foreground">{c.status}</span>
+              </div>
+              <div className="p-4">
+                <h4 className="text-base font-bold text-foreground mb-2">{c.title}</h4>
+                <p className="text-xs text-muted-foreground mb-3">vs {c.opponent} · Filed {c.filed}</p>
+                
+                <div className="rounded-xl bg-surface-1 p-3 mb-3">
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground/60 mb-1">Verdict Breakdown</p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1 text-xs">
+                      <Users size={10} className="text-muted-foreground" />
+                      <span>25% Random</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs">
+                      <Cpu size={10} className="text-court-blue" />
+                      <span>25% AI</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs">
+                      <Crown size={10} className="text-badge-gold" />
+                      <span>50% Expert</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button className="w-full rounded-lg border border-border py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  View Case Details
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {courtCases.filter(c => c.type === 'my-case').length === 0 && (
+            <div className="py-12 text-center">
+              <Shield size={32} className="mx-auto mb-3 text-muted-foreground/30" />
+              <p className="text-foreground font-medium">No active disputes</p>
+              <p className="text-sm text-muted-foreground">All your gigs are running smoothly</p>
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GUILDS TAB
+═══════════════════════════════════════════════════════════════════════════ */
+
+const GuildsTab = () => {
+  const myGuilds = [
+    { id: 1, name: "Design Masters", members: 128, rank: 3, role: "Member", icon: "🎨" },
+    { id: 2, name: "Code Ninjas", members: 256, rank: 1, role: "Officer", icon: "⚔️" },
+    { id: 3, name: "Creative Collective", members: 89, rank: 7, role: "Leader", icon: "✨" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="font-heading text-2xl font-bold text-foreground">My Guilds</h2>
+        <button className="flex items-center gap-2 rounded-xl bg-foreground px-4 py-2 text-sm font-semibold text-background">
+          <Plus size={14} /> Create Guild
+        </button>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {myGuilds.map((guild) => (
+          <Link key={guild.id} to={`/guild/${guild.id}`} className="group">
+            <div className="rounded-2xl border border-border bg-card p-5 transition-all hover:border-foreground/20">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-2 text-2xl">
+                  {guild.icon}
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-foreground group-hover:text-skill-green transition-colors">{guild.name}</h3>
+                  <Badge variant="secondary" className="text-[10px]">{guild.role}</Badge>
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span className="flex items-center gap-1"><Users size={10} /> {guild.members} members</span>
+                <span className="flex items-center gap-1"><Trophy size={10} /> Rank #{guild.rank}</span>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <div className="rounded-xl border border-dashed border-border bg-surface-1/50 p-8 text-center">
+        <Users size={32} className="mx-auto mb-3 text-muted-foreground/30" />
+        <p className="text-foreground font-medium mb-1">Discover New Guilds</p>
+        <p className="text-sm text-muted-foreground mb-4">Join communities of like-minded swappers</p>
+        <Link to="/guilds" className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          Browse Guilds <ArrowRight size={14} />
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WALLET TAB
+═══════════════════════════════════════════════════════════════════════════ */
+
+const WalletTab = ({ profile }: { profile: any }) => {
+  const transactions = [
+    { id: 1, type: "earned", desc: "Gig completion: Logo Design", amount: 30, date: "2026-03-08" },
+    { id: 2, type: "spent", desc: "Auction bid: Video Editing", amount: -25, date: "2026-03-07" },
+    { id: 3, type: "earned", desc: "Jury duty reward", amount: 15, date: "2026-03-06" },
+    { id: 4, type: "tax", desc: "Platform tax (5%)", amount: -2, date: "2026-03-06" },
+    { id: 5, type: "earned", desc: "Referral bonus", amount: 50, date: "2026-03-05" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Balance Card */}
+      <div className="rounded-2xl border border-badge-gold/20 bg-gradient-to-br from-badge-gold/10 via-card to-surface-1 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Available Balance</p>
+            <p className="font-heading text-4xl font-black text-badge-gold">{profile?.sp?.toLocaleString() || 100} SP</p>
+          </div>
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-badge-gold/10">
+            <Coins size={28} className="text-badge-gold" />
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <button className="flex-1 rounded-xl bg-foreground py-3 text-sm font-semibold text-background">
+            Earn More SP
+          </button>
+          <button className="flex-1 rounded-xl border border-border py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            Transfer
+          </button>
+        </div>
+      </div>
+
+      {/* Transaction History */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h3 className="font-heading text-lg font-bold text-foreground mb-4">Transaction History</h3>
+        <div className="space-y-2">
+          {transactions.map((tx) => (
+            <div key={tx.id} className="flex items-center gap-3 rounded-lg bg-surface-1 p-3">
+              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${tx.amount > 0 ? 'bg-skill-green/10' : 'bg-alert-red/10'}`}>
+                {tx.amount > 0 ? <TrendingUp size={14} className="text-skill-green" /> : <TrendingUp size={14} className="text-alert-red rotate-180" />}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-foreground">{tx.desc}</p>
+                <p className="text-[10px] text-muted-foreground">{tx.date}</p>
+              </div>
+              <span className={`text-sm font-bold ${tx.amount > 0 ? 'text-skill-green' : 'text-alert-red'}`}>
+                {tx.amount > 0 ? '+' : ''}{tx.amount} SP
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SETTINGS TAB
+═══════════════════════════════════════════════════════════════════════════ */
+
+const SettingsTab = ({ profile, updateProfile }: { profile: any; updateProfile: (data: any) => void }) => {
+  return (
+    <div className="max-w-2xl space-y-6">
+      <h2 className="font-heading text-2xl font-bold text-foreground">Settings</h2>
+
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h3 className="font-medium text-foreground mb-4">Profile Settings</h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-muted-foreground mb-1">Display Name</label>
+            <input
+              type="text"
+              defaultValue={profile?.display_name || ""}
+              className="w-full rounded-lg border border-border bg-surface-1 px-4 py-2.5 text-foreground focus:outline-none focus:border-foreground/20"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-muted-foreground mb-1">Bio</label>
+            <textarea
+              defaultValue={profile?.bio || ""}
+              rows={3}
+              className="w-full rounded-lg border border-border bg-surface-1 px-4 py-2.5 text-foreground focus:outline-none focus:border-foreground/20 resize-none"
+            />
+          </div>
+          <button className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background">
+            Save Changes
+          </button>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h3 className="font-medium text-foreground mb-4">Notifications</h3>
+        <div className="space-y-3">
+          {["Email notifications", "Push notifications", "Gig updates", "Court duty reminders"].map((item) => (
+            <label key={item} className="flex items-center justify-between rounded-lg bg-surface-1 p-3">
+              <span className="text-sm text-foreground">{item}</span>
+              <input type="checkbox" defaultChecked className="h-4 w-4 rounded border-border" />
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-alert-red/20 bg-alert-red/5 p-5">
+        <h3 className="font-medium text-alert-red mb-2">Danger Zone</h3>
+        <p className="text-xs text-muted-foreground mb-4">Permanently delete your account and all associated data.</p>
+        <button className="rounded-lg border border-alert-red/30 px-4 py-2 text-sm font-medium text-alert-red hover:bg-alert-red/10 transition-colors">
+          Delete Account
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DASHBOARD SIDEBAR COMPONENT
+═══════════════════════════════════════════════════════════════════════════ */
+
+const DashboardSidebar = ({ activeTab, setActiveTab, profile }: { activeTab: string; setActiveTab: (tab: string) => void; profile: any }) => {
+  const { state } = useSidebar();
+  const collapsed = state === "collapsed";
+  const tier = eloTier(profile?.elo || 1000);
+
+  return (
+    <Sidebar collapsible="icon" className="border-r border-border">
+      <SidebarContent className="bg-card">
+        {/* Profile Summary */}
+        {!collapsed && (
+          <div className="p-4 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${tier.bg} font-mono text-sm font-bold ${tier.color}`}>
+                {profile?.avatar_emoji || profile?.display_name?.[0] || "?"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground truncate">{profile?.display_name || "Swapper"}</p>
+                <p className="text-xs text-muted-foreground">{profile?.sp || 100} SP · {tier.label}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <SidebarGroup>
+          {!collapsed && <SidebarGroupLabel>Dashboard</SidebarGroupLabel>}
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {sidebarItems.map((item) => (
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton
+                    onClick={() => setActiveTab(item.id)}
+                    className={activeTab === item.id ? "bg-foreground text-background" : ""}
+                  >
+                    <item.icon size={18} />
+                    {!collapsed && <span>{item.label}</span>}
+                    {!collapsed && item.id === "skill-court" && courtCases.length > 0 && (
+                      <Badge className="ml-auto bg-alert-red/10 text-alert-red border-none text-[9px]">{courtCases.length}</Badge>
+                    )}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MAIN DASHBOARD PAGE
+═══════════════════════════════════════════════════════════════════════════ */
 
 const DashboardPage = () => {
-  const { user, profile, isAuthenticated, logout } = useAuth();
+  const { user, profile, isAuthenticated, logout, updateProfile } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "overview");
 
   useEffect(() => {
     if (!isAuthenticated) navigate("/login");
   }, [isAuthenticated, navigate]);
 
+  useEffect(() => {
+    setSearchParams({ tab: activeTab });
+  }, [activeTab, setSearchParams]);
+
   if (!user) return null;
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "overview": return <OverviewTab profile={profile} />;
+      case "my-gigs": return <MyGigsTab />;
+      case "create-gig": return <CreateGigTab />;
+      case "skill-court": return <SkillCourtTab />;
+      case "guilds": return <GuildsTab />;
+      case "wallet": return <WalletTab profile={profile} />;
+      case "analytics": return <div className="text-center py-20 text-muted-foreground">Analytics coming soon...</div>;
+      case "settings": return <SettingsTab profile={profile} updateProfile={updateProfile} />;
+      default: return <OverviewTab profile={profile} />;
+    }
+  };
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background">
-        <CustomCursor />
-        <CursorGlow />
-        <Navbar />
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-background">
+          <DashboardSidebar activeTab={activeTab} setActiveTab={setActiveTab} profile={profile} />
 
-        {/* Hero / Welcome */}
-        <section className="pt-28 pb-12 px-6">
-          <div className="max-w-6xl mx-auto">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Welcome back,</p>
-                <h1 className="font-heading text-3xl sm:text-4xl font-black text-foreground">{profile?.display_name || profile?.full_name || "Swapper"}</h1>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="rounded-full bg-badge-gold/10 border border-badge-gold/20 px-3 py-1 text-xs font-mono text-badge-gold">{profile?.tier || "Bronze"}</span>
-                  <span className="rounded-full bg-skill-green/10 border border-skill-green/20 px-3 py-1 text-xs font-mono text-skill-green">Member</span>
-                  <span className="text-xs text-muted-foreground">Member since {profile?.created_at ? new Date(profile.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "—"}</span>
-                </div>
+          <div className="flex-1 flex flex-col">
+            {/* Header */}
+            <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/80 backdrop-blur-xl px-6">
+              <div className="flex items-center gap-3">
+                <SidebarTrigger />
+                <h1 className="font-heading text-lg font-bold text-foreground capitalize">{activeTab.replace("-", " ")}</h1>
               </div>
-              <div className="flex gap-2">
-                <button className="rounded-full border border-border px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  <Bell size={14} className="inline mr-1.5" /> Notifications
+              <div className="flex items-center gap-2">
+                <button className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-1 transition-colors">
+                  <Bell size={18} />
                 </button>
+                <Link to={`/profile/${user.id}`} className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-1 transition-colors">
+                  <User size={18} />
+                </Link>
                 <button
                   onClick={() => { logout(); navigate("/"); }}
-                  className="rounded-full border border-destructive/30 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                  className="flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  <LogOut size={14} className="inline mr-1.5" /> Log Out
+                  <LogOut size={14} /> Logout
                 </button>
               </div>
-            </motion.div>
+            </header>
+
+            {/* Main Content */}
+            <main className="flex-1 p-6 overflow-y-auto">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {renderContent()}
+                </motion.div>
+              </AnimatePresence>
+            </main>
           </div>
-        </section>
-
-        {/* Quick Stats */}
-        <section className="px-6 pb-10">
-          <div className="max-w-6xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {quickStats.map((stat, i) => (
-              <motion.div
-                key={i}
-                className="rounded-xl border border-border bg-card p-5 text-center"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
-              >
-                <stat.icon size={18} className={`mx-auto mb-2 ${stat.color}`} />
-                <p className={`font-heading text-2xl font-black ${stat.color}`}>{stat.value}</p>
-                <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* Main Grid: Activity + Quick Links */}
-        <section className="px-6 pb-16">
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-6">
-            {/* Recent Activity */}
-            <div className="lg:col-span-2 rounded-xl border border-border bg-card p-6">
-              <h2 className="font-heading text-lg font-bold text-foreground mb-4">Recent Activity</h2>
-              <div className="space-y-3">
-                {recentActivity.map((item, i) => (
-                  <motion.div
-                    key={i}
-                    className="flex items-center gap-3 rounded-lg border border-border bg-surface-1 p-3"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + i * 0.06 }}
-                  >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-2">
-                      <item.icon size={14} className={item.color} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-foreground truncate">{item.action}</p>
-                      <p className="text-[10px] text-muted-foreground">{item.time}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            {/* Quick Links */}
-            <div className="rounded-xl border border-border bg-card p-6">
-              <h2 className="font-heading text-lg font-bold text-foreground mb-4">Quick Links</h2>
-              <div className="space-y-2">
-                {quickLinks.map((link, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.06 }}>
-                    <Link
-                      to={link.href}
-                      className="flex items-center gap-3 rounded-lg border border-border bg-surface-1 p-3 text-sm text-muted-foreground hover:text-foreground hover:border-muted-foreground/20 transition-all"
-                    >
-                      <link.icon size={14} />
-                      <span className="flex-1">{link.label}</span>
-                      <ChevronRight size={12} />
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-
-              {user.role === "admin" && (
-                <div className="mt-4 rounded-lg border border-badge-gold/20 bg-badge-gold/5 p-3">
-                  <p className="text-xs font-bold text-badge-gold flex items-center gap-1"><Shield size={12} /> Admin Access</p>
-                  <p className="text-[10px] text-muted-foreground mt-1">You have full platform admin permissions.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-
-        <Footer />
-      </div>
+        </div>
+      </SidebarProvider>
     </PageTransition>
   );
 };
