@@ -14,6 +14,7 @@ import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
+import Footer from "@/components/shared/Footer";
 
 
 type SortType = "hot" | "new" | "top" | "rising";
