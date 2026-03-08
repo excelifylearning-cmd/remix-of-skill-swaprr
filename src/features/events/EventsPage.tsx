@@ -46,15 +46,15 @@ const nextBigEvent = {
 };
 
 const upcomingEvents = [
-  { id: 1, title: "Design Sprint Showdown", date: "Mar 22, 2026", time: "3:00 PM UTC", type: "Tournament", category: "Design", spots: 64, icon: Target, color: "text-badge-gold", description: "48-hour design challenge. Teams of 4 compete to redesign a real product.", prize: "5,000 SP" },
+  { id: 1, title: "Design Sprint Showdown", date: "Mar 22, 2026", time: "3:00 PM UTC", type: "Tournament", category: "Design", spots: 64, icon: Target, color: "text-court-blue", description: "48-hour design challenge. Teams of 4 compete to redesign a real product.", prize: "5,000 SP" },
   { id: 2, title: "Code & Coffee — NYC Meetup", date: "Mar 28, 2026", time: "10:00 AM EST", type: "In-Person", category: "Networking", spots: 40, icon: MapPin, color: "text-skill-green", description: "Casual Saturday morning meetup at Brooklyn Roasting. Bring your laptop.", prize: null },
   { id: 3, title: "Guild Wars: Season 5 Kickoff", date: "Apr 1, 2026", time: "6:00 PM UTC", type: "Tournament", category: "Competition", spots: 32, icon: Swords, color: "text-court-blue", description: "Guild vs Guild. 5 rounds. Strategy, skill, and teamwork determine the champion.", prize: "15,000 SP" },
   { id: 4, title: "API Workshop: Building Integrations", date: "Apr 5, 2026", time: "2:00 PM UTC", type: "Workshop", category: "Dev", spots: 100, icon: BookOpen, color: "text-foreground", description: "Hands-on workshop with the SkillSwappr API team. Build your first integration live.", prize: null },
-  { id: 5, title: "Marketplace AMA with Founders", date: "Apr 8, 2026", time: "5:00 PM UTC", type: "Live Stream", category: "Community", spots: null, icon: Mic, color: "text-badge-gold", description: "Ask anything about the roadmap, upcoming features, and marketplace economics.", prize: null },
+  { id: 5, title: "Marketplace AMA with Founders", date: "Apr 8, 2026", time: "5:00 PM UTC", type: "Live Stream", category: "Community", spots: null, icon: Mic, color: "text-foreground", description: "Ask anything about the roadmap, upcoming features, and marketplace economics.", prize: null },
   { id: 6, title: "London Skill Swap Social", date: "Apr 12, 2026", time: "7:00 PM BST", type: "In-Person", category: "Social", spots: 80, icon: PartyPopper, color: "text-skill-green", description: "Drinks, demos, and skill swapping IRL at Shoreditch Works.", prize: null },
   { id: 7, title: "ELO Blitz: Weekend Warrior", date: "Apr 15, 2026", time: "12:00 PM UTC", type: "Tournament", category: "Competition", spots: 256, icon: Flame, color: "text-destructive", description: "48-hour ELO sprint. Complete as many gigs as possible. Top 10 get Diamond badges.", prize: "8,000 SP" },
   { id: 8, title: "University Challenge: Spring", date: "Apr 20, 2026", time: "4:00 PM UTC", type: "Tournament", category: "Academic", spots: 52, icon: Award, color: "text-court-blue", description: "University teams compete across design, dev, and marketing challenges.", prize: "20,000 SP" },
-  { id: 9, title: "Creative Jam: Album Art Edition", date: "Apr 25, 2026", time: "1:00 PM UTC", type: "Workshop", category: "Design", spots: 120, icon: Palette, color: "text-badge-gold", description: "Design album covers for indie artists in 4 hours. Best designs get featured on Spotify.", prize: "3,000 SP" },
+  { id: 9, title: "Creative Jam: Album Art Edition", date: "Apr 25, 2026", time: "1:00 PM UTC", type: "Workshop", category: "Design", spots: 120, icon: Palette, color: "text-court-blue", description: "Design album covers for indie artists in 4 hours. Best designs get featured on Spotify.", prize: "3,000 SP" },
   { id: 10, title: "Podcast Recording: Swap Stories", date: "Apr 28, 2026", time: "6:00 PM UTC", type: "Live Stream", category: "Community", spots: null, icon: Podcast, color: "text-court-blue", description: "Live recording of our community podcast. Share your craziest skill swap stories.", prize: null },
   { id: 11, title: "Berlin Dev Meetup", date: "May 2, 2026", time: "6:30 PM CET", type: "In-Person", category: "Dev", spots: 60, icon: MapPin, color: "text-skill-green", description: "Monthly Berlin developer meetup at Factory Berlin. Lightning talks + networking.", prize: null },
   { id: 12, title: "Game Jam: 72 Hour Challenge", date: "May 5, 2026", time: "12:00 AM UTC", type: "Tournament", category: "Game Dev", spots: 200, icon: Gamepad2, color: "text-destructive", description: "Build a complete game in 72 hours. Solo or team. Theme revealed at start.", prize: "10,000 SP" },
@@ -121,19 +121,19 @@ const tickerItems = [
 const featuredSpeakers = [
   { name: "Sarah Chen", role: "Head of Design, SkillSwappr", topic: "Future of Collaborative Design", avatar: "SC", color: "court-blue" },
   { name: "Marcus Rivera", role: "Staff Engineer, Vercel", topic: "Building at Scale with Edge Functions", avatar: "MR", color: "skill-green" },
-  { name: "Amira Okafor", role: "Community Lead", topic: "Growing Guild Culture from Zero", avatar: "AO", color: "badge-gold" },
+  { name: "Amira Okafor", role: "Community Lead", topic: "Growing Guild Culture from Zero", avatar: "AO", color: "foreground" },
   { name: "Leo Park", role: "Founder, DesignCraft", topic: "From Side Project to 10K Users", avatar: "LP", color: "destructive" },
   { name: "Nina Petrov", role: "AI Researcher, DeepMind", topic: "AI-Assisted Skill Matching", avatar: "NP", color: "court-blue" },
   { name: "Jake Williams", role: "Pro Gamer & Streamer", topic: "Competitive Mindset in Skill Swapping", avatar: "JW", color: "skill-green" },
 ];
 
 const eventPerks = [
-  { icon: Trophy, title: "Exclusive Badges", desc: "Earn event-specific badges that permanently display on your profile", color: "badge-gold" },
+  { icon: Trophy, title: "Exclusive Badges", desc: "Earn event-specific badges that permanently display on your profile", color: "foreground" },
   { icon: Zap, title: "Bonus SP", desc: "Participants receive SP rewards — winners get the lion's share", color: "skill-green" },
   { icon: TrendingUp, title: "ELO Boost", desc: "Tournament wins give a significant ELO rating multiplier", color: "court-blue" },
   { icon: Users, title: "Networking", desc: "Connect with top swappers, guild leaders, and industry pros", color: "foreground" },
-  { icon: Gift, title: "Swag & Merch", desc: "In-person attendees receive exclusive SkillSwappr merchandise", color: "badge-gold" },
-  { icon: Star, title: "Featured Profile", desc: "Top 3 winners get featured on the homepage for a week", color: "destructive" },
+  { icon: Gift, title: "Swag & Merch", desc: "In-person attendees receive exclusive SkillSwappr merchandise", color: "muted-foreground" },
+  { icon: Star, title: "Featured Profile", desc: "Top 3 winners get featured on the homepage for a week", color: "foreground" },
 ];
 
 const communityHighlights = [
@@ -194,8 +194,8 @@ const EventsPage = () => {
         {/* ────── 1. HERO + COUNTDOWN ────── */}
         <section className="relative pt-28 pb-20 px-6 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full bg-badge-gold/5 blur-3xl" />
-            <div className="absolute bottom-10 right-1/4 w-80 h-80 rounded-full bg-court-blue/5 blur-3xl" />
+            <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full bg-court-blue/5 blur-3xl" />
+            <div className="absolute bottom-10 right-1/4 w-80 h-80 rounded-full bg-skill-green/5 blur-3xl" />
           </div>
           <div className="max-w-7xl mx-auto relative grid grid-cols-1 lg:grid-cols-2 items-center gap-8">
             {/* Left: Content */}
@@ -204,7 +204,7 @@ const EventsPage = () => {
                 <Calendar size={12} className="inline mr-1.5 -mt-0.5" /> Platform Events
               </span>
               <h1 className="font-heading text-5xl sm:text-7xl font-black text-foreground mt-4">
-                Events &<br /><span className="text-badge-gold">Tournaments</span>
+                Events &<br /><span className="text-court-blue">Tournaments</span>
               </h1>
               <p className="text-muted-foreground mt-4 max-w-xl text-lg">
                 Compete, connect, and level up. From global tournaments to local meetups — there's always something happening.
@@ -226,7 +226,7 @@ const EventsPage = () => {
               </div>
 
               <div className="flex flex-wrap items-center gap-4 mt-5 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1"><Trophy size={12} className="text-badge-gold" /> {nextBigEvent.title}</span>
+                <span className="flex items-center gap-1"><Trophy size={12} className="text-foreground" /> {nextBigEvent.title}</span>
                 <span className="flex items-center gap-1"><MapPin size={12} /> {nextBigEvent.location}</span>
                 <span className="flex items-center gap-1"><Users size={12} /> {nextBigEvent.spotsFilled}/{nextBigEvent.spots} filled</span>
               </div>

@@ -154,9 +154,9 @@ const tierBg = (t: string) => {
 };
 
 const rankIcon = (r: number) => {
-  if (r === 1) return <Crown size={18} className="text-badge-gold" />;
+  if (r === 1) return <Crown size={18} className="text-foreground" />;
   if (r === 2) return <Medal size={18} className="text-muted-foreground" />;
-  if (r === 3) return <Medal size={18} className="text-orange-400" />;
+  if (r === 3) return <Medal size={18} className="text-muted-foreground" />;
   return <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-2 font-mono text-xs font-bold text-muted-foreground">#{r}</span>;
 };
 
@@ -173,14 +173,14 @@ const LeaderboardPage = () => {
 
         {/* Hero */}
         <section className="relative pt-32 pb-20 overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--badge-gold)/0.06),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--foreground)/0.03),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--court-blue)/0.04),transparent_40%)]" />
 
           <div className="relative z-10 mx-auto max-w-7xl px-6">
             <div className="grid items-center gap-12 lg:grid-cols-2">
               {/* Left: Text */}
               <div>
-                <motion.span initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-4 inline-block rounded-full border border-badge-gold/20 bg-badge-gold/5 px-4 py-1.5 font-mono text-xs text-badge-gold">
+                <motion.span initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-4 inline-block rounded-full border border-border bg-surface-2 px-4 py-1.5 font-mono text-xs text-muted-foreground">
                   <Trophy size={12} className="mr-1.5 inline" /> Live Rankings
                 </motion.span>
                 <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-4 font-heading text-5xl font-black text-foreground sm:text-6xl lg:text-7xl">
@@ -223,9 +223,9 @@ const LeaderboardPage = () => {
                   </motion.div>
 
                   {/* #1 */}
-                  <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="rounded-2xl border border-badge-gold/30 bg-badge-gold/5 p-5 text-center -mt-6">
-                    <Crown size={24} className="mx-auto mb-2 text-badge-gold" />
-                    <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-badge-gold/10 ring-2 ring-badge-gold/30 font-mono text-base font-bold text-foreground">CL</div>
+                  <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="rounded-2xl border border-border bg-card p-5 text-center -mt-6">
+                    <Crown size={24} className="mx-auto mb-2 text-foreground" />
+                    <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-surface-2 ring-2 ring-border font-mono text-base font-bold text-foreground">CL</div>
                     <p className="text-sm font-bold text-foreground">Chen L.</p>
                     <p className="text-[10px] text-muted-foreground">MIT</p>
                     <span className="mt-1 inline-block rounded-full bg-court-blue/10 px-2 py-0.5 text-[9px] font-semibold text-court-blue">Diamond</span>
@@ -279,7 +279,7 @@ const LeaderboardPage = () => {
           <div className="mx-auto max-w-7xl px-6">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Bookmark size={16} className="text-badge-gold" />
+                <Bookmark size={16} className="text-muted-foreground" />
                 <h2 className="font-heading text-lg font-bold text-foreground">Top Talent by Skill</h2>
               </div>
               <button onClick={() => setActiveTab("By Skill")} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">

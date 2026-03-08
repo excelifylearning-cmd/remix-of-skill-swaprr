@@ -149,18 +149,18 @@ const SuccessStoriesPage = () => {
 
         {/* SECTION 1: HERO */}
         <section className="relative pt-28 pb-20 overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--badge-gold)/0.08),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--court-blue)/0.06),transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,hsl(var(--skill-green)/0.05),transparent_40%)]" />
 
           <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-              <span className="inline-flex items-center gap-2 rounded-full border border-badge-gold/30 bg-badge-gold/10 px-5 py-2 font-mono text-xs text-badge-gold">
-                <Star size={12} fill="currentColor" /> Real People, Real Transformations
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-2 px-5 py-2 font-mono text-xs text-muted-foreground">
+                <Star size={12} /> Real People, Real Transformations
               </span>
             </motion.div>
 
             <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-6 font-heading text-5xl font-black text-foreground sm:text-6xl lg:text-7xl">
-              Success <span className="text-badge-gold">Stories</span>
+              Success <span className="text-muted-foreground">Stories</span>
             </motion.h1>
 
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground">
@@ -185,7 +185,7 @@ const SuccessStoriesPage = () => {
                 { value: "94%", label: "Goal Achievement", icon: Target },
               ].map((stat, i) => (
                 <div key={stat.label} className="rounded-2xl border border-border bg-card p-6 text-center">
-                  <stat.icon size={20} className="mx-auto mb-2 text-badge-gold" />
+                  <stat.icon size={20} className="mx-auto mb-2 text-muted-foreground" />
                   <p className="font-heading text-3xl font-black text-foreground">{stat.value}</p>
                   <p className="text-xs text-muted-foreground">{stat.label}</p>
                 </div>
@@ -215,7 +215,7 @@ const SuccessStoriesPage = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    className={`w-full text-left rounded-2xl border p-5 transition-all ${activeStory === i ? "border-badge-gold bg-badge-gold/5" : "border-border bg-card hover:border-foreground/20"}`}
+                    className={`w-full text-left rounded-2xl border p-5 transition-all ${activeStory === i ? "border-foreground/30 bg-foreground/5" : "border-border bg-card hover:border-foreground/20"}`}
                   >
                     <div className="flex items-center gap-4">
                       <img src={story.image} alt={story.name} className="h-14 w-14 rounded-full object-cover ring-2 ring-border" />
@@ -227,7 +227,7 @@ const SuccessStoriesPage = () => {
                           <span className="text-[9px] text-muted-foreground">{story.stats.swaps} swaps</span>
                         </div>
                       </div>
-                      <ChevronRight size={16} className={`transition-transform ${activeStory === i ? "rotate-90 text-badge-gold" : "text-muted-foreground"}`} />
+                      <ChevronRight size={16} className={`transition-transform ${activeStory === i ? "rotate-90 text-foreground" : "text-muted-foreground"}`} />
                     </div>
                   </motion.button>
                 ))}
@@ -253,7 +253,7 @@ const SuccessStoriesPage = () => {
                 </div>
                 <div className="p-6">
                   <div className="mb-4 flex items-center gap-3">
-                    <img src={featuredStories[activeStory].image} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-badge-gold" />
+                    <img src={featuredStories[activeStory].image} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-border" />
                     <div>
                       <h3 className="font-heading text-lg font-bold text-foreground">{featuredStories[activeStory].name}</h3>
                       <p className="text-xs text-muted-foreground flex items-center gap-2">

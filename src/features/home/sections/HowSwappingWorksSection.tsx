@@ -4,10 +4,10 @@ import { UserPlus, Search, Handshake, MessageSquare, CheckCircle2, Star } from "
 const steps = [
   { icon: UserPlus, title: "Sign Up & Get Rewarded", desc: "Create your account, take the guided tour, and earn your first 100 Skill Points for completing it.", color: "text-skill-green", accent: "bg-skill-green/10 border-skill-green/20" },
   { icon: Search, title: "Browse or Post a Gig", desc: "Find a skill you need on the marketplace, or post your own service. AI recommends perfect matches based on your profile.", color: "text-court-blue", accent: "bg-court-blue/10 border-court-blue/20" },
-  { icon: Handshake, title: "Match & Agree", desc: "Found your swap partner? Agree on deliverables, set stages, and stake Skill Points as insurance on each milestone.", color: "text-badge-gold", accent: "bg-badge-gold/10 border-badge-gold/20" },
+  { icon: Handshake, title: "Match & Agree", desc: "Found your swap partner? Agree on deliverables, set stages, and stake Skill Points as insurance on each milestone.", color: "text-foreground", accent: "bg-surface-2 border-border" },
   { icon: MessageSquare, title: "Collaborate in the Workspace", desc: "Every gig gets a private workspace with real-time chat, video calls, whiteboard, file sharing — all built in.", color: "text-court-blue", accent: "bg-court-blue/10 border-court-blue/20" },
   { icon: CheckCircle2, title: "Deliver & Approve", desc: "Submit deliverables stage by stage. Work is AI quality-checked, and both parties must approve before points are released.", color: "text-skill-green", accent: "bg-skill-green/10 border-skill-green/20" },
-  { icon: Star, title: "Rate, Review & Level Up", desc: "Leave verified reviews, earn ELO rating boosts, unlock achievements, and climb the leaderboard.", color: "text-badge-gold", accent: "bg-badge-gold/10 border-badge-gold/20" },
+  { icon: Star, title: "Rate, Review & Level Up", desc: "Leave verified reviews, earn ELO rating boosts, unlock achievements, and climb the leaderboard.", color: "text-foreground", accent: "bg-surface-2 border-border" },
 ];
 
 const HowSwappingWorksSection = () => (

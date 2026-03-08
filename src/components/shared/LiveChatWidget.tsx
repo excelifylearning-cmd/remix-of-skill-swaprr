@@ -45,10 +45,10 @@ const LiveChatWidget = () => {
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="mb-3 flex h-[420px] w-[340px] flex-col rounded-2xl border border-border bg-card shadow-2xl"
+            className="mb-3 flex h-[420px] w-[340px] flex-col rounded-2xl border border-border bg-surface-1 shadow-2xl"
           >
             {/* Chat Header */}
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <div className="flex items-center justify-between border-b border-border bg-surface-2 px-4 py-3">
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-skill-green/10">
                   <Bot size={14} className="text-skill-green" />

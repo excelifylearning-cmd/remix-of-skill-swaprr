@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
   Clock, ArrowRight, ArrowLeft, Tag, TrendingUp, User, Heart, MessageSquare,
   Bookmark, Share2, Eye, Calendar, ChevronRight, Search, Star, Sparkles,
@@ -7,7 +8,7 @@ import {
   ThumbsUp, Send, MoreHorizontal, Link2, Twitter, Facebook, Copy, CheckCircle2,
   ChevronDown, Play, Quote, List, Image as ImageIcon, Code, Crown, Flame,
   ArrowUp, Layers, Globe, PenTool, Lightbulb, Shield, Users, Target,
-  BarChart3, Hash, Mic, Coffee, Loader2
+  BarChart3, Hash, Mic, Coffee, Loader2, Lock
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
@@ -233,7 +234,7 @@ const posts = [
 const blogSeries = [
   { name: "Building Trust at Scale", count: 4, color: "text-court-blue", bg: "bg-court-blue/10", borderColor: "border-court-blue/20" },
   { name: "Engineering Deep Dives", count: 6, color: "text-skill-green", bg: "bg-skill-green/10", borderColor: "border-skill-green/20" },
-  { name: "Platform Economics", count: 3, color: "text-badge-gold", bg: "bg-badge-gold/10", borderColor: "border-badge-gold/20" },
+  { name: "Platform Economics", count: 3, color: "text-foreground", bg: "bg-surface-2", borderColor: "border-border" },
   { name: "Swapper Spotlights", count: 8, color: "text-alert-red", bg: "bg-alert-red/10", borderColor: "border-alert-red/20" },
 ];
 
@@ -675,6 +676,33 @@ const BlogPage = () => {
     );
   }
 
+  // ========== AUTH PROTECTION ==========
+  if (!user) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen bg-background flex flex-col">
+          <Navbar />
+          <div className="flex-1 flex items-center justify-center px-6">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-surface-2 border border-border">
+                <Lock size={32} className="text-muted-foreground" />
+              </div>
+              <h1 className="mb-3 font-heading text-3xl font-bold text-foreground">Login Required</h1>
+              <p className="mb-6 text-muted-foreground">Please log in to access the blog and community content.</p>
+              <Link to="/login" className="inline-flex items-center gap-2 rounded-full bg-foreground px-8 py-3 text-sm font-semibold text-background hover:opacity-90 transition-opacity">
+                Log In <ArrowRight size={16} />
+              </Link>
+              <p className="mt-4 text-xs text-muted-foreground">
+                Don't have an account? <Link to="/signup" className="text-foreground hover:underline">Sign up</Link>
+              </p>
+            </motion.div>
+          </div>
+          <Footer />
+        </div>
+      </PageTransition>
+    );
+  }
+
   // ========== BLOG LISTING VIEW ==========
   return (
     <PageTransition>
@@ -785,17 +813,17 @@ const BlogPage = () => {
         <section className="py-12 border-b border-border">
           <div className="mx-auto max-w-7xl px-6">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-6 flex items-center gap-2">
-              <Crown size={16} className="text-badge-gold" />
+              <Crown size={16} className="text-muted-foreground" />
               <h2 className="font-heading text-xl font-bold text-foreground">Editor's Picks</h2>
             </motion.div>
             <div className="grid gap-4 sm:grid-cols-3">
               {editorsPicks.map((post, i) => (
                 <motion.div key={post.id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
                   onClick={() => setSelectedPost(post.id)}
-                  className="group cursor-pointer overflow-hidden rounded-2xl border border-badge-gold/10 bg-card transition-all hover:border-badge-gold/30">
+                  className="group cursor-pointer overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-foreground/20">
                   <div className="relative aspect-video overflow-hidden">
                     <img src={post.image} alt={post.title} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-badge-gold/90 px-2.5 py-0.5 text-[9px] font-bold text-background">
+                    <div className="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-foreground/90 px-2.5 py-0.5 text-[9px] font-bold text-background">
                       <Star size={9} /> Pick
                     </div>
                   </div>

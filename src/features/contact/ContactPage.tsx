@@ -17,7 +17,7 @@ import { validateEmail } from "@/lib/email-validation";
 const contactMethods = [
   { icon: Mail, title: "Email Us", desc: "hello@skillswappr.com", detail: "Response within 24 hours", color: "text-court-blue", bg: "bg-court-blue/10" },
   { icon: Headphones, title: "Live Chat", desc: "Talk to our team", detail: "Avg response: 5 minutes", color: "text-skill-green", bg: "bg-skill-green/10" },
-  { icon: MapPin, title: "Office", desc: "San Francisco, CA", detail: "By appointment only", color: "text-badge-gold", bg: "bg-badge-gold/10" },
+  { icon: MapPin, title: "Office", desc: "San Francisco, CA", detail: "By appointment only", color: "text-muted-foreground", bg: "bg-surface-2" },
   { icon: Clock, title: "Support Hours", desc: "Mon–Fri, 9am–6pm EST", detail: "Weekend email support", color: "text-muted-foreground", bg: "bg-surface-2" },
 ];
 
@@ -32,14 +32,14 @@ const topics = [
 
 const priorityLevels = [
   { label: "Low", desc: "General question, no rush", color: "text-muted-foreground", bg: "border-border" },
-  { label: "Medium", desc: "Need help soon", color: "text-badge-gold", bg: "border-badge-gold/30" },
+  { label: "Medium", desc: "Need help soon", color: "text-muted-foreground", bg: "border-muted-foreground/30" },
   { label: "High", desc: "Blocking my work", color: "text-alert-red", bg: "border-alert-red/30" },
 ];
 
 const slaCards = [
   { channel: "Email", time: "< 24 hours", icon: Mail, color: "text-court-blue", bg: "bg-court-blue/5" },
   { channel: "Live Chat", time: "< 5 minutes", icon: MessageSquare, color: "text-skill-green", bg: "bg-skill-green/5" },
-  { channel: "Enterprise", time: "< 1 hour", icon: Building2, color: "text-badge-gold", bg: "bg-badge-gold/5" },
+  { channel: "Enterprise", time: "< 1 hour", icon: Building2, color: "text-muted-foreground", bg: "bg-surface-2" },
 ];
 
 const faqs = [
@@ -191,7 +191,7 @@ const ContactPage = () => {
                         <p className="mt-1 text-xs text-muted-foreground">We'll get back to you within 24 hours.</p>
                       </div>
                       <div className="flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1">
-                        <Sparkles size={12} className="text-badge-gold" />
+                        <Sparkles size={12} className="text-muted-foreground" />
                         <span className="text-[10px] font-medium text-muted-foreground">Avg reply: 4h</span>
                       </div>
                     </div>
