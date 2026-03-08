@@ -244,25 +244,31 @@ const HelpPage = () => {
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [statusTab, setStatusTab] = useState<"services" | "incidents" | "uptime">("services");
   const [feedbackSent, setFeedbackSent] = useState(false);
+  const [statusLoading, setStatusLoading] = useState(false);
 
   // Backend-driven state
   const [helpArticles, setHelpArticles] = useState<HelpArticle[]>([]);
   const [liveServices, setLiveServices] = useState<ServiceStatus[]>([]);
   const [liveIncidents, setLiveIncidents] = useState<Incident[]>([]);
+  const [articleCount, setArticleCount] = useState(0);
 
-  useEffect(() => {
-    const loadData = async () => {
-      const [articlesRes, servicesRes, incidentsRes] = await Promise.all([
-        supabase.from("help_articles").select("id, category, title, slug, excerpt").order("category"),
-        supabase.from("service_status").select("*").order("name"),
-        supabase.from("service_incidents").select("*").order("started_at", { ascending: false }).limit(10),
-      ]);
-      if (articlesRes.data) setHelpArticles(articlesRes.data as any);
-      if (servicesRes.data) setLiveServices(servicesRes.data as any);
-      if (incidentsRes.data) setLiveIncidents(incidentsRes.data as any);
-    };
-    loadData();
-  }, []);
+  const loadData = async () => {
+    setStatusLoading(true);
+    const [articlesRes, servicesRes, incidentsRes] = await Promise.all([
+      supabase.from("help_articles").select("id, category, title, slug, excerpt").order("category"),
+      supabase.from("service_status").select("*").order("name"),
+      supabase.from("service_incidents").select("*").order("started_at", { ascending: false }).limit(10),
+    ]);
+    if (articlesRes.data) {
+      setHelpArticles(articlesRes.data as any);
+      setArticleCount(articlesRes.data.length);
+    }
+    if (servicesRes.data) setLiveServices(servicesRes.data as any);
+    if (incidentsRes.data) setLiveIncidents(incidentsRes.data as any);
+    setStatusLoading(false);
+  };
+
+  useEffect(() => { loadData(); }, []);
 
   // Group articles by category
   const articlesByCategory = helpArticles.reduce<Record<string, HelpArticle[]>>((acc, a) => {
