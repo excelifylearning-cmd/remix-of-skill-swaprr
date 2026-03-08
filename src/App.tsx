@@ -21,6 +21,7 @@ const EnterprisePage = lazy(() => import("./features/enterprise/EnterprisePage")
 const EnterpriseDashboardPage = lazy(() => import("./features/enterprise/EnterpriseDashboardPage"));
 const GuildDashboardPage = lazy(() => import("./features/guild/GuildDashboardPage"));
 const MarketplacePage = lazy(() => import("./features/marketplace/MarketplacePage"));
+const GigDetailPage = lazy(() => import("./features/marketplace/components/GigDetailPage"));
 const LegalPage = lazy(() => import("./features/legal/LegalPage"));
 const RoadmapPage = lazy(() => import("./features/roadmap/RoadmapPage"));
 const ContactPage = lazy(() => import("./features/contact/ContactPage"));
@@ -62,6 +63,7 @@ const AnimatedRoutes = () => {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/enterprise" element={<EnterprisePage />} />
           <Route path="/marketplace" element={<MarketplacePage />} />
+          <Route path="/marketplace/:gigId" element={<GigDetailPage />} />
           <Route path="/legal" element={<LegalPage />} />
           <Route path="/roadmap" element={<RoadmapPage />} />
           <Route path="/contact" element={<ContactPage />} />
