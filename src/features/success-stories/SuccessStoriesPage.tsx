@@ -93,7 +93,7 @@ const transformationStats = [
 const industryBreakdown = [
   { industry: "Technology", percentage: 34, icon: Code, color: "bg-skill-green" },
   { industry: "Design & Creative", percentage: 22, icon: Palette, color: "bg-court-blue" },
-  { industry: "Business & Finance", percentage: 18, icon: BarChart3, color: "bg-badge-gold" },
+  { industry: "Business & Finance", percentage: 18, icon: BarChart3, color: "bg-foreground" },
   { industry: "Data & Analytics", percentage: 14, icon: Database, color: "bg-purple-500" },
   { industry: "Marketing", percentage: 8, icon: Mic, color: "bg-alert-red" },
   { industry: "Other", percentage: 4, icon: Layers, color: "bg-muted-foreground" },
