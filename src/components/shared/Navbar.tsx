@@ -104,17 +104,34 @@ const Navbar = () => {
               )}
             </AnimatePresence>
           </motion.button>
-
-          <Link to="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-            Log In
-          </Link>
-          <Link
-            to="/signup"
-            className="rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background transition-shadow hover:shadow-[0_0_20px_hsl(var(--silver)/0.3)]"
-          >
-            Start Swapping
-          </Link>
-        </div>
+          {isAuthenticated ? (
+            <>
+              <Link to="/dashboard" className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-2 border border-border">
+                  <User size={13} className="text-foreground" />
+                </div>
+                <span className="hidden xl:inline">{user?.name}</span>
+              </Link>
+              <button
+                onClick={() => { logout(); navigate("/"); }}
+                className="rounded-full border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <LogOut size={14} className="inline mr-1" /> Log Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                Log In
+              </Link>
+              <Link
+                to="/signup"
+                className="rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background transition-shadow hover:shadow-[0_0_20px_hsl(var(--silver)/0.3)]"
+              >
+                Start Swapping
+              </Link>
+            </>
+          )}
 
         <div className="flex items-center gap-2 lg:hidden">
           <motion.button
