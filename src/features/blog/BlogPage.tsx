@@ -431,7 +431,7 @@ const BlogPage = () => {
   const editorsPicks = allPosts.filter((p) => editorsPickIds.includes(p.id)).slice(0, 3);
   const popularPosts = [...allPosts].sort((a, b) => b.views - a.views).slice(0, 5);
   const mostDiscussed = [...allPosts].sort((a, b) => b.comments - a.comments).slice(0, 4);
-  const mostDiscussed = [...posts].sort((a, b) => b.comments - a.comments).slice(0, 4);
+  
 
   const toggleLike = (id: string) => {
     setLikedPosts((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
