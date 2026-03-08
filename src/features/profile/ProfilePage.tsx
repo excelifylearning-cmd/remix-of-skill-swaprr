@@ -152,7 +152,7 @@ const ProfilePage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <Navbar />
+        <AppNav />
 
         {/* ─── HEADER ─── */}
         <section className="pt-24 pb-0 px-6">
