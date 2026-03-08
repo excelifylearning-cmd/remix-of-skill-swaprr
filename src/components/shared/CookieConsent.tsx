@@ -34,7 +34,7 @@ const CookieConsent = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: "spring", damping: 25 }}
-          className="fixed bottom-4 left-4 right-4 z-[9999] mx-auto max-w-lg rounded-2xl border border-border bg-card p-6 shadow-2xl sm:bottom-6 sm:left-6 sm:right-auto"
+          className="fixed bottom-4 right-4 z-[9995] max-w-xs rounded-2xl border border-border bg-card p-4 shadow-2xl sm:bottom-6 sm:right-6"
         >
           <button onClick={() => setShow(false)} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
             <X size={16} />
