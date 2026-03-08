@@ -154,9 +154,9 @@ const tierBg = (t: string) => {
 };
 
 const rankIcon = (r: number) => {
-  if (r === 1) return <Crown size={18} className="text-badge-gold" />;
+  if (r === 1) return <Crown size={18} className="text-foreground" />;
   if (r === 2) return <Medal size={18} className="text-muted-foreground" />;
-  if (r === 3) return <Medal size={18} className="text-orange-400" />;
+  if (r === 3) return <Medal size={18} className="text-muted-foreground" />;
   return <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-2 font-mono text-xs font-bold text-muted-foreground">#{r}</span>;
 };
 
