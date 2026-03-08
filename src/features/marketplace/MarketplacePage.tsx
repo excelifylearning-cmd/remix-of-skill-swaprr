@@ -36,6 +36,7 @@ const categories = [
 const sidebarNav = [
   { label: "Explore", icon: Compass, section: "explore", badge: null },
   { label: "Trending", icon: Flame, section: "trending", badge: "HOT" },
+  { label: "SP Only", icon: CircleDollarSign, section: "sp-only", badge: "BUY" },
   { label: "Auctions", icon: Gavel, section: "auctions", badge: "LIVE" },
   { label: "Co-Creation", icon: Layers, section: "cocreation", badge: null },
   { label: "Skill Fusion", icon: GitMerge, section: "fusion", badge: "NEW" },
