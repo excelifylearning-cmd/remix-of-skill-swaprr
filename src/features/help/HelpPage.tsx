@@ -762,9 +762,15 @@ console.log(\`Found \${meta.total} gigs\`);`}</code>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-skill-green/10 px-3 py-1 text-[10px] font-semibold text-skill-green">99.97% overall uptime</span>
-                <button className="flex items-center gap-1 rounded-full border border-border px-3 py-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors">
-                  <RefreshCw size={10} /> Refresh
+                <span className="rounded-full bg-skill-green/10 px-3 py-1 text-[10px] font-semibold text-skill-green">
+                  {liveServices.length ? `${(liveServices.reduce((a, s) => a + s.uptime, 0) / liveServices.length).toFixed(2)}%` : "99.97%"} overall uptime
+                </span>
+                <button 
+                  onClick={() => loadData()} 
+                  disabled={statusLoading}
+                  className="flex items-center gap-1 rounded-full border border-border px-3 py-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                >
+                  <RefreshCw size={10} className={statusLoading ? "animate-spin" : ""} /> {statusLoading ? "Loading..." : "Refresh"}
                 </button>
               </div>
             </div>
