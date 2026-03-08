@@ -8,29 +8,34 @@ const footerLinks = {
     { label: "Features", href: "/features" },
     { label: "Pricing", href: "/pricing" },
     { label: "How It Works", href: "/how-it-works" },
-    { label: "Events", href: "/events" },
     { label: "Roadmap", href: "/roadmap" },
+    { label: "Dashboard", href: "/dashboard" },
   ],
   Community: [
     { label: "Forums", href: "/forums" },
     { label: "Blog", href: "/blog" },
+    { label: "Success Stories", href: "/success-stories" },
     { label: "Leaderboard", href: "/leaderboard" },
-    { label: "Enterprise", href: "/enterprise" },
     { label: "Events", href: "/events" },
+    { label: "Guilds", href: "/guild/demo" },
   ],
   Resources: [
     { label: "Help Center", href: "/help" },
+    { label: "FAQ", href: "/faq" },
     { label: "Contact Us", href: "/contact" },
     { label: "About", href: "/about" },
     { label: "Analytics", href: "/analytics" },
     { label: "Transaction Lookup", href: "/transaction" },
-    { label: "FAQ", href: "/faq" },
+  ],
+  Enterprise: [
+    { label: "Enterprise Solutions", href: "/enterprise" },
+    { label: "Enterprise Dashboard", href: "/enterprise-dashboard" },
+    { label: "Guild Management", href: "/guild-dashboard/demo" },
   ],
   Legal: [
     { label: "Privacy Policy", href: "/legal" },
     { label: "Terms of Service", href: "/legal" },
     { label: "GDPR", href: "/legal" },
-    { label: "Community Guidelines", href: "/legal" },
     { label: "Cookie Policy", href: "/legal" },
   ],
 };
@@ -45,11 +50,14 @@ const socials = [
 const Footer = () => (
   <footer className="bg-surface-1 border-t border-border">
     <div className="mx-auto max-w-7xl px-6 py-16">
-      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
         <div className="lg:col-span-1">
           <Link to="/" className="font-heading text-xl font-bold text-foreground">
             Skill<span className="text-muted-foreground">Swappr</span>
           </Link>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            The skill exchange platform for students. Trade what you know for what you need.
+          </p>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             The skill exchange platform for students. Trade what you know for what you need.
           </p>
