@@ -804,6 +804,41 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_comments: {
+        Row: {
+          content: string
+          created_at: string
+          feature_id: string
+          id: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          feature_id: string
+          id?: string
+          user_id: string
+          user_name?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          feature_id?: string
+          id?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_comments_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "feature_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_requests: {
         Row: {
           category: string
@@ -1420,6 +1455,48 @@ export type Database = {
         }
         Relationships: []
       }
+      help_articles: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          excerpt: string | null
+          helpful_count: number
+          id: string
+          slug: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          view_count: number
+        }
+        Insert: {
+          category?: string
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          helpful_count?: number
+          id?: string
+          slug: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          view_count?: number
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          helpful_count?: number
+          id?: string
+          slug?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          view_count?: number
+        }
+        Relationships: []
+      }
       help_feedback: {
         Row: {
           created_at: string
@@ -1920,6 +1997,75 @@ export type Database = {
           id?: string
           rankings?: Json
           snapshot_date?: string
+        }
+        Relationships: []
+      }
+      service_incidents: {
+        Row: {
+          created_at: string
+          duration: string | null
+          id: string
+          resolved_at: string | null
+          severity: string
+          started_at: string
+          status: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          duration?: string | null
+          id?: string
+          resolved_at?: string | null
+          severity?: string
+          started_at?: string
+          status?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          duration?: string | null
+          id?: string
+          resolved_at?: string | null
+          severity?: string
+          started_at?: string
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      service_status: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          last_checked_at: string
+          latency: string
+          name: string
+          region: string
+          status: string
+          uptime: number
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          id?: string
+          last_checked_at?: string
+          latency?: string
+          name: string
+          region?: string
+          status?: string
+          uptime?: number
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          last_checked_at?: string
+          latency?: string
+          name?: string
+          region?: string
+          status?: string
+          uptime?: number
         }
         Relationships: []
       }
