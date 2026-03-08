@@ -609,21 +609,21 @@ const EventsPage = () => {
                     key={d.day}
                     className={`relative flex h-9 sm:h-10 items-center justify-center rounded-lg text-sm cursor-pointer transition-colors ${
                       d.hasEvent
-                        ? "bg-badge-gold/10 text-badge-gold font-bold border border-badge-gold/20 hover:bg-badge-gold/20"
+                        ? "bg-skill-green/10 text-skill-green font-bold border border-skill-green/20 hover:bg-skill-green/20"
                         : "text-muted-foreground hover:bg-surface-2"
                     }`}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     {d.day}
-                    {d.hasEvent && <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-badge-gold" />}
+                    {d.hasEvent && <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-skill-green" />}
                   </motion.div>
                 ))}
               </div>
 
               {/* Calendar legend */}
               <div className="mt-4 flex items-center gap-4 pt-3 border-t border-border/30">
-                <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-badge-gold" /><span className="text-[10px] text-muted-foreground">Event Day</span></div>
+                <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-skill-green" /><span className="text-[10px] text-muted-foreground">Event Day</span></div>
                 <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-surface-2 border border-border" /><span className="text-[10px] text-muted-foreground">No Events</span></div>
               </div>
             </motion.div>
