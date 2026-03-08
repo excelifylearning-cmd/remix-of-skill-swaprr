@@ -428,7 +428,7 @@ const ForumsPage = () => {
   // Submit new thread
   const handleSubmitThread = async () => {
     if (!user) {
-      toast.error("Please log in to post");
+      setShowLoginPrompt(true);
       return;
     }
     if (!newPostTitle.trim() || !newPostContent.trim()) {
