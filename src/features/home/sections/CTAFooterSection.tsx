@@ -22,7 +22,7 @@ const footerLinks = {
     { label: "Help Center", href: "/help" },
     { label: "Contact Us", href: "/contact" },
     { label: "About", href: "/about" },
-    { label: "Transaction Lookup", href: "/transaction" },
+    { label: "Analytics", href: "/analytics" },
     { label: "History", href: "/history" },
   ],
   Legal: [
