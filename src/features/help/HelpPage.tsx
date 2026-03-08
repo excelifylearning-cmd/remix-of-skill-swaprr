@@ -700,7 +700,7 @@ const HelpPage = () => {
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2.5">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-2">
-                          <s.icon size={14} className="text-muted-foreground" />
+                          <IconComp size={14} className="text-muted-foreground" />
                         </div>
                         <div>
                           <span className="text-xs font-semibold text-foreground block">{s.name}</span>
