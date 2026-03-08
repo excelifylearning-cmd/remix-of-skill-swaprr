@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Trophy, Crown, Medal, Star, TrendingUp, Users, Shield, GraduationCap,
   Flame, Zap, ArrowUp, Target, Award, Swords, BarChart3, Timer,
