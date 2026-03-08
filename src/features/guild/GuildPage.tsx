@@ -365,106 +365,82 @@ const GuildPage = () => {
               </div>
             )}
 
-            {/* MANAGEMENT (Leader only) */}
-            {activeTab === "Management" && isLeader && (
-              <div className="space-y-12">
-                {/* Treasury */}
-                <div>
-                  <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-6">Treasury</h2>
-                  <div className="grid sm:grid-cols-3 gap-4 mb-6">
-                    <div className="rounded-xl border border-border bg-card p-4">
-                      <p className="font-mono text-2xl font-bold text-foreground">{guild.treasury.balance.toLocaleString()}</p>
-                      <p className="text-[10px] text-muted-foreground">SP Balance</p>
-                    </div>
-                    <div className="rounded-xl border border-border bg-card p-4">
-                      <p className="font-mono text-2xl font-bold text-skill-green">+{guild.treasury.monthlyIncome.toLocaleString()}</p>
-                      <p className="text-[10px] text-muted-foreground">Monthly Income</p>
-                    </div>
-                    <div className="rounded-xl border border-border bg-card p-4">
-                      <p className="font-mono text-2xl font-bold text-muted-foreground">-{guild.treasury.monthlyExpense.toLocaleString()}</p>
-                      <p className="text-[10px] text-muted-foreground">Monthly Expense</p>
-                    </div>
-                  </div>
-                  <div className="grid gap-px bg-border rounded-xl overflow-hidden">
-                    {guild.treasury.recentTransactions.map((t, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 bg-card text-xs">
-                        <span className="text-muted-foreground">{t.desc}</span>
-                        <div className="flex items-center gap-4">
-                          <span className={`font-mono ${t.amount > 0 ? "text-skill-green" : "text-muted-foreground"}`}>
-                            {t.amount > 0 ? "+" : ""}{t.amount.toLocaleString()} SP
-                          </span>
-                          <span className="text-muted-foreground">{t.date}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+          </div>
+        </section>
 
-                {/* Pending Applications */}
-                <div>
-                  <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-6">
-                    Pending Applications ({guild.pendingApplications.length})
-                  </h2>
-                  <div className="space-y-3">
-                    {guild.pendingApplications.map((app, i) => (
-                      <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-2 font-mono text-xs font-bold text-foreground">
-                          {app.name.split(" ").map(n => n[0]).join("")}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground">{app.name}</p>
-                          <p className="text-[10px] text-muted-foreground">{app.elo} ELO · {app.skills.join(", ")} · Applied {app.appliedAt}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <button className="rounded-lg bg-foreground px-3 py-1.5 text-[10px] font-semibold text-background">Accept</button>
-                          <button className="rounded-lg border border-border px-3 py-1.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors">Decline</button>
-                        </div>
-                      </div>
-                    ))}
+        {/* ─── EXTRA SECTIONS (always visible) ─── */}
+        <section className="px-6 pb-16">
+          <div className="max-w-5xl mx-auto space-y-12">
+            
+            {/* Achievements */}
+            <div>
+              <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-4">Achievements</h2>
+              <div className="flex flex-wrap gap-3">
+                {guild.achievements.map((a, i) => (
+                  <div key={i} className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-3">
+                    <span className="text-lg">{a.icon}</span>
+                    <div>
+                      <p className="text-xs font-medium text-foreground">{a.name}</p>
+                      <p className="text-[10px] text-muted-foreground">{a.date}</p>
+                    </div>
                   </div>
-                </div>
-
-                {/* Member Management */}
-                <div>
-                  <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-6">Member Management</h2>
-                  <div className="grid gap-px bg-border rounded-xl overflow-hidden">
-                    {[...guild.leaders, ...guild.members].map(member => (
-                      <div key={member.id} className="flex items-center gap-4 p-3 bg-card">
-                        <div className="flex h-8 w-8 items-center justify-center rounded bg-surface-2 font-mono text-[10px] font-bold text-foreground">
-                          {member.avatar}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-foreground">{member.name}</p>
-                        </div>
-                        <span className="text-[10px] text-muted-foreground">{member.role}</span>
-                        <span className="font-mono text-[10px] text-muted-foreground">{member.elo}</span>
-                        <button className="text-muted-foreground hover:text-foreground transition-colors">
-                          <MoreHorizontal size={14} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Guild Settings */}
-                <div>
-                  <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-4">Settings</h2>
-                  <div className="space-y-3">
-                    {[
-                      { label: "Guild Name", value: guild.name },
-                      { label: "Category", value: guild.category },
-                      { label: "Visibility", value: guild.isPublic ? "Public" : "Private" },
-                      { label: "Min ELO Requirement", value: "1300" },
-                    ].map((setting, i) => (
-                      <div key={i} className="flex items-center justify-between py-3 border-b border-border last:border-0">
-                        <span className="text-xs text-muted-foreground">{setting.label}</span>
-                        <span className="text-xs font-medium text-foreground">{setting.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
-            )}
+            </div>
+
+            {/* Member Spotlight */}
+            <div>
+              <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-4">Member Spotlight</h2>
+              <div className="flex items-center gap-4 p-5 rounded-xl border border-border bg-card">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-2 font-mono text-sm font-bold text-foreground">
+                  {guild.spotlight.avatar}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground">{guild.spotlight.member}</p>
+                  <p className="text-xs text-muted-foreground">{guild.spotlight.reason}</p>
+                </div>
+                <span className="font-mono text-xs text-muted-foreground shrink-0">{guild.spotlight.elo} ELO</span>
+              </div>
+            </div>
+
+            {/* Skill Distribution */}
+            <div>
+              <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-4">Skill Distribution</h2>
+              <div className="space-y-3">
+                {guild.skillDistribution.map((s, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <span className="text-xs text-muted-foreground w-28 shrink-0">{s.skill}</span>
+                    <div className="flex-1 h-1.5 rounded-full bg-surface-2 overflow-hidden">
+                      <div className="h-full rounded-full bg-foreground" style={{ width: `${(s.members / guild.totalMembers) * 100}%` }} />
+                    </div>
+                    <span className="font-mono text-[10px] text-muted-foreground w-12 text-right">{s.members}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Open Roles / Recruiting */}
+            <div>
+              <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-4">Open Roles</h2>
+              <div className="space-y-3">
+                {guild.openRoles.map((role, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-sm font-medium text-foreground">{role.title}</h3>
+                        <span className="rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground">{role.level}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{role.description}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="font-mono text-xs text-muted-foreground">{role.applicants} applicants</p>
+                      <button className="mt-1 text-[10px] text-foreground hover:underline">Apply</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
           </div>
         </section>
 
