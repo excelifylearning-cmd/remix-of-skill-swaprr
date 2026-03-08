@@ -795,13 +795,41 @@ const GuildsTab = () => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const WalletTab = ({ profile }: { profile: any }) => {
-  const transactions = [
-    { id: 1, type: "earned", desc: "Gig completion: Logo Design", amount: 30, date: "2026-03-08" },
-    { id: 2, type: "spent", desc: "Auction bid: Video Editing", amount: -25, date: "2026-03-07" },
-    { id: 3, type: "earned", desc: "Jury duty reward", amount: 15, date: "2026-03-06" },
-    { id: 4, type: "tax", desc: "Platform tax (5%)", amount: -2, date: "2026-03-06" },
-    { id: 5, type: "earned", desc: "Referral bonus", amount: 50, date: "2026-03-05" },
-  ];
+  const { user } = useAuth();
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const { data } = await supabase
+        .from("sp_transactions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(20);
+      if (data?.length) {
+        setTransactions(data.map((t: any) => ({
+          id: t.id,
+          type: t.amount > 0 ? "earned" : t.type === "tax" ? "tax" : "spent",
+          desc: t.description || t.type,
+          amount: t.amount,
+          date: new Date(t.created_at).toLocaleDateString(),
+        })));
+      } else {
+        // Fallback mock
+        setTransactions([
+          { id: 1, type: "earned", desc: "Gig completion: Logo Design", amount: 30, date: "2026-03-08" },
+          { id: 2, type: "spent", desc: "Auction bid: Video Editing", amount: -25, date: "2026-03-07" },
+          { id: 3, type: "earned", desc: "Jury duty reward", amount: 15, date: "2026-03-06" },
+          { id: 4, type: "tax", desc: "Platform tax (5%)", amount: -2, date: "2026-03-06" },
+          { id: 5, type: "earned", desc: "Referral bonus", amount: 50, date: "2026-03-05" },
+        ]);
+      }
+      setLoading(false);
+    };
+    load();
+  }, [user]);
 
   return (
     <div className="space-y-6">
