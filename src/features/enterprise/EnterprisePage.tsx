@@ -111,10 +111,12 @@ interface ExpertProfile {
   name: string;
   skill: string;
   elo: number;
+  rating: number;
   university: string;
   avatar: string;
   available: boolean;
   gigs: number;
+  specialties: string[];
   specialties: string[];
 }
 
