@@ -28,7 +28,7 @@ const HomePage = () => {
         <WhatIsSection />
         <HowSwappingWorksSection />
         
-        <SkillPointsSection />
+        
         <MarketplacePreviewSection />
         <PlatformFormatsSection />
         <GamificationSection />
