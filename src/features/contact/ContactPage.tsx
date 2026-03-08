@@ -277,7 +277,7 @@ const ContactPage = () => {
                       ) : formStep === 1 ? (
                         <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
                           <div className="mb-2 flex items-center gap-2 rounded-lg bg-surface-1 px-3 py-2">
-                            <topics.find(t => t.label === topic)!.icon size={14} className="text-muted-foreground" />
+                            {(() => { const TopicIcon = topics.find(t => t.label === topic)!.icon; return <TopicIcon size={14} className="text-muted-foreground" />; })()}
                             <span className="text-xs font-medium text-muted-foreground">{topic}</span>
                             <button onClick={() => setFormStep(0)} className="ml-auto text-[10px] text-muted-foreground hover:text-foreground underline">Change</button>
                           </div>
