@@ -24,6 +24,7 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: userError.message }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
+  // Get user ID (either from creation or lookup)
   let userId = userData?.user?.id;
   if (!userId) {
     const { data: users } = await supabase.auth.admin.listUsers();
@@ -35,7 +36,7 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "Could not find/create user" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
-  // 2. Update profile
+  // 2. Update profile with rich data
   await supabase.from("profiles").update({
     full_name: "Admin User",
     display_name: "The Admin",
@@ -61,8 +62,9 @@ Deno.serve(async (req) => {
     twitter_url: "https://twitter.com/admin",
     personal_website: "https://skillswappr.com",
     work_history: [
-      { role: "CTO", company: "SkillSwappr", period: "2024 – Present", description: "Leading platform development." },
-      { role: "Senior Engineer", company: "Meta", period: "2021 – 2024", description: "React core team." },
+      { role: "CTO", company: "SkillSwappr", period: "2024 – Present", description: "Leading platform development and engineering team." },
+      { role: "Senior Engineer", company: "Meta", period: "2021 – 2024", description: "Worked on React core team and internal developer tools." },
+      { role: "Full-Stack Developer", company: "Stripe", period: "2019 – 2021", description: "Built payment infrastructure serving millions of transactions." },
     ],
     education_history: [
       { school: "Stanford University", degree: "M.S. Computer Science", period: "2017 – 2019" },
@@ -70,21 +72,23 @@ Deno.serve(async (req) => {
     ],
     certificates: [
       { name: "AWS Solutions Architect", issuer: "Amazon", date: "2023", verified: true },
+      { name: "Google Cloud Professional", issuer: "Google", date: "2022", verified: true },
     ],
     portfolio_items: [
       { title: "SkillSwappr Platform", description: "The skill exchange marketplace", image: "" },
+      { title: "Payment Dashboard", description: "Real-time analytics for transactions", image: "" },
     ],
     interests: ["Open Source", "EdTech", "AI/ML", "Community Building"],
     needs: ["Design Feedback", "Content Writers", "Beta Testers"],
   }).eq("user_id", userId);
 
-  // 3. Admin role
+  // 3. Give admin role
   await supabase.from("user_roles").upsert({ user_id: userId, role: "admin" }, { onConflict: "user_id,role" });
 
-  // 4. Create test guild
-  const { data: guildData } = await supabase.from("guilds").upsert({
+  // 4. Create a test guild
+  const { data: guildData } = await supabase.from("guilds").insert({
     name: "Code Collective",
-    description: "An elite guild of full-stack developers, designers, and architects.",
+    description: "An elite guild of full-stack developers, designers, and architects. We tackle the most challenging projects and mentor the next generation of tech talent.",
     slogan: "Build. Ship. Repeat.",
     category: "Engineering",
     rank: 1,
@@ -94,56 +98,41 @@ Deno.serve(async (req) => {
     avg_elo: 2100,
     win_rate: 78,
     created_by: userId,
-    requirements: ["ELO 1500+", "3+ completed gigs", "Portfolio review"],
-    perks: ["Priority project access", "Monthly SP bonus", "Mentorship program"],
-  }, { onConflict: "name" }).select("id").single();
+    requirements: ["ELO 1500+", "3+ completed gigs", "Portfolio review", "Code challenge pass"],
+    perks: ["Priority project access", "Monthly SP bonus", "Mentorship program", "Exclusive workshops", "Guild War participation"],
+  }).select("id").single();
 
   const guildId = guildData?.id;
 
   if (guildId) {
-    // Guild member
-    await supabase.from("guild_members").upsert({
+    // Add admin as Guild Master
+    await supabase.from("guild_members").insert({
       guild_id: guildId,
       user_id: userId,
       role: "Guild Master",
-    }, { onConflict: "guild_id,user_id" });
+    });
 
-    // Seed guild treasury
-    await supabase.from("guild_treasury_log").insert([
-      { guild_id: guildId, user_id: userId, type: "deposit", amount: 5000, reason: "Guild Wars S4 prize" },
-      { guild_id: guildId, user_id: userId, type: "deposit", amount: 3500, reason: "Monthly contributions" },
-      { guild_id: guildId, user_id: userId, type: "withdrawal", amount: -1200, reason: "Project funding: UI Kit v2" },
-      { guild_id: guildId, user_id: userId, type: "deposit", amount: 2000, reason: "Tournament winnings" },
-      { guild_id: guildId, user_id: userId, type: "withdrawal", amount: -800, reason: "Member SP advances" },
-    ]);
+    // Get badge and achievement IDs
+    const { data: badges } = await supabase.from("badges").select("id, name").limit(5);
+    const { data: achievements } = await supabase.from("achievements").select("id, name").limit(6);
 
-    // Seed guild wars
-    await supabase.from("guild_wars").insert([
-      { guild_id: guildId, opponent_name: "Tech Titans", status: "Upcoming", start_date: "2026-03-15T18:00:00Z", stakes: 500, our_score: 0, their_score: 0 },
-      { guild_id: guildId, opponent_name: "Creative Collective", status: "Victory", start_date: "2026-03-01T18:00:00Z", stakes: 300, our_score: 1250, their_score: 980 },
-      { guild_id: guildId, opponent_name: "Code Ninjas", status: "Defeat", start_date: "2026-02-15T18:00:00Z", stakes: 400, our_score: 890, their_score: 1100 },
-    ]);
-
-    // Seed guild projects
-    await supabase.from("guild_projects").insert([
-      { guild_id: guildId, title: "Platform API v2", client: "Internal", status: "In Progress", progress: 65, sp_pool: 2500, members_count: 4 },
-      { guild_id: guildId, title: "Brand Identity Suite", client: "External", status: "Planning", progress: 15, sp_pool: 800, members_count: 3 },
-      { guild_id: guildId, title: "Motion Graphics Pack", client: "External", status: "Completed", progress: 100, sp_pool: 500, members_count: 2 },
-    ]);
-
-    // Badges & achievements
-    const { data: badges } = await supabase.from("badges").select("id").limit(5);
-    const { data: achievements } = await supabase.from("achievements").select("id").limit(6);
-
-    if (badges?.length) {
-      await supabase.from("guild_badges").insert(badges.slice(0, 3).map((b: any) => ({ guild_id: guildId, badge_id: b.id })));
-      await supabase.from("user_badges").insert(badges.map((b: any) => ({ user_id: userId, badge_id: b.id })));
+    // Award badges to guild
+    if (badges && badges.length > 0) {
+      await supabase.from("guild_badges").insert(
+        badges.slice(0, 3).map((b: any) => ({ guild_id: guildId, badge_id: b.id }))
+      );
+      // Award badges to user
+      await supabase.from("user_badges").insert(
+        badges.map((b: any) => ({ user_id: userId, badge_id: b.id }))
+      );
     }
 
-    if (achievements?.length) {
+    // Award achievements
+    if (achievements && achievements.length > 0) {
       await supabase.from("guild_achievements").insert(
         achievements.slice(0, 3).map((a: any, i: number) => ({
-          guild_id: guildId, achievement_id: a.id,
+          guild_id: guildId,
+          achievement_id: a.id,
           progress: i === 0 ? 100 : 50 + i * 15,
           completed: i === 0,
           completed_at: i === 0 ? new Date().toISOString() : null,
@@ -151,7 +140,8 @@ Deno.serve(async (req) => {
       );
       await supabase.from("user_achievements").insert(
         achievements.map((a: any, i: number) => ({
-          user_id: userId, achievement_id: a.id,
+          user_id: userId,
+          achievement_id: a.id,
           progress: i < 2 ? 100 : 30 + i * 10,
           completed: i < 2,
           completed_at: i < 2 ? new Date().toISOString() : null,
@@ -160,23 +150,11 @@ Deno.serve(async (req) => {
     }
   }
 
-  // 5. Enterprise test data
-  const { data: ep1 } = await supabase.from("enterprise_projects").insert([
-    { user_id: userId, name: "AI Chatbot Integration", description: "Build conversational AI for customer support.", status: "In Progress", progress: 65, team_size: 4, budget: 5000, deadline: "2026-04-01", priority: "high" },
-    { user_id: userId, name: "Mobile App Redesign", description: "Complete redesign of the mobile experience.", status: "Planning", progress: 15, team_size: 3, budget: 3500, deadline: "2026-05-15", priority: "medium" },
-    { user_id: userId, name: "Data Pipeline Setup", description: "ETL pipeline for analytics and reporting.", status: "In Progress", progress: 40, team_size: 2, budget: 2800, deadline: "2026-04-20", priority: "high" },
-    { user_id: userId, name: "Security Audit", description: "Comprehensive security review and penetration testing.", status: "Completed", progress: 100, team_size: 1, budget: 1500, deadline: "2026-03-01", priority: "low" },
-  ]).select("id");
-
-  await supabase.from("enterprise_consultations").insert([
-    { user_id: userId, expert_name: "Victor Z.", topic: "ML Architecture Review", scheduled_date: "2026-03-12", scheduled_time: "2:00 PM", status: "Scheduled", sp_cost: 150 },
-    { user_id: userId, expert_name: "Niko A.", topic: "Cloud Migration Strategy", scheduled_date: "2026-03-15", scheduled_time: "10:00 AM", status: "Pending", sp_cost: 200 },
-  ]);
-
-  // 6. Listings
+  // 5. Create test listings
   await supabase.from("listings").insert([
-    { user_id: userId, title: "Full-Stack Web App Development", description: "Build modern React + Node.js applications.", category: "Development", price: "500 SP", status: "Active", views: 234, inquiries: 12 },
-    { user_id: userId, title: "System Architecture Review", description: "Review and optimize your app architecture.", category: "Consulting", price: "300 SP", status: "Active", views: 156, inquiries: 8 },
+    { user_id: userId, title: "Full-Stack Web App Development", description: "Build modern React + Node.js applications from scratch.", category: "Development", price: "500 SP", status: "Active", views: 234, inquiries: 12 },
+    { user_id: userId, title: "System Architecture Review", description: "Review and optimize your app architecture for scalability.", category: "Consulting", price: "300 SP", status: "Active", views: 156, inquiries: 8 },
+    { user_id: userId, title: "TypeScript Migration", description: "Migrate your JavaScript codebase to TypeScript with best practices.", category: "Development", price: "400 SP", status: "Paused", views: 89, inquiries: 4 },
   ]);
 
   return new Response(JSON.stringify({ success: true, userId, guildId }), {
