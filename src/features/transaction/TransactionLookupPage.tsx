@@ -247,22 +247,68 @@ const TransactionLookupPage = () => {
   const [code, setCode] = useState("");
   const [searching, setSearching] = useState(false);
   const [found, setFound] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+  const [txnData, setTxnData] = useState<any>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "details" | "security">("overview");
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!code.trim()) return;
     setSearching(true);
     setFound(false);
-    setTimeout(() => {
-      setSearching(false);
+    setNotFound(false);
+    setTxnData(null);
+
+    const { data, error } = await supabase
+      .from("transactions")
+      .select("*")
+      .eq("code", code.trim())
+      .maybeSingle();
+
+    setSearching(false);
+    if (data && !error) {
+      // Map DB columns to the shape used in the UI
+      setTxnData({
+        code: data.code,
+        status: data.status,
+        gig: data.gig_title,
+        format: data.format,
+        category: data.category,
+        date: new Date(data.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+        completedDate: data.completed_date ? new Date(data.completed_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—",
+        duration: data.duration,
+        seller: data.seller_data,
+        buyer: data.buyer_data,
+        points: data.points,
+        stages: data.stages,
+        quality: data.quality,
+        workspace: data.workspace,
+        deliverables: data.deliverables,
+        escrow: data.escrow,
+        security: data.security_data,
+        compliance: data.compliance,
+        skillImpact: data.skill_impact,
+        performance: data.performance,
+        recommendations: data.recommendations,
+        communicationHeatmap: data.communication_heatmap,
+        deviceInfo: data.device_info,
+        aiInsights: data.ai_insights,
+        comments: data.comments,
+        timeline: data.timeline,
+        fingerprint: data.fingerprint,
+        blockchainHash: data.blockchain_hash,
+        disputeHistory: data.dispute_history,
+        satisfactionSurvey: data.satisfaction_survey,
+      });
       setFound(true);
-    }, 1500);
+    } else {
+      setNotFound(true);
+    }
   };
 
   const toggleSection = (s: string) => setExpandedSection(expandedSection === s ? null : s);
-  const fmt = formatTemplates[mockTransaction.format];
-  const txn = mockTransaction;
+  const fmt = txnData ? formatTemplates[txnData.format] || formatTemplates["Direct Swap"] : formatTemplates["Direct Swap"];
+  const txn = txnData || mockTransaction;
 
   return (
     <PageTransition>
