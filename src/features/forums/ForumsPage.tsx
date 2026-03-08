@@ -911,7 +911,7 @@ const ForumsPage = () => {
                   <div className="rounded-2xl border border-border bg-card p-5">
                     <h3 className="mb-3 text-xs font-bold text-foreground">Related Threads</h3>
                     <div className="space-y-2.5">
-                      {allThreads.filter(t => t.id !== openThread.id && t.category === openThread.category).slice(0, 3).map((t) => (
+                      {allThreadsDisplay.filter(t => t.id !== openThread.id && t.category === openThread.category).slice(0, 3).map((t) => (
                         <button key={t.id} onClick={() => setSelectedThread(t.id)} className="block w-full text-left group">
                           <p className="text-[11px] font-medium text-foreground line-clamp-2 group-hover:text-muted-foreground transition-colors">{t.title}</p>
                           <div className="mt-0.5 flex items-center gap-2 text-[9px] text-muted-foreground">
