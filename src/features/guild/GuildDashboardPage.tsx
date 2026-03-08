@@ -1,28 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams, useParams } from "react-router-dom";
 import {
   Users, Shield, Trophy, Zap, Coins, Crown, Star, TrendingUp,
   Briefcase, Calendar, MessageSquare, Settings, Bell, Plus,
   LayoutDashboard, Wallet, Swords, Target, Award, ChevronRight,
   UserPlus, UserMinus, ArrowUpRight, ArrowDownRight, Gift,
   Lock, Unlock, BarChart3, Activity, Send, Clock, CheckCircle2,
-  AlertTriangle, Hand, Scale
+  AlertTriangle, Hand, Scale, Loader2
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
   SidebarProvider, SidebarTrigger, useSidebar,
 } from "@/components/ui/sidebar";
 import PageTransition from "@/components/shared/PageTransition";
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   MOCK DATA
-═══════════════════════════════════════════════════════════════════════════ */
+import { toast } from "sonner";
 
 const sidebarItems = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -31,62 +28,8 @@ const sidebarItems = [
   { id: "lending", label: "SP Lending", icon: Hand },
   { id: "wars", label: "Guild Wars", icon: Swords },
   { id: "projects", label: "Guild Projects", icon: Briefcase },
-  { id: "leaderboard", label: "Leaderboard", icon: Trophy },
   { id: "settings", label: "Settings", icon: Settings },
 ];
-
-const guildData = {
-  name: "Design Dragons",
-  icon: "🐉",
-  rank: 3,
-  totalMembers: 156,
-  avgElo: 1520,
-  treasurySP: 12500,
-  warsWon: 8,
-  warsLost: 2,
-  founded: "2025-06-15",
-  description: "Elite design guild specializing in brand identity, UI/UX, and motion graphics. We take on ambitious projects together.",
-};
-
-const members = [
-  { id: 1, name: "Maya K.", role: "Leader", elo: 1450, sp: 850, avatar: "MK", contributions: 2400, status: "online" },
-  { id: 2, name: "Chen L.", role: "Officer", elo: 1750, sp: 1200, avatar: "CL", contributions: 3100, status: "online" },
-  { id: 3, name: "Raj P.", role: "Officer", elo: 1720, sp: 980, avatar: "RP", contributions: 2800, status: "away" },
-  { id: 4, name: "Lena S.", role: "Member", elo: 1380, sp: 450, avatar: "LS", contributions: 890, status: "offline" },
-  { id: 5, name: "Omar H.", role: "Member", elo: 1600, sp: 720, avatar: "OH", contributions: 1500, status: "online" },
-  { id: 6, name: "Tara J.", role: "Member", elo: 1470, sp: 560, avatar: "TJ", contributions: 1200, status: "online" },
-  { id: 7, name: "Suki T.", role: "Member", elo: 1540, sp: 680, avatar: "ST", contributions: 1100, status: "offline" },
-  { id: 8, name: "Alex F.", role: "Member", elo: 1490, sp: 520, avatar: "AF", contributions: 950, status: "away" },
-];
-
-const treasuryHistory = [
-  { id: 1, type: "deposit", user: "Maya K.", amount: 500, reason: "Guild Wars S4 prize", date: "2026-03-06" },
-  { id: 2, type: "withdrawal", user: "Chen L.", amount: -200, reason: "Project funding", date: "2026-03-05" },
-  { id: 3, type: "deposit", user: "Raj P.", amount: 350, reason: "Monthly contribution", date: "2026-03-01" },
-  { id: 4, type: "lending", user: "Lena S.", amount: -150, reason: "SP loan to member", date: "2026-02-28" },
-  { id: 5, type: "deposit", user: "Guild", amount: 1000, reason: "Guild Wars S3 victory", date: "2026-02-20" },
-];
-
-const activeLoans = [
-  { id: 1, borrower: "Lena S.", amount: 150, borrowed: "2026-02-28", dueDate: "2026-03-28", status: "active", interest: 5 },
-  { id: 2, borrower: "Alex F.", amount: 100, borrowed: "2026-03-01", dueDate: "2026-04-01", status: "active", interest: 5 },
-];
-
-const guildWars = [
-  { id: 1, opponent: "Code Ninjas", status: "Upcoming", startDate: "2026-03-15", stakes: 500, ourScore: 0, theirScore: 0 },
-  { id: 2, opponent: "Creative Collective", status: "Victory", startDate: "2026-03-01", stakes: 300, ourScore: 1250, theirScore: 980 },
-  { id: 3, opponent: "Tech Titans", status: "Defeat", startDate: "2026-02-15", stakes: 400, ourScore: 890, theirScore: 1100 },
-];
-
-const guildProjects = [
-  { id: 1, title: "Brand Identity Suite", client: "External", status: "In Progress", progress: 60, spPool: 800, members: 4 },
-  { id: 2, title: "UI Kit v2.0", client: "Internal", status: "Planning", progress: 15, spPool: 0, members: 6 },
-  { id: 3, title: "Motion Graphics Pack", client: "External", status: "Completed", progress: 100, spPool: 500, members: 3 },
-];
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   HELPER FUNCTIONS
-═══════════════════════════════════════════════════════════════════════════ */
 
 const eloTier = (elo: number) => {
   if (elo >= 1700) return { label: "Diamond", color: "text-court-blue", bg: "bg-court-blue/10" };
@@ -97,63 +40,81 @@ const eloTier = (elo: number) => {
 
 const roleColor = (role: string) => {
   switch (role) {
-    case "Leader": return "bg-badge-gold/10 text-badge-gold";
+    case "Guild Master": return "bg-badge-gold/10 text-badge-gold";
     case "Officer": return "bg-court-blue/10 text-court-blue";
     default: return "bg-surface-2 text-muted-foreground";
   }
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   OVERVIEW TAB
-═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ HOOKS ═══ */
+const useGuildDashData = (guildId: string | undefined) => {
+  const [guild, setGuild] = useState<any>(null);
+  const [members, setMembers] = useState<any[]>([]);
+  const [treasury, setTreasury] = useState<any[]>([]);
+  const [loans, setLoans] = useState<any[]>([]);
+  const [wars, setWars] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const OverviewTab = () => {
+  const reload = async () => {
+    if (!guildId) return;
+    setLoading(true);
+    const [guildRes, membersRes, treasuryRes, loansRes, warsRes, projectsRes] = await Promise.all([
+      supabase.from("guilds").select("*").eq("id", guildId).single(),
+      supabase.from("guild_members").select("user_id, role, joined_at, profiles(full_name, elo, sp, avatar_url)").eq("guild_id", guildId),
+      supabase.from("guild_treasury_log").select("*").eq("guild_id", guildId).order("created_at", { ascending: false }).limit(50),
+      supabase.from("guild_loans").select("*").eq("guild_id", guildId).order("borrowed_at", { ascending: false }),
+      supabase.from("guild_wars").select("*").eq("guild_id", guildId).order("start_date", { ascending: false }),
+      supabase.from("guild_projects").select("*").eq("guild_id", guildId).order("created_at", { ascending: false }),
+    ]);
+    if (guildRes.data) setGuild(guildRes.data);
+    setMembers((membersRes.data || []).map((m: any) => ({
+      user_id: m.user_id, role: m.role, joined_at: m.joined_at,
+      name: m.profiles?.full_name || "Unknown", elo: m.profiles?.elo || 1000,
+      sp: m.profiles?.sp || 0, avatar: (m.profiles?.full_name || "U").split(" ").map((n: string) => n[0]).join("").slice(0, 2),
+    })));
+    setTreasury(treasuryRes.data || []);
+    setLoans(loansRes.data || []);
+    setWars(warsRes.data || []);
+    setProjects(projectsRes.data || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { reload(); }, [guildId]);
+  return { guild, members, treasury, loans, wars, projects, loading, reload };
+};
+
+/* ═══ OVERVIEW ═══ */
+const OverviewTab = ({ guild, members, treasury, wars, projects }: any) => {
+  if (!guild) return null;
   const stats = [
-    { label: "Treasury", value: guildData.treasurySP.toLocaleString(), icon: Coins, color: "text-badge-gold" },
-    { label: "Members", value: guildData.totalMembers, icon: Users, color: "text-foreground" },
-    { label: "Avg ELO", value: guildData.avgElo, icon: TrendingUp, color: "text-skill-green" },
-    { label: "Global Rank", value: `#${guildData.rank}`, icon: Trophy, color: "text-court-blue" },
+    { label: "Treasury", value: (guild.total_sp || 0).toLocaleString(), icon: Coins, color: "text-badge-gold" },
+    { label: "Members", value: members.length, icon: Users, color: "text-foreground" },
+    { label: "Avg ELO", value: guild.avg_elo || 1000, icon: TrendingUp, color: "text-skill-green" },
+    { label: "Global Rank", value: guild.rank > 0 ? `#${guild.rank}` : "—", icon: Trophy, color: "text-court-blue" },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Guild Banner */}
       <div className="rounded-2xl border border-border bg-gradient-to-br from-badge-gold/10 via-card to-surface-1 p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-surface-2 text-4xl">
-              {guildData.icon}
-            </div>
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-surface-2 text-4xl">⚔️</div>
             <div>
-              <h2 className="font-heading text-3xl font-black text-foreground">{guildData.name}</h2>
-              <p className="text-muted-foreground mt-1 max-w-lg">{guildData.description}</p>
-              <div className="flex items-center gap-3 mt-2">
-                <Badge className="bg-badge-gold/10 text-badge-gold border-none">Rank #{guildData.rank}</Badge>
-                <span className="text-xs text-muted-foreground">Founded {new Date(guildData.founded).toLocaleDateString()}</span>
-              </div>
+              <h2 className="font-heading text-3xl font-black text-foreground">{guild.name}</h2>
+              <p className="text-muted-foreground mt-1 max-w-lg">{guild.description || "No description."}</p>
+              <Badge className="mt-2 bg-badge-gold/10 text-badge-gold border-none">Rank #{guild.rank || "—"}</Badge>
             </div>
           </div>
           <div className="hidden lg:flex flex-col items-end gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-skill-green font-bold">{guildData.warsWon}W</span>
-              <span className="text-muted-foreground">/</span>
-              <span className="text-sm text-alert-red font-bold">{guildData.warsLost}L</span>
-            </div>
-            <span className="text-xs text-muted-foreground">Guild Wars Record</span>
+            <span className="text-sm text-muted-foreground">Win Rate: {guild.win_rate || 0}%</span>
           </div>
         </div>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
-          <motion.div
-            key={i}
-            className="rounded-xl border border-border bg-card p-5"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-          >
+          <motion.div key={i} className="rounded-xl border border-border bg-card p-5" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
             <stat.icon size={18} className={`${stat.color} mb-2`} />
             <p className={`font-heading text-2xl font-black ${stat.color}`}>{stat.value}</p>
             <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
@@ -161,264 +122,180 @@ const OverviewTab = () => {
         ))}
       </div>
 
-      {/* Quick Sections */}
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Top Contributors */}
         <div className="rounded-xl border border-border bg-card p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-heading text-lg font-bold text-foreground">Top Contributors</h3>
-            <Link to="?tab=members" className="text-xs text-muted-foreground hover:text-foreground">View All →</Link>
-          </div>
+          <h3 className="font-heading text-lg font-bold text-foreground mb-4">Top Members</h3>
           <div className="space-y-3">
-            {members.slice(0, 4).map((member, i) => {
-              const tier = eloTier(member.elo);
-              return (
-                <div key={member.id} className="flex items-center gap-3">
-                  <span className={`text-lg font-bold ${i === 0 ? 'text-badge-gold' : i === 1 ? 'text-muted-foreground' : i === 2 ? 'text-orange-400' : 'text-muted-foreground/50'}`}>
-                    #{i + 1}
-                  </span>
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${tier.bg} font-mono text-sm font-bold ${tier.color}`}>
-                    {member.avatar}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">{member.name}</p>
-                    <p className="text-xs text-muted-foreground">{member.contributions.toLocaleString()} SP contributed</p>
-                  </div>
-                  <Badge className={roleColor(member.role)}>{member.role}</Badge>
+            {members.sort((a: any, b: any) => b.elo - a.elo).slice(0, 4).map((m: any, i: number) => (
+              <div key={m.user_id} className="flex items-center gap-3">
+                <span className={`text-lg font-bold ${i === 0 ? 'text-badge-gold' : 'text-muted-foreground/50'}`}>#{i + 1}</span>
+                <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${eloTier(m.elo).bg} font-mono text-sm font-bold ${eloTier(m.elo).color}`}>{m.avatar}</div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">{m.name}</p>
+                  <p className="text-xs text-muted-foreground">ELO {m.elo}</p>
                 </div>
-              );
-            })}
+                <Badge className={roleColor(m.role)}>{m.role}</Badge>
+              </div>
+            ))}
+            {members.length === 0 && <p className="text-sm text-muted-foreground">No members yet</p>}
           </div>
         </div>
 
-        {/* Upcoming Wars */}
         <div className="rounded-xl border border-border bg-card p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-heading text-lg font-bold text-foreground flex items-center gap-2">
-              <Swords size={16} className="text-alert-red" /> Guild Wars
-            </h3>
-            <Link to="?tab=wars" className="text-xs text-muted-foreground hover:text-foreground">View All →</Link>
-          </div>
-          <div className="space-y-3">
-            {guildWars.slice(0, 3).map((war) => (
+          <h3 className="font-heading text-lg font-bold text-foreground flex items-center gap-2"><Swords size={16} className="text-alert-red" /> Guild Wars</h3>
+          <div className="space-y-3 mt-4">
+            {wars.slice(0, 3).map((war: any) => (
               <div key={war.id} className={`rounded-lg border p-3 ${
                 war.status === "Upcoming" ? "border-badge-gold/20 bg-badge-gold/5" :
                 war.status === "Victory" ? "border-skill-green/20 bg-skill-green/5" :
                 "border-alert-red/20 bg-alert-red/5"
               }`}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-foreground">vs {war.opponent}</span>
-                  <Badge className={
-                    war.status === "Upcoming" ? "bg-badge-gold/10 text-badge-gold border-none" :
-                    war.status === "Victory" ? "bg-skill-green/10 text-skill-green border-none" :
-                    "bg-alert-red/10 text-alert-red border-none"
-                  }>
-                    {war.status}
-                  </Badge>
+                  <span className="text-sm font-medium text-foreground">vs {war.opponent_name}</span>
+                  <Badge className={war.status === "Victory" ? "bg-skill-green/10 text-skill-green border-none" : war.status === "Upcoming" ? "bg-badge-gold/10 text-badge-gold border-none" : "bg-alert-red/10 text-alert-red border-none"}>{war.status}</Badge>
                 </div>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{new Date(war.startDate).toLocaleDateString()}</span>
+                  <span>{new Date(war.start_date).toLocaleDateString()}</span>
                   <span className="text-badge-gold font-medium">{war.stakes} SP stakes</span>
+                </div>
+              </div>
+            ))}
+            {wars.length === 0 && <p className="text-sm text-muted-foreground">No wars yet</p>}
+          </div>
+        </div>
+      </div>
+
+      {projects.length > 0 && (
+        <div className="rounded-xl border border-border bg-card p-5">
+          <h3 className="font-heading text-lg font-bold text-foreground mb-4">Guild Projects</h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {projects.slice(0, 6).map((p: any) => (
+              <div key={p.id} className="rounded-xl border border-border bg-surface-1 p-4">
+                <Badge className={p.status === "Completed" ? "bg-skill-green/10 text-skill-green border-none" : p.status === "In Progress" ? "bg-court-blue/10 text-court-blue border-none" : "bg-badge-gold/10 text-badge-gold border-none"}>{p.status}</Badge>
+                <h4 className="text-sm font-bold text-foreground mt-2 mb-2">{p.title}</h4>
+                <Progress value={p.progress} className="h-1.5 mb-2" />
+                <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                  <span>{p.members_count} members</span>
+                  {p.sp_pool > 0 && <span className="text-badge-gold">{p.sp_pool} SP</span>}
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </div>
-
-      {/* Active Projects */}
-      <div className="rounded-xl border border-border bg-card p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-heading text-lg font-bold text-foreground">Guild Projects</h3>
-          <Link to="?tab=projects" className="text-xs text-muted-foreground hover:text-foreground">View All →</Link>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {guildProjects.map((project) => (
-            <div key={project.id} className="rounded-xl border border-border bg-surface-1 p-4">
-              <div className="flex items-center justify-between mb-2">
-                <Badge className={
-                  project.status === "Completed" ? "bg-skill-green/10 text-skill-green border-none" :
-                  project.status === "In Progress" ? "bg-court-blue/10 text-court-blue border-none" :
-                  "bg-badge-gold/10 text-badge-gold border-none"
-                }>
-                  {project.status}
-                </Badge>
-                <Badge variant="secondary">{project.client}</Badge>
-              </div>
-              <h4 className="text-sm font-bold text-foreground mb-2">{project.title}</h4>
-              <Progress value={project.progress} className="h-1.5 mb-2" />
-              <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                <span>{project.members} members</span>
-                {project.spPool > 0 && <span className="text-badge-gold">{project.spPool} SP pool</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
     </div>
   );
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   MEMBERS TAB
-═══════════════════════════════════════════════════════════════════════════ */
-
-const MembersTab = () => {
+/* ═══ MEMBERS ═══ */
+const MembersTab = ({ members }: { members: any[] }) => {
   const [filter, setFilter] = useState("all");
-
-  const filteredMembers = filter === "all" ? members : members.filter(m => m.role.toLowerCase() === filter);
+  const filtered = filter === "all" ? members : members.filter((m: any) => m.role.toLowerCase().includes(filter));
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-2xl font-bold text-foreground">Members ({members.length})</h2>
-        <button className="flex items-center gap-2 rounded-xl bg-foreground px-4 py-2 text-sm font-semibold text-background">
-          <UserPlus size={14} /> Invite
-        </button>
       </div>
-
       <div className="flex gap-2">
-        {["all", "leader", "officer", "member"].map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-              filter === f ? 'bg-foreground text-background' : 'bg-surface-1 text-muted-foreground hover:text-foreground'
-            }`}
-          >
+        {["all", "guild master", "officer", "member"].map((f) => (
+          <button key={f} onClick={() => setFilter(f)} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${filter === f ? 'bg-foreground text-background' : 'bg-surface-1 text-muted-foreground hover:text-foreground'}`}>
             {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}
       </div>
-
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredMembers.map((member) => {
-          const tier = eloTier(member.elo);
+        {filtered.map((m: any) => {
+          const tier = eloTier(m.elo);
           return (
-            <motion.div
-              key={member.id}
-              className="rounded-2xl border border-border bg-card p-5"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <div className="flex items-start gap-3 mb-4">
-                <div className="relative">
-                  <div className={`flex h-14 w-14 items-center justify-center rounded-xl ${tier.bg} font-mono text-lg font-bold ${tier.color}`}>
-                    {member.avatar}
+            <Link key={m.user_id} to={`/profile/${m.user_id}`}>
+              <motion.div className="rounded-2xl border border-border bg-card p-5 hover:border-foreground/20 transition-colors" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                <div className="flex items-start gap-3 mb-4">
+                  <div className={`flex h-14 w-14 items-center justify-center rounded-xl ${tier.bg} font-mono text-lg font-bold ${tier.color}`}>{m.avatar}</div>
+                  <div className="flex-1">
+                    <h3 className="text-base font-bold text-foreground">{m.name}</h3>
+                    <Badge className={`mt-1 ${roleColor(m.role)}`}>{m.role}</Badge>
                   </div>
-                  <div className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-card ${
-                    member.status === "online" ? "bg-skill-green" :
-                    member.status === "away" ? "bg-badge-gold" : "bg-muted-foreground/30"
-                  }`} />
+                  <Badge className={`${tier.bg} ${tier.color} border-none`}>{tier.label}</Badge>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-base font-bold text-foreground">{member.name}</h3>
-                  <Badge className={`mt-1 ${roleColor(member.role)}`}>{member.role}</Badge>
+                <div className="grid grid-cols-2 gap-2 text-center">
+                  <div className="rounded-lg bg-surface-1 p-2">
+                    <p className="text-xs font-bold text-foreground">{m.elo}</p>
+                    <p className="text-[9px] text-muted-foreground">ELO</p>
+                  </div>
+                  <div className="rounded-lg bg-surface-1 p-2">
+                    <p className="text-xs font-bold text-badge-gold">{m.sp}</p>
+                    <p className="text-[9px] text-muted-foreground">SP</p>
+                  </div>
                 </div>
-                <Badge className={`${tier.bg} ${tier.color} border-none`}>{tier.label}</Badge>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="rounded-lg bg-surface-1 p-2">
-                  <p className="text-xs font-bold text-foreground">{member.elo}</p>
-                  <p className="text-[9px] text-muted-foreground">ELO</p>
-                </div>
-                <div className="rounded-lg bg-surface-1 p-2">
-                  <p className="text-xs font-bold text-badge-gold">{member.sp}</p>
-                  <p className="text-[9px] text-muted-foreground">SP</p>
-                </div>
-                <div className="rounded-lg bg-surface-1 p-2">
-                  <p className="text-xs font-bold text-foreground">{(member.contributions / 1000).toFixed(1)}k</p>
-                  <p className="text-[9px] text-muted-foreground">Contrib</p>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </Link>
           );
         })}
       </div>
+      {filtered.length === 0 && <p className="text-center text-sm text-muted-foreground py-12">No members found</p>}
     </div>
   );
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   TREASURY TAB
-═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ TREASURY ═══ */
+const TreasuryTab = ({ guild, treasury, members }: any) => {
+  const getMemberName = (uid: string | null) => {
+    if (!uid) return "System";
+    return members.find((m: any) => m.user_id === uid)?.name || "Unknown";
+  };
 
-const TreasuryTab = () => {
   return (
     <div className="space-y-6">
-      {/* Balance Card */}
       <div className="rounded-2xl border border-badge-gold/20 bg-gradient-to-br from-badge-gold/10 via-card to-surface-1 p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Guild Treasury</p>
-            <p className="font-heading text-4xl font-black text-badge-gold">{guildData.treasurySP.toLocaleString()} SP</p>
+            <p className="font-heading text-4xl font-black text-badge-gold">{(guild?.total_sp || 0).toLocaleString()} SP</p>
           </div>
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-badge-gold/10">
             <Coins size={32} className="text-badge-gold" />
           </div>
         </div>
-        <div className="flex gap-3">
-          <button className="flex-1 rounded-xl bg-foreground py-3 text-sm font-semibold text-background flex items-center justify-center gap-2">
-            <ArrowUpRight size={14} /> Deposit
-          </button>
-          <button className="flex-1 rounded-xl border border-border py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-2">
-            <ArrowDownRight size={14} /> Withdraw
-          </button>
-        </div>
       </div>
 
-      {/* Transaction History */}
       <div className="rounded-xl border border-border bg-card p-5">
         <h3 className="font-heading text-lg font-bold text-foreground mb-4">Transaction History</h3>
         <div className="space-y-2">
-          {treasuryHistory.map((tx) => (
+          {treasury.map((tx: any) => (
             <div key={tx.id} className="flex items-center gap-3 rounded-lg bg-surface-1 p-3">
-              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
-                tx.type === "deposit" ? "bg-skill-green/10" :
-                tx.type === "withdrawal" ? "bg-alert-red/10" :
-                "bg-court-blue/10"
-              }`}>
-                {tx.type === "deposit" ? <ArrowUpRight size={16} className="text-skill-green" /> :
-                 tx.type === "withdrawal" ? <ArrowDownRight size={16} className="text-alert-red" /> :
-                 <Hand size={16} className="text-court-blue" />}
+              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${tx.type === "deposit" ? "bg-skill-green/10" : "bg-alert-red/10"}`}>
+                {tx.type === "deposit" ? <ArrowUpRight size={16} className="text-skill-green" /> : <ArrowDownRight size={16} className="text-alert-red" />}
               </div>
               <div className="flex-1">
-                <p className="text-sm text-foreground">{tx.reason}</p>
-                <p className="text-[10px] text-muted-foreground">by {tx.user} · {tx.date}</p>
+                <p className="text-sm text-foreground">{tx.reason || tx.type}</p>
+                <p className="text-[10px] text-muted-foreground">by {getMemberName(tx.user_id)} · {new Date(tx.created_at).toLocaleDateString()}</p>
               </div>
-              <span className={`text-sm font-bold ${tx.amount > 0 ? "text-skill-green" : "text-alert-red"}`}>
-                {tx.amount > 0 ? "+" : ""}{tx.amount} SP
+              <span className={`text-sm font-bold ${tx.type === "deposit" ? "text-skill-green" : "text-alert-red"}`}>
+                {tx.type === "deposit" ? "+" : "-"}{tx.amount} SP
               </span>
             </div>
           ))}
+          {treasury.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No transactions yet</p>}
         </div>
       </div>
     </div>
   );
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   LENDING TAB
-═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ LENDING ═══ */
+const LendingTab = ({ loans, members }: any) => {
+  const activeLoans = loans.filter((l: any) => l.status === "active");
+  const totalOutstanding = activeLoans.reduce((s: number, l: any) => s + l.amount, 0);
 
-const LendingTab = () => {
+  const getMemberName = (uid: string) => members.find((m: any) => m.user_id === uid)?.name || "Unknown";
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-heading text-2xl font-bold text-foreground">SP Lending</h2>
-          <p className="text-sm text-muted-foreground">Lend SP to guild members with automatic interest</p>
-        </div>
-        <button className="flex items-center gap-2 rounded-xl bg-foreground px-4 py-2 text-sm font-semibold text-background">
-          <Plus size={14} /> New Loan
-        </button>
-      </div>
-
-      {/* Stats */}
+      <h2 className="font-heading text-2xl font-bold text-foreground">SP Lending</h2>
       <div className="grid grid-cols-3 gap-4">
         <div className="rounded-xl border border-border bg-card p-5 text-center">
-          <p className="font-heading text-2xl font-black text-court-blue">250</p>
+          <p className="font-heading text-2xl font-black text-court-blue">{totalOutstanding}</p>
           <p className="text-xs text-muted-foreground">SP Outstanding</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-5 text-center">
@@ -426,184 +303,122 @@ const LendingTab = () => {
           <p className="text-xs text-muted-foreground">Interest Rate</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-5 text-center">
-          <p className="font-heading text-2xl font-black text-foreground">2</p>
+          <p className="font-heading text-2xl font-black text-foreground">{activeLoans.length}</p>
           <p className="text-xs text-muted-foreground">Active Loans</p>
         </div>
       </div>
-
-      {/* Active Loans */}
       <div className="rounded-xl border border-border bg-card p-5">
         <h3 className="font-heading text-lg font-bold text-foreground mb-4">Active Loans</h3>
         <div className="space-y-4">
-          {activeLoans.map((loan) => (
+          {activeLoans.map((loan: any) => (
             <div key={loan.id} className="rounded-xl border border-border bg-surface-1 p-4">
               <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 font-mono text-sm font-bold text-foreground">
-                    {loan.borrower.split(" ").map(n => n[0]).join("")}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{loan.borrower}</p>
-                    <p className="text-xs text-muted-foreground">Borrowed {loan.borrowed}</p>
-                  </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{getMemberName(loan.borrower_id)}</p>
+                  <p className="text-xs text-muted-foreground">Borrowed {new Date(loan.borrowed_at).toLocaleDateString()}</p>
                 </div>
                 <Badge className="bg-court-blue/10 text-court-blue border-none">{loan.status}</Badge>
               </div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <span className="text-sm font-bold text-badge-gold">{loan.amount} SP</span>
-                  <span className="text-xs text-muted-foreground">+{loan.interest}% interest</span>
-                </div>
-                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Clock size={10} /> Due: {loan.dueDate}
-                </span>
+                <span className="text-sm font-bold text-badge-gold">{loan.amount} SP</span>
+                <span className="flex items-center gap-1 text-xs text-muted-foreground"><Clock size={10} /> Due: {new Date(loan.due_date).toLocaleDateString()}</span>
               </div>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Info Box */}
-      <div className="rounded-xl border border-court-blue/20 bg-court-blue/5 p-4">
-        <div className="flex items-start gap-3">
-          <Shield size={18} className="text-court-blue shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-medium text-foreground">Guild Lending Protection</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Loans are backed by the borrower's ELO reputation. Defaulting affects their ELO score and may result in guild removal.
-            </p>
-          </div>
+          {activeLoans.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No active loans</p>}
         </div>
       </div>
     </div>
   );
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   GUILD WARS TAB
-═══════════════════════════════════════════════════════════════════════════ */
-
-const WarsTab = () => {
+/* ═══ WARS ═══ */
+const WarsTab = ({ guild, wars }: any) => {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-heading text-2xl font-bold text-foreground flex items-center gap-2">
-            <Swords size={24} className="text-alert-red" /> Guild Wars
-          </h2>
-          <p className="text-sm text-muted-foreground">Compete with other guilds for SP and glory</p>
-        </div>
-        <div className="flex items-center gap-2 bg-surface-1 rounded-xl px-4 py-2">
-          <span className="text-sm text-skill-green font-bold">{guildData.warsWon}W</span>
-          <span className="text-muted-foreground">/</span>
-          <span className="text-sm text-alert-red font-bold">{guildData.warsLost}L</span>
-        </div>
-      </div>
-
+      <h2 className="font-heading text-2xl font-bold text-foreground flex items-center gap-2"><Swords size={24} className="text-alert-red" /> Guild Wars</h2>
       <div className="space-y-4">
-        {guildWars.map((war) => (
-          <motion.div
-            key={war.id}
-            className={`rounded-2xl border overflow-hidden ${
-              war.status === "Upcoming" ? "border-badge-gold/30" :
-              war.status === "Victory" ? "border-skill-green/30" :
-              "border-alert-red/30"
-            }`}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <div className={`px-5 py-3 ${
-              war.status === "Upcoming" ? "bg-badge-gold/10" :
-              war.status === "Victory" ? "bg-skill-green/10" :
-              "bg-alert-red/10"
-            }`}>
+        {wars.map((war: any) => (
+          <motion.div key={war.id} className={`rounded-2xl border overflow-hidden ${war.status === "Upcoming" ? "border-badge-gold/30" : war.status === "Victory" ? "border-skill-green/30" : "border-alert-red/30"}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <div className={`px-5 py-3 ${war.status === "Upcoming" ? "bg-badge-gold/10" : war.status === "Victory" ? "bg-skill-green/10" : "bg-alert-red/10"}`}>
               <div className="flex items-center justify-between">
-                <Badge className={
-                  war.status === "Upcoming" ? "bg-badge-gold/20 text-badge-gold border-none" :
-                  war.status === "Victory" ? "bg-skill-green/20 text-skill-green border-none" :
-                  "bg-alert-red/20 text-alert-red border-none"
-                }>
-                  {war.status}
-                </Badge>
-                <span className="text-xs text-muted-foreground">{war.startDate}</span>
+                <Badge className={war.status === "Victory" ? "bg-skill-green/20 text-skill-green border-none" : war.status === "Upcoming" ? "bg-badge-gold/20 text-badge-gold border-none" : "bg-alert-red/20 text-alert-red border-none"}>{war.status}</Badge>
+                <span className="text-xs text-muted-foreground">{new Date(war.start_date).toLocaleDateString()}</span>
               </div>
             </div>
             <div className="p-5 bg-card">
               <div className="flex items-center justify-center gap-8 mb-4">
                 <div className="text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-surface-2 text-2xl mx-auto mb-2">
-                    {guildData.icon}
-                  </div>
-                  <p className="text-sm font-bold text-foreground">{guildData.name}</p>
-                  {war.status !== "Upcoming" && (
-                    <p className={`text-xl font-black ${war.ourScore > war.theirScore ? "text-skill-green" : "text-alert-red"}`}>
-                      {war.ourScore}
-                    </p>
-                  )}
+                  <p className="text-sm font-bold text-foreground">{guild?.name}</p>
+                  {war.status !== "Upcoming" && <p className={`text-xl font-black ${war.our_score > war.their_score ? "text-skill-green" : "text-alert-red"}`}>{war.our_score}</p>}
                 </div>
                 <div className="text-3xl font-black text-muted-foreground/30">VS</div>
                 <div className="text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-surface-2 text-2xl mx-auto mb-2">
-                    ⚔️
-                  </div>
-                  <p className="text-sm font-bold text-foreground">{war.opponent}</p>
-                  {war.status !== "Upcoming" && (
-                    <p className={`text-xl font-black ${war.theirScore > war.ourScore ? "text-skill-green" : "text-alert-red"}`}>
-                      {war.theirScore}
-                    </p>
-                  )}
+                  <p className="text-sm font-bold text-foreground">{war.opponent_name}</p>
+                  {war.status !== "Upcoming" && <p className={`text-xl font-black ${war.their_score > war.our_score ? "text-skill-green" : "text-alert-red"}`}>{war.their_score}</p>}
                 </div>
               </div>
-              <div className="flex items-center justify-center gap-2 text-badge-gold">
-                <Coins size={14} />
-                <span className="text-sm font-bold">{war.stakes} SP stakes</span>
-              </div>
+              <div className="flex items-center justify-center gap-2 text-badge-gold"><Coins size={14} /><span className="text-sm font-bold">{war.stakes} SP stakes</span></div>
             </div>
           </motion.div>
         ))}
+        {wars.length === 0 && <div className="py-16 text-center text-muted-foreground"><Swords size={32} className="mx-auto mb-3 opacity-30" /><p>No guild wars yet</p></div>}
       </div>
     </div>
   );
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   SIDEBAR
-═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ PROJECTS ═══ */
+const ProjectsTab = ({ projects }: { projects: any[] }) => (
+  <div className="space-y-6">
+    <h2 className="font-heading text-2xl font-bold text-foreground">Guild Projects</h2>
+    <div className="grid gap-4 sm:grid-cols-2">
+      {projects.map((p: any) => (
+        <div key={p.id} className="rounded-2xl border border-border bg-card p-5">
+          <Badge className={p.status === "Completed" ? "bg-skill-green/10 text-skill-green border-none" : p.status === "In Progress" ? "bg-court-blue/10 text-court-blue border-none" : "bg-badge-gold/10 text-badge-gold border-none"}>{p.status}</Badge>
+          <h3 className="text-lg font-bold text-foreground mt-2 mb-2">{p.title}</h3>
+          <Progress value={p.progress} className="h-2 mb-3" />
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span><Users size={10} className="inline mr-1" />{p.members_count} members</span>
+            <span>Client: {p.client}</span>
+            {p.sp_pool > 0 && <span className="text-badge-gold">{p.sp_pool} SP</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+    {projects.length === 0 && <div className="py-16 text-center text-muted-foreground"><Briefcase size={32} className="mx-auto mb-3 opacity-30" /><p>No projects yet</p></div>}
+  </div>
+);
 
-const GuildSidebar = ({ activeTab, setActiveTab }: { activeTab: string; setActiveTab: (tab: string) => void }) => {
+/* ═══ SIDEBAR ═══ */
+const GuildSidebar = ({ activeTab, setActiveTab, guild, wars }: any) => {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border">
       <SidebarContent className="bg-card">
-        {!collapsed && (
+        {!collapsed && guild && (
           <div className="p-4 border-b border-border">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 text-xl">
-                {guildData.icon}
-              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 text-xl">⚔️</div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground truncate">{guildData.name}</p>
-                <p className="text-xs text-muted-foreground">Rank #{guildData.rank}</p>
+                <p className="text-sm font-semibold text-foreground truncate">{guild.name}</p>
+                <p className="text-xs text-muted-foreground">Rank #{guild.rank || "—"}</p>
               </div>
             </div>
           </div>
         )}
-
         <SidebarGroup>
           {!collapsed && <SidebarGroupLabel>Guild Management</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
               {sidebarItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    onClick={() => setActiveTab(item.id)}
-                    className={activeTab === item.id ? "bg-foreground text-background" : ""}
-                  >
+                  <SidebarMenuButton onClick={() => setActiveTab(item.id)} className={activeTab === item.id ? "bg-foreground text-background" : ""}>
                     <item.icon size={18} />
                     {!collapsed && <span>{item.label}</span>}
-                    {!collapsed && item.id === "wars" && guildWars.some(w => w.status === "Upcoming") && (
+                    {!collapsed && item.id === "wars" && wars.some((w: any) => w.status === "Upcoming") && (
                       <Badge className="ml-auto bg-badge-gold/10 text-badge-gold border-none text-[9px]">!</Badge>
                     )}
                   </SidebarMenuButton>
@@ -617,26 +432,33 @@ const GuildSidebar = ({ activeTab, setActiveTab }: { activeTab: string; setActiv
   );
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   MAIN PAGE
-═══════════════════════════════════════════════════════════════════════════ */
-
+/* ═══ MAIN ═══ */
 const GuildDashboardPage = () => {
-  const navigate = useNavigate();
+  const { guildId } = useParams();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "overview");
+  const { guild, members, treasury, loans, wars, projects, loading } = useGuildDashData(guildId);
+
+  if (loading) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <Loader2 size={24} className="animate-spin text-muted-foreground" />
+        </div>
+      </PageTransition>
+    );
+  }
 
   const renderContent = () => {
     switch (activeTab) {
-      case "overview": return <OverviewTab />;
-      case "members": return <MembersTab />;
-      case "treasury": return <TreasuryTab />;
-      case "lending": return <LendingTab />;
-      case "wars": return <WarsTab />;
-      case "projects": return <div className="py-20 text-center text-muted-foreground">Guild projects management coming soon...</div>;
-      case "leaderboard": return <div className="py-20 text-center text-muted-foreground">Guild leaderboard coming soon...</div>;
+      case "overview": return <OverviewTab guild={guild} members={members} treasury={treasury} wars={wars} projects={projects} />;
+      case "members": return <MembersTab members={members} />;
+      case "treasury": return <TreasuryTab guild={guild} treasury={treasury} members={members} />;
+      case "lending": return <LendingTab loans={loans} members={members} />;
+      case "wars": return <WarsTab guild={guild} wars={wars} />;
+      case "projects": return <ProjectsTab projects={projects} />;
       case "settings": return <div className="py-20 text-center text-muted-foreground">Guild settings coming soon...</div>;
-      default: return <OverviewTab />;
+      default: return <OverviewTab guild={guild} members={members} treasury={treasury} wars={wars} projects={projects} />;
     }
   };
 
@@ -644,8 +466,7 @@ const GuildDashboardPage = () => {
     <PageTransition>
       <SidebarProvider>
         <div className="min-h-screen flex w-full bg-background">
-          <GuildSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-
+          <GuildSidebar activeTab={activeTab} setActiveTab={setActiveTab} guild={guild} wars={wars} />
           <div className="flex-1 flex flex-col">
             <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/80 backdrop-blur-xl px-6">
               <div className="flex items-center gap-3">
@@ -653,24 +474,17 @@ const GuildDashboardPage = () => {
                 <h1 className="font-heading text-lg font-bold text-foreground capitalize">{activeTab.replace("-", " ")}</h1>
               </div>
               <div className="flex items-center gap-2">
-                <button className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-1 transition-colors">
-                  <Bell size={18} />
-                </button>
+                <Link to={`/guild/${guildId}`} className="flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Guild Page
+                </Link>
                 <Link to="/dashboard" className="flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  User Dashboard
+                  Dashboard
                 </Link>
               </div>
             </header>
-
             <main className="flex-1 p-6 overflow-y-auto">
               <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTab}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                >
+                <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
                   {renderContent()}
                 </motion.div>
               </AnimatePresence>
