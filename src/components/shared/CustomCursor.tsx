@@ -85,7 +85,7 @@ const CustomCursor = () => {
     <>
       {/* Outer ring */}
       <motion.div
-        className="pointer-events-none fixed left-0 top-0 z-[9999] rounded-full border-2 mix-blend-difference"
+        className="pointer-events-none fixed left-0 top-0 z-[99999] rounded-full border-2 mix-blend-difference"
         style={{
           x: ringX,
           y: ringY,
@@ -108,7 +108,7 @@ const CustomCursor = () => {
 
       {/* Inner dot */}
       <motion.div
-        className="pointer-events-none fixed left-0 top-0 z-[9999] rounded-full mix-blend-difference"
+        className="pointer-events-none fixed left-0 top-0 z-[99999] rounded-full mix-blend-difference"
         style={{
           x: dotX,
           y: dotY,

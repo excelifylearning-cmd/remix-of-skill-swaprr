@@ -34,7 +34,7 @@ const CursorGlow = () => {
 
   return (
     <motion.div
-      className="pointer-events-none fixed left-0 top-0 z-[9990] h-[400px] w-[400px] rounded-full"
+      className="pointer-events-none fixed left-0 top-0 z-[99999] h-[400px] w-[400px] rounded-full"
       style={{
         x: glowX,
         y: glowY,
