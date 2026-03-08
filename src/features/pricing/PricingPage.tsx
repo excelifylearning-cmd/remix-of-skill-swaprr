@@ -128,6 +128,61 @@ const socialProof = [
   { name: "Team Nexus", tier: "Enterprise", quote: "We've onboarded 50 interns through SkillSwappr. Quality of talent is unmatched.", stat: "50 hires" },
 ];
 
+const groupPlans = [
+  {
+    name: "Guild Plan", price: "$29", period: "/mo", icon: Shield, color: "text-court-blue",
+    tagline: "For guilds up to 15 members",
+    features: [
+      "Shared guild treasury management",
+      "Guild analytics dashboard",
+      "2% tax rate for all members",
+      "Guild Wars priority matchmaking",
+      "Shared portfolio showcase",
+      "Internal gig board",
+    ],
+  },
+  {
+    name: "Team Plan", price: "$49", period: "/mo", icon: Users, color: "text-skill-green",
+    tagline: "For project teams up to 25 members",
+    features: [
+      "Everything in Guild Plan",
+      "Co-Creation Studio unlimited",
+      "Team milestone tracking",
+      "Shared workspace & files",
+      "Role-based permissions",
+      "Team performance reports",
+      "1.5% tax rate for all members",
+    ],
+  },
+  {
+    name: "University", price: "$199", period: "/mo", icon: GraduationCap, color: "text-badge-gold",
+    tagline: "Campus-wide license, unlimited students",
+    features: [
+      "Everything in Team Plan",
+      "Unlimited student seats",
+      "University-branded portal",
+      "Faculty admin dashboard",
+      "Career services integration",
+      "Campus leaderboard",
+      "1% tax rate campus-wide",
+      "Dedicated support",
+    ],
+  },
+];
+
+const calcSkills = [
+  { name: "UI/UX Design", avgRate: 35 },
+  { name: "Full-Stack Dev", avgRate: 45 },
+  { name: "Mobile Dev", avgRate: 42 },
+  { name: "Video Editing", avgRate: 30 },
+  { name: "Copywriting", avgRate: 20 },
+  { name: "Data Science", avgRate: 40 },
+  { name: "Marketing", avgRate: 25 },
+  { name: "Illustration", avgRate: 28 },
+  { name: "3D Modeling", avgRate: 38 },
+  { name: "Photography", avgRate: 22 },
+];
+
 /* ─── Component ─── */
 
 const PricingPage = () => {
