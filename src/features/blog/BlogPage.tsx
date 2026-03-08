@@ -813,7 +813,7 @@ const BlogPage = () => {
         <section className="py-12 border-b border-border">
           <div className="mx-auto max-w-7xl px-6">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-6 flex items-center gap-2">
-              <Crown size={16} className="text-badge-gold" />
+              <Crown size={16} className="text-muted-foreground" />
               <h2 className="font-heading text-xl font-bold text-foreground">Editor's Picks</h2>
             </motion.div>
             <div className="grid gap-4 sm:grid-cols-3">
