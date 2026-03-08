@@ -375,7 +375,7 @@ const ContactPage = () => {
                           {/* Context bar */}
                           <div className="flex flex-wrap items-center gap-2 rounded-lg bg-surface-1 px-3 py-2">
                             <span className="flex items-center gap-1 rounded-md bg-surface-2 px-2 py-1 text-[10px] font-medium text-muted-foreground">
-                              <topics.find(t => t.label === topic)!.icon size={10} /> {topic}
+                              {(() => { const TopicIcon = topics.find(t => t.label === topic)!.icon; return <TopicIcon size={10} />; })()} {topic}
                             </span>
                             <span className="flex items-center gap-1 rounded-md bg-surface-2 px-2 py-1 text-[10px] font-medium text-muted-foreground">
                               <User size={10} /> {name}
