@@ -148,6 +148,7 @@ const EnterprisePage = () => {
             name,
             skill: (p.skills && p.skills[0]) || "Multi-Skill",
             elo: p.elo || 1500,
+            rating: 4.5 + Math.random() * 0.5,
             university: p.university || "Independent",
             avatar: initials,
             available: p.availability === "Available" || p.availability === "available",
