@@ -26,7 +26,7 @@ const ForumsPage = lazy(() => import("./features/forums/ForumsPage"));
 const LoginPage = lazy(() => import("./features/auth/LoginPage"));
 const SignupPage = lazy(() => import("./features/auth/SignupPage"));
 const HelpPage = lazy(() => import("./features/help/HelpPage"));
-const HistoryPage = lazy(() => import("./features/history/HistoryPage"));
+const AnalyticsPage = lazy(() => import("./features/analytics/AnalyticsPage"));
 const LeaderboardPage = lazy(() => import("./features/leaderboard/LeaderboardPage"));
 const TransactionLookupPage = lazy(() => import("./features/transaction/TransactionLookupPage"));
 const FAQPage = lazy(() => import("./features/faq/FAQPage"));
