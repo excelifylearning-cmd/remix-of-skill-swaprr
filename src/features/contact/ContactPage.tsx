@@ -42,13 +42,6 @@ const faqs = [
   { q: "Can I cancel a swap after matching?", a: "Yes, within the first 24 hours. After that, cancellations may affect your ELO rating and require a Skill Court review." },
 ];
 
-const chatBotResponses = [
-  "Hi! 👋 I'm SkillBot. How can I help you today?",
-  "I can help with account issues, billing, finding gigs, or connecting you to a human agent.",
-  "For technical issues, try our Help Center first — most answers are there!",
-  "Want me to connect you with a live agent? They're available Mon–Fri, 9am–6pm EST.",
-];
-
 const ContactPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
