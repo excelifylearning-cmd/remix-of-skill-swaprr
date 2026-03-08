@@ -882,7 +882,7 @@ const EventsPage = () => {
         <section className="py-24 px-6">
           <div className="max-w-3xl mx-auto text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <PartyPopper size={36} className="mx-auto mb-4 text-badge-gold" />
+              <PartyPopper size={36} className="mx-auto mb-4 text-skill-green" />
               <h2 className="font-heading text-3xl sm:text-5xl font-black text-foreground">Don't Miss Out</h2>
               <p className="text-muted-foreground mt-3 max-w-md mx-auto">
                 Subscribe to event notifications. Be the first to register for tournaments, meetups, and workshops.
