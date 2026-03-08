@@ -3,6 +3,9 @@ import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import HeroSection from "./sections/HeroSection";
+import WhatIsSection from "./sections/WhatIsSection";
+import HowSwappingWorksSection from "./sections/HowSwappingWorksSection";
+import PlatformHighlightsSection from "./sections/PlatformHighlightsSection";
 import SkillPointsSection from "./sections/SkillPointsSection";
 import MarketplacePreviewSection from "./sections/MarketplacePreviewSection";
 import PlatformFormatsSection from "./sections/PlatformFormatsSection";
@@ -23,6 +26,9 @@ const HomePage = () => {
         <CursorGlow />
         <Navbar />
         <HeroSection />
+        <WhatIsSection />
+        <HowSwappingWorksSection />
+        <PlatformHighlightsSection />
         <SkillPointsSection />
         <MarketplacePreviewSection />
         <PlatformFormatsSection />
