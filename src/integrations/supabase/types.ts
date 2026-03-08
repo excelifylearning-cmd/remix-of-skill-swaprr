@@ -257,6 +257,69 @@ export type Database = {
         }
         Relationships: []
       }
+      bug_bounty_submissions: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          reward: string | null
+          severity: string
+          status: string
+          submitted_by: string | null
+          title: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          reward?: string | null
+          severity?: string
+          status?: string
+          submitted_by?: string | null
+          title?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          reward?: string | null
+          severity?: string
+          status?: string
+          submitted_by?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      changelog_entries: {
+        Row: {
+          changes: Json
+          created_at: string
+          date: string
+          highlight: string | null
+          id: string
+          title: string
+          version: string
+        }
+        Insert: {
+          changes?: Json
+          created_at?: string
+          date?: string
+          highlight?: string | null
+          id?: string
+          title?: string
+          version?: string
+        }
+        Update: {
+          changes?: Json
+          created_at?: string
+          date?: string
+          highlight?: string | null
+          id?: string
+          title?: string
+          version?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string
@@ -296,6 +359,42 @@ export type Database = {
           subject?: string | null
           topic?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      demo_bookings: {
+        Row: {
+          company_name: string
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          message: string | null
+          team_size: string
+          use_case: string
+        }
+        Insert: {
+          company_name?: string
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          message?: string | null
+          team_size?: string
+          use_case?: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          message?: string | null
+          team_size?: string
+          use_case?: string
         }
         Relationships: []
       }
@@ -478,6 +577,33 @@ export type Database = {
           team_size?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      enterprise_quotes: {
+        Row: {
+          company_name: string
+          created_at: string
+          email: string
+          id: string
+          source: string
+          team_size: string
+        }
+        Insert: {
+          company_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string
+          team_size?: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string
+          team_size?: string
         }
         Relationships: []
       }
@@ -1198,6 +1324,27 @@ export type Database = {
           total_sp?: number
           updated_at?: string
           win_rate?: number
+        }
+        Relationships: []
+      }
+      help_feedback: {
+        Row: {
+          created_at: string
+          id: string
+          rating: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          rating?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          rating?: string
+          user_id?: string | null
         }
         Relationships: []
       }
