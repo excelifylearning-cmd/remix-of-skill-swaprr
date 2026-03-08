@@ -528,7 +528,7 @@ const SuccessStoriesPage = () => {
         <section className="py-20 border-t border-border bg-surface-1">
           <div className="mx-auto max-w-7xl px-6">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-10 text-center">
-              <span className="mb-3 inline-block rounded-full border border-skill-green/20 bg-skill-green/5 px-4 py-1.5 font-mono text-xs text-skill-green">
+              <span className="mb-3 inline-block rounded-full border border-border bg-surface-2 px-4 py-1.5 font-mono text-xs text-muted-foreground">
                 <GraduationCap size={12} className="inline mr-1.5 -mt-0.5" /> Academic Excellence
               </span>
               <h2 className="font-heading text-3xl font-bold text-foreground">University Success Stories</h2>
