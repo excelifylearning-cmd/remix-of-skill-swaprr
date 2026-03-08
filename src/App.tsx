@@ -26,7 +26,7 @@ const ForumsPage = lazy(() => import("./features/forums/ForumsPage"));
 const LoginPage = lazy(() => import("./features/auth/LoginPage"));
 const SignupPage = lazy(() => import("./features/auth/SignupPage"));
 const HelpPage = lazy(() => import("./features/help/HelpPage"));
-const HistoryPage = lazy(() => import("./features/history/HistoryPage"));
+const AnalyticsPage = lazy(() => import("./features/analytics/AnalyticsPage"));
 const LeaderboardPage = lazy(() => import("./features/leaderboard/LeaderboardPage"));
 const TransactionLookupPage = lazy(() => import("./features/transaction/TransactionLookupPage"));
 const FAQPage = lazy(() => import("./features/faq/FAQPage"));
@@ -63,7 +63,8 @@ const AnimatedRoutes = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/help" element={<HelpPage />} />
-          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/history" element={<AnalyticsPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/transaction" element={<TransactionLookupPage />} />
           <Route path="/faq" element={<FAQPage />} />
