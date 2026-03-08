@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Check, X, Sparkles, Building2, Zap, Coins, Shield, Trophy,
   Award, Star, ArrowRight, Users, Target, TrendingUp, Flame,
-  BarChart3, Clock, Eye, Crown, Gem, Medal, CircleDot, Activity
+  BarChart3, Clock, Eye, Crown, Gem, Medal, CircleDot, Activity,
+  Calculator, Layers, GraduationCap
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
@@ -127,11 +128,87 @@ const socialProof = [
   { name: "Team Nexus", tier: "Enterprise", quote: "We've onboarded 50 interns through SkillSwappr. Quality of talent is unmatched.", stat: "50 hires" },
 ];
 
+const groupPlans = [
+  {
+    name: "Guild Plan", price: "$29", period: "/mo", icon: Shield, color: "text-court-blue",
+    tagline: "For guilds up to 15 members",
+    features: [
+      "Shared guild treasury management",
+      "Guild analytics dashboard",
+      "2% tax rate for all members",
+      "Guild Wars priority matchmaking",
+      "Shared portfolio showcase",
+      "Internal gig board",
+    ],
+  },
+  {
+    name: "Team Plan", price: "$49", period: "/mo", icon: Users, color: "text-skill-green",
+    tagline: "For project teams up to 25 members",
+    features: [
+      "Everything in Guild Plan",
+      "Co-Creation Studio unlimited",
+      "Team milestone tracking",
+      "Shared workspace & files",
+      "Role-based permissions",
+      "Team performance reports",
+      "1.5% tax rate for all members",
+    ],
+  },
+  {
+    name: "University", price: "$199", period: "/mo", icon: GraduationCap, color: "text-badge-gold",
+    tagline: "Campus-wide license, unlimited students",
+    features: [
+      "Everything in Team Plan",
+      "Unlimited student seats",
+      "University-branded portal",
+      "Faculty admin dashboard",
+      "Career services integration",
+      "Campus leaderboard",
+      "1% tax rate campus-wide",
+      "Dedicated support",
+    ],
+  },
+];
+
+const calcSkills = [
+  { name: "UI/UX Design", avgRate: 35 },
+  { name: "Full-Stack Dev", avgRate: 45 },
+  { name: "Mobile Dev", avgRate: 42 },
+  { name: "Video Editing", avgRate: 30 },
+  { name: "Copywriting", avgRate: 20 },
+  { name: "Data Science", avgRate: 40 },
+  { name: "Marketing", avgRate: 25 },
+  { name: "Illustration", avgRate: 28 },
+  { name: "3D Modeling", avgRate: 38 },
+  { name: "Photography", avgRate: 22 },
+];
+
 /* ─── Component ─── */
 
 const PricingPage = () => {
   const [annual, setAnnual] = useState(false);
   const [animatedStats, setAnimatedStats] = useState(liveStats.map(() => 0));
+  const [calcSkill, setCalcSkill] = useState(calcSkills[0].name);
+  const [calcGigs, setCalcGigs] = useState(8);
+  const [calcComplexity, setCalcComplexity] = useState(3);
+  const [calcTier, setCalcTier] = useState<"free" | "pro">("free");
+  const [calcGuild, setCalcGuild] = useState(false);
+  const [calcMembers, setCalcMembers] = useState(5);
+
+  const calcResult = useMemo(() => {
+    const skill = calcSkills.find((s) => s.name === calcSkill) || calcSkills[0];
+    const baseEarnings = calcGigs * skill.avgRate * (calcComplexity / 3);
+    const taxRate = calcGuild ? 0.02 : calcTier === "pro" ? 0.03 : 0.05;
+    const tax = baseEarnings * taxRate;
+    const net = baseEarnings - tax;
+    const tierCost = calcTier === "pro" ? (annual ? 10 : 12) : 0;
+    const guildCost = calcGuild ? (annual ? 23 : 29) : 0;
+    const monthlyCost = tierCost + guildCost;
+    const proSavings = calcTier === "free" ? baseEarnings * 0.02 : 0; // what they'd save upgrading
+    const recommended = calcGigs > 5 ? "Pro" : "Free";
+    const guildValue = calcGuild ? calcMembers * net * 0.1 : 0;
+    return { baseEarnings: Math.round(baseEarnings), tax: Math.round(tax), net: Math.round(net), taxRate: Math.round(taxRate * 100), monthlyCost, proSavings: Math.round(proSavings), recommended, guildValue: Math.round(guildValue) };
+  }, [calcSkill, calcGigs, calcComplexity, calcTier, calcGuild, calcMembers, annual]);
 
   // Animate stat counters on mount
   useEffect(() => {
@@ -223,7 +300,169 @@ const PricingPage = () => {
           </div>
         </section>
 
-        {/* Live Platform Stats */}
+        {/* Guild, Team & University Plans */}
+        <section className="bg-surface-1 py-24">
+          <div className="mx-auto max-w-5xl px-6">
+            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-3 text-center font-heading text-3xl font-bold text-foreground sm:text-4xl">Guild, Team & University Plans</motion.h2>
+            <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-12 max-w-lg text-center text-muted-foreground">
+              Group pricing for guilds, project teams, and entire universities. Lower tax rates and shared tools for everyone.
+            </motion.p>
+            <div className="grid gap-5 md:grid-cols-3">
+              {groupPlans.map((plan, i) => (
+                <motion.div key={plan.name} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                  <div className="h-full rounded-2xl border border-border bg-card p-7 transition-all hover:border-foreground/20">
+                    <div className="mb-4 flex items-center gap-2">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2">
+                        <plan.icon size={20} className={plan.color} />
+                      </div>
+                      <div>
+                        <h3 className="font-heading text-base font-bold text-foreground">{plan.name}</h3>
+                        <p className="text-[10px] text-muted-foreground">{plan.tagline}</p>
+                      </div>
+                    </div>
+                    <div className="mb-5">
+                      <span className="font-heading text-3xl font-black text-foreground">{plan.price}</span>
+                      <span className="text-sm text-muted-foreground">{plan.period}</span>
+                    </div>
+                    <ul className="mb-6 space-y-2">
+                      {plan.features.map((f) => (
+                        <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <Check size={13} className="mt-0.5 flex-shrink-0 text-skill-green" /> {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <motion.button className="w-full rounded-xl border border-border py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-foreground hover:text-background" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      Get {plan.name} <ArrowRight size={14} className="ml-1 inline" />
+                    </motion.button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing Calculator */}
+        <section className="py-24">
+          <div className="mx-auto max-w-4xl px-6">
+            <div className="mb-8 flex items-center justify-center gap-3">
+              <Calculator size={24} className="text-badge-gold" />
+              <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="font-heading text-3xl font-bold text-foreground sm:text-4xl">Earnings Calculator</motion.h2>
+            </div>
+            <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-12 max-w-lg text-center text-muted-foreground">
+              Estimate your monthly earnings, see tax impact, and find the best plan for your activity level.
+            </motion.p>
+
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-2xl border border-border bg-card overflow-hidden">
+              {/* Inputs */}
+              <div className="grid gap-6 p-8 md:grid-cols-2">
+                {/* Left: Sliders */}
+                <div className="space-y-6">
+                  <div>
+                    <label className="mb-2 flex items-center justify-between text-sm">
+                      <span className="font-medium text-foreground">Primary Skill</span>
+                    </label>
+                    <select value={calcSkill} onChange={(e) => setCalcSkill(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-surface-1 px-4 text-sm text-foreground focus:border-ring focus:outline-none">
+                      {calcSkills.map((s) => (
+                        <option key={s.name}>{s.name}</option>
+                      ))}
+                    </select>
+                    <p className="mt-1 text-[10px] text-muted-foreground">Avg rate: {calcSkills.find((s) => s.name === calcSkill)?.avgRate} SP/gig</p>
+                  </div>
+
+                  <div>
+                    <label className="mb-2 flex items-center justify-between text-sm">
+                      <span className="font-medium text-foreground">Gigs per month</span>
+                      <span className="font-mono text-xs text-muted-foreground">{calcGigs}</span>
+                    </label>
+                    <input type="range" min={1} max={30} value={calcGigs} onChange={(e) => setCalcGigs(Number(e.target.value))} className="w-full accent-foreground" />
+                    <div className="mt-1 flex justify-between text-[10px] text-muted-foreground"><span>1</span><span>30</span></div>
+                  </div>
+
+                  <div>
+                    <label className="mb-2 flex items-center justify-between text-sm">
+                      <span className="font-medium text-foreground">Avg Complexity</span>
+                      <span className="font-mono text-xs text-muted-foreground">{calcComplexity}/5</span>
+                    </label>
+                    <input type="range" min={1} max={5} value={calcComplexity} onChange={(e) => setCalcComplexity(Number(e.target.value))} className="w-full accent-foreground" />
+                    <div className="mt-1 flex justify-between text-[10px] text-muted-foreground"><span>Simple</span><span>Complex</span></div>
+                  </div>
+                </div>
+
+                {/* Right: Options */}
+                <div className="space-y-5">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-foreground">Your Plan</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(["free", "pro"] as const).map((t) => (
+                        <button key={t} onClick={() => setCalcTier(t)} className={`rounded-xl border px-4 py-3 text-sm font-medium transition-all ${calcTier === t ? "border-foreground bg-foreground text-background" : "border-border text-muted-foreground hover:text-foreground"}`}>
+                          {t === "free" ? "Free" : "Pro ($12/mo)"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="mb-2 flex items-center gap-3 text-sm font-medium text-foreground">
+                      <button onClick={() => setCalcGuild(!calcGuild)} className={`flex h-5 w-9 items-center rounded-full transition-colors ${calcGuild ? "bg-foreground" : "bg-border"}`}>
+                        <div className={`h-4 w-4 rounded-full bg-background transition-transform ${calcGuild ? "translate-x-4" : "translate-x-0.5"}`} />
+                      </button>
+                      Guild Plan ($29/mo)
+                    </label>
+                  </div>
+
+                  {calcGuild && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}>
+                      <label className="mb-2 flex items-center justify-between text-sm">
+                        <span className="font-medium text-foreground">Guild Members</span>
+                        <span className="font-mono text-xs text-muted-foreground">{calcMembers}</span>
+                      </label>
+                      <input type="range" min={2} max={15} value={calcMembers} onChange={(e) => setCalcMembers(Number(e.target.value))} className="w-full accent-foreground" />
+                    </motion.div>
+                  )}
+
+                  <div className="rounded-xl bg-surface-1 p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-muted-foreground">Recommended plan:</span>
+                      <span className="rounded-full bg-foreground px-3 py-0.5 text-[10px] font-bold text-background">{calcResult.recommended}</span>
+                    </div>
+                    {calcTier === "free" && calcResult.proSavings > 0 && (
+                      <p className="text-[10px] text-skill-green">⚡ Upgrading to Pro would save you ~{calcResult.proSavings} SP/mo in taxes</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Results */}
+              <div className="border-t border-border bg-surface-1 p-8">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                  <div className="rounded-xl bg-card p-4 text-center border border-border">
+                    <p className="font-heading text-2xl font-black text-foreground">{calcResult.baseEarnings}</p>
+                    <p className="text-[10px] text-muted-foreground">Gross Earnings (SP)</p>
+                  </div>
+                  <div className="rounded-xl bg-card p-4 text-center border border-border">
+                    <p className="font-heading text-2xl font-black text-destructive">-{calcResult.tax}</p>
+                    <p className="text-[10px] text-muted-foreground">Tax ({calcResult.taxRate}%)</p>
+                  </div>
+                  <div className="rounded-xl bg-card p-4 text-center border border-border">
+                    <p className="font-heading text-2xl font-black text-skill-green">{calcResult.net}</p>
+                    <p className="text-[10px] text-muted-foreground">Net Earnings (SP)</p>
+                  </div>
+                  <div className="rounded-xl bg-card p-4 text-center border border-border">
+                    <p className="font-heading text-2xl font-black text-foreground">${calcResult.monthlyCost}</p>
+                    <p className="text-[10px] text-muted-foreground">Monthly Cost</p>
+                  </div>
+                  {calcGuild && (
+                    <div className="rounded-xl bg-card p-4 text-center border border-border">
+                      <p className="font-heading text-2xl font-black text-court-blue">{calcResult.guildValue}</p>
+                      <p className="text-[10px] text-muted-foreground">Guild Treasury Value</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         <section className="bg-surface-1 py-24">
           <div className="mx-auto max-w-5xl px-6">
             <div className="mb-4 text-center">
