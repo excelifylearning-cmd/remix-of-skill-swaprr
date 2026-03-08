@@ -279,7 +279,7 @@ const LeaderboardPage = () => {
           <div className="mx-auto max-w-7xl px-6">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Bookmark size={16} className="text-badge-gold" />
+                <Bookmark size={16} className="text-muted-foreground" />
                 <h2 className="font-heading text-lg font-bold text-foreground">Top Talent by Skill</h2>
               </div>
               <button onClick={() => setActiveTab("By Skill")} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">

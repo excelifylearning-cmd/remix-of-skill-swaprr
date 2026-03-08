@@ -191,7 +191,7 @@ const ContactPage = () => {
                         <p className="mt-1 text-xs text-muted-foreground">We'll get back to you within 24 hours.</p>
                       </div>
                       <div className="flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1">
-                        <Sparkles size={12} className="text-badge-gold" />
+                        <Sparkles size={12} className="text-muted-foreground" />
                         <span className="text-[10px] font-medium text-muted-foreground">Avg reply: 4h</span>
                       </div>
                     </div>

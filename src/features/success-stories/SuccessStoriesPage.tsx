@@ -253,7 +253,7 @@ const SuccessStoriesPage = () => {
                 </div>
                 <div className="p-6">
                   <div className="mb-4 flex items-center gap-3">
-                    <img src={featuredStories[activeStory].image} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-badge-gold" />
+                    <img src={featuredStories[activeStory].image} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-border" />
                     <div>
                       <h3 className="font-heading text-lg font-bold text-foreground">{featuredStories[activeStory].name}</h3>
                       <p className="text-xs text-muted-foreground flex items-center gap-2">

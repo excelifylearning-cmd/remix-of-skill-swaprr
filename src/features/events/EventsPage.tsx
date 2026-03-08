@@ -226,7 +226,7 @@ const EventsPage = () => {
               </div>
 
               <div className="flex flex-wrap items-center gap-4 mt-5 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1"><Trophy size={12} className="text-badge-gold" /> {nextBigEvent.title}</span>
+                <span className="flex items-center gap-1"><Trophy size={12} className="text-foreground" /> {nextBigEvent.title}</span>
                 <span className="flex items-center gap-1"><MapPin size={12} /> {nextBigEvent.location}</span>
                 <span className="flex items-center gap-1"><Users size={12} /> {nextBigEvent.spotsFilled}/{nextBigEvent.spots} filled</span>
               </div>
