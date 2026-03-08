@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import {
   Building2, Users, Search, Shield, FolderKanban, Sparkles,
   ArrowRight, Lock, Globe, Zap, CheckCircle2, Mail, Target,
@@ -12,6 +13,7 @@ import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 
 /* ─── Data ─── */
