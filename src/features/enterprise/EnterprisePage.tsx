@@ -117,7 +117,6 @@ interface ExpertProfile {
   available: boolean;
   gigs: number;
   specialties: string[];
-  specialties: string[];
 }
 
 const EnterprisePage = () => {
