@@ -654,7 +654,7 @@ const HelpPage = () => {
                 </div>
                 <div>
                   <h2 className="font-heading text-2xl font-bold text-foreground">{overallStatus}</h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">Last checked: Just now · {operationalCount}/{services.length} services operational</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Last checked: Just now · {operationalCount}/{activeServices.length} services operational</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
