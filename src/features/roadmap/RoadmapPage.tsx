@@ -153,81 +153,8 @@ const RoadmapPage = () => {
           </div>
         </section>
 
-        {/* Our Vision */}
-        <section className="bg-surface-1 py-24">
-          <div className="mx-auto max-w-5xl px-6">
-            <div className="mb-12 text-center">
-              <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-4 font-heading text-3xl font-bold text-foreground">Our Vision</motion.h2>
-              <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="mx-auto max-w-2xl text-muted-foreground">
-                Where SkillSwappr is headed — and why it matters.
-              </motion.p>
-            </div>
-            <div className="grid gap-6 md:grid-cols-3">
-              {[
-                { icon: Eye, title: "Democratize Skill Value", desc: "We believe every skill has value. SkillSwappr removes financial barriers so students can access expertise through what they know, not what they can pay." },
-                { icon: Heart, title: "Community-First Growth", desc: "Every feature we build starts with community feedback. Our roadmap isn't decided in a boardroom — it's shaped by the people who use the platform daily." },
-                { icon: Lightbulb, title: "AI-Augmented, Human-Centered", desc: "AI enhances matching, quality assurance, and pricing — but humans make every decision. Technology serves the community, never the other way around." },
-              ].map((v, i) => (
-                <motion.div key={v.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="rounded-2xl border border-border bg-card p-8">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-surface-2">
-                    <v.icon size={22} className="text-foreground" />
-                  </div>
-                  <h3 className="mb-2 font-heading text-lg font-bold text-foreground">{v.title}</h3>
-                  <p className="text-sm leading-relaxed text-muted-foreground">{v.desc}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* How We Build */}
-        <section className="py-24">
-          <div className="mx-auto max-w-4xl px-6">
-            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-4 text-center font-heading text-3xl font-bold text-foreground">How We Build</motion.h2>
-            <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-12 max-w-xl text-center text-muted-foreground">
-              Our development process is transparent, iterative, and community-driven.
-            </motion.p>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                { step: "01", title: "Listen", desc: "Community suggestions, support tickets, and usage data", icon: MessageSquare },
-                { step: "02", title: "Prototype", desc: "Rapid prototyping with internal testing and feedback loops", icon: Palette },
-                { step: "03", title: "Ship", desc: "Incremental releases with feature flags and beta access", icon: Rocket },
-                { step: "04", title: "Iterate", desc: "Post-launch monitoring, user feedback, and continuous improvement", icon: Sparkles },
-              ].map((s, i) => (
-                <motion.div key={s.step} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="rounded-2xl border border-border bg-card p-6 text-center">
-                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 font-mono text-sm font-bold text-foreground">{s.step}</div>
-                  <s.icon size={20} className="mx-auto mb-2 text-muted-foreground" />
-                  <h4 className="mb-1 font-heading text-sm font-bold text-foreground">{s.title}</h4>
-                  <p className="text-xs text-muted-foreground">{s.desc}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Who It Helps */}
-        <section className="bg-surface-1 py-24">
-          <div className="mx-auto max-w-5xl px-6">
-            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-4 text-center font-heading text-3xl font-bold text-foreground">Who It Helps</motion.h2>
-            <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-12 max-w-xl text-center text-muted-foreground">
-              SkillSwappr serves students and professionals across every creative and technical discipline.
-            </motion.p>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {whoItHelps.map((w, i) => (
-                <motion.div key={w.role} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="rounded-2xl border border-border bg-card p-6">
-                  <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${w.bg}`}>
-                    <w.icon size={22} className={w.color} />
-                  </div>
-                  <h4 className="mb-2 font-heading text-base font-bold text-foreground">{w.role}</h4>
-                  <p className="text-sm leading-relaxed text-muted-foreground">{w.desc}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Detailed Phase Cards */}
-        <section className="py-24">
+        <section className="bg-surface-1 py-24">
           <div className="mx-auto max-w-5xl px-6">
             <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-4 text-center font-heading text-3xl font-bold text-foreground">Development Phases</motion.h2>
             <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-12 max-w-xl text-center text-muted-foreground">
@@ -297,7 +224,7 @@ const RoadmapPage = () => {
         </section>
 
         {/* What's Next */}
-        <section className="bg-surface-1 py-24">
+        <section className="py-24">
           <div className="mx-auto max-w-4xl px-6">
             <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-4 text-center font-heading text-3xl font-bold text-foreground">What's Next</motion.h2>
             <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-12 max-w-xl text-center text-muted-foreground">
@@ -319,8 +246,84 @@ const RoadmapPage = () => {
           </div>
         </section>
 
-        {/* Suggest a Feature */}
+        <ChangelogSection />
+        <FeatureVotingSection />
+
+        {/* Our Vision */}
         <section className="py-24">
+          <div className="mx-auto max-w-5xl px-6">
+            <div className="mb-12 text-center">
+              <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-4 font-heading text-3xl font-bold text-foreground">Our Vision</motion.h2>
+              <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="mx-auto max-w-2xl text-muted-foreground">
+                Where SkillSwappr is headed — and why it matters.
+              </motion.p>
+            </div>
+            <div className="grid gap-6 md:grid-cols-3">
+              {[
+                { icon: Eye, title: "Democratize Skill Value", desc: "We believe every skill has value. SkillSwappr removes financial barriers so students can access expertise through what they know, not what they can pay." },
+                { icon: Heart, title: "Community-First Growth", desc: "Every feature we build starts with community feedback. Our roadmap isn't decided in a boardroom — it's shaped by the people who use the platform daily." },
+                { icon: Lightbulb, title: "AI-Augmented, Human-Centered", desc: "AI enhances matching, quality assurance, and pricing — but humans make every decision. Technology serves the community, never the other way around." },
+              ].map((v, i) => (
+                <motion.div key={v.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="rounded-2xl border border-border bg-card p-8">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-surface-2">
+                    <v.icon size={22} className="text-foreground" />
+                  </div>
+                  <h3 className="mb-2 font-heading text-lg font-bold text-foreground">{v.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{v.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* How We Build */}
+        <section className="bg-surface-1 py-24">
+          <div className="mx-auto max-w-4xl px-6">
+            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-4 text-center font-heading text-3xl font-bold text-foreground">How We Build</motion.h2>
+            <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-12 max-w-xl text-center text-muted-foreground">
+              Our development process is transparent, iterative, and community-driven.
+            </motion.p>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                { step: "01", title: "Listen", desc: "Community suggestions, support tickets, and usage data", icon: MessageSquare },
+                { step: "02", title: "Prototype", desc: "Rapid prototyping with internal testing and feedback loops", icon: Palette },
+                { step: "03", title: "Ship", desc: "Incremental releases with feature flags and beta access", icon: Rocket },
+                { step: "04", title: "Iterate", desc: "Post-launch monitoring, user feedback, and continuous improvement", icon: Sparkles },
+              ].map((s, i) => (
+                <motion.div key={s.step} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="rounded-2xl border border-border bg-card p-6 text-center">
+                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 font-mono text-sm font-bold text-foreground">{s.step}</div>
+                  <s.icon size={20} className="mx-auto mb-2 text-muted-foreground" />
+                  <h4 className="mb-1 font-heading text-sm font-bold text-foreground">{s.title}</h4>
+                  <p className="text-xs text-muted-foreground">{s.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Who It Helps */}
+        <section className="py-24">
+          <div className="mx-auto max-w-5xl px-6">
+            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-4 text-center font-heading text-3xl font-bold text-foreground">Who It Helps</motion.h2>
+            <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-12 max-w-xl text-center text-muted-foreground">
+              SkillSwappr serves students and professionals across every creative and technical discipline.
+            </motion.p>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {whoItHelps.map((w, i) => (
+                <motion.div key={w.role} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="rounded-2xl border border-border bg-card p-6">
+                  <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${w.bg}`}>
+                    <w.icon size={22} className={w.color} />
+                  </div>
+                  <h4 className="mb-2 font-heading text-base font-bold text-foreground">{w.role}</h4>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{w.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Suggest a Feature */}
+        <section className="bg-surface-1 py-24">
           <div className="mx-auto max-w-lg px-6">
             <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-4 text-center font-heading text-3xl font-bold text-foreground">Suggest a Feature</motion.h2>
             <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-8 text-center text-muted-foreground">
@@ -361,8 +364,6 @@ const RoadmapPage = () => {
           </div>
         </section>
 
-        <ChangelogSection />
-        <FeatureVotingSection />
         <CTAFooterSection />
       </div>
     </PageTransition>
