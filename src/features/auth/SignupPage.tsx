@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { validateEmail } from "@/lib/email-validation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
