@@ -29,6 +29,7 @@ const HistoryPage = lazy(() => import("./features/history/HistoryPage"));
 const LeaderboardPage = lazy(() => import("./features/leaderboard/LeaderboardPage"));
 const TransactionLookupPage = lazy(() => import("./features/transaction/TransactionLookupPage"));
 const FAQPage = lazy(() => import("./features/faq/FAQPage"));
+const EventsPage = lazy(() => import("./features/events/EventsPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const MaintenancePage = lazy(() => import("./pages/Maintenance"));
 const ComingSoonPage = lazy(() => import("./pages/ComingSoon"));
@@ -64,6 +65,7 @@ const AnimatedRoutes = () => {
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/transaction" element={<TransactionLookupPage />} />
           <Route path="/faq" element={<FAQPage />} />
+          <Route path="/events" element={<EventsPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/coming-soon" element={<ComingSoonPage />} />
           <Route path="/500" element={<ServerErrorPage />} />
