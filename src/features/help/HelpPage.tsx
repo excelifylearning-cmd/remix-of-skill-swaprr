@@ -433,13 +433,23 @@ const HelpPage = () => {
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden border-t border-border/50">
                         <div className="p-4 space-y-1.5">
                           <p className="text-[10px] font-semibold text-muted-foreground mb-2">Popular Articles</p>
-                          {cat.popular.map((article) => (
-                            <div key={article} className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-foreground hover:bg-surface-2 cursor-pointer transition-colors">
-                              <FileText size={12} className="text-muted-foreground shrink-0" />
-                              {article}
-                              <ArrowRight size={10} className="ml-auto text-muted-foreground" />
-                            </div>
-                          ))}
+                          {(articlesByCategory[cat.title] || []).length > 0 ? (
+                            (articlesByCategory[cat.title] || []).slice(0, 4).map((article) => (
+                              <div key={article.id} className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-foreground hover:bg-surface-2 cursor-pointer transition-colors" title={article.excerpt}>
+                                <FileText size={12} className="text-muted-foreground shrink-0" />
+                                {article.title}
+                                <ArrowRight size={10} className="ml-auto text-muted-foreground" />
+                              </div>
+                            ))
+                          ) : (
+                            cat.popular.map((article) => (
+                              <div key={article} className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-foreground hover:bg-surface-2 cursor-pointer transition-colors">
+                                <FileText size={12} className="text-muted-foreground shrink-0" />
+                                {article}
+                                <ArrowRight size={10} className="ml-auto text-muted-foreground" />
+                              </div>
+                            ))
+                          )}
                         </div>
                       </motion.div>
                     )}
