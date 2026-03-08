@@ -207,15 +207,101 @@ const AnalyticsPage = () => {
   const [chartMetric, setChartMetric] = useState<"users" | "gigs">("users");
   const [dbQuarters, setDbQuarters] = useState<any[]>([]);
   const [dbMetrics, setDbMetrics] = useState<any>(null);
+  const [telemetry, setTelemetry] = useState<{
+    totalSessions: number;
+    avgDuration: number;
+    avgScrollDepth: number;
+    avgEngagement: number;
+    totalClicks: number;
+    rageClicks: number;
+    deadClicks: number;
+    totalErrors: number;
+    topPages: { path: string; count: number; avgDuration: number }[];
+    topClickElements: { tag: string; text: string; count: number }[];
+    errorTypes: { type: string; count: number }[];
+    hourlyActivity: { hour: number; sessions: number }[];
+    deviceBreakdown: { device: string; count: number }[];
+  }>({
+    totalSessions: 0, avgDuration: 0, avgScrollDepth: 0, avgEngagement: 0,
+    totalClicks: 0, rageClicks: 0, deadClicks: 0, totalErrors: 0,
+    topPages: [], topClickElements: [], errorTypes: [], hourlyActivity: [], deviceBreakdown: [],
+  });
 
   useEffect(() => {
     const fetchData = async () => {
-      const [qRes, mRes] = await Promise.all([
+      const [qRes, mRes, sessRes, clickRes, errRes] = await Promise.all([
         supabase.from("quarterly_reports").select("*").order("quarter_id"),
         supabase.from("platform_metrics").select("*").order("metric_date", { ascending: false }).limit(1),
+        supabase.from("page_sessions").select("*").order("created_at", { ascending: false }).limit(500),
+        supabase.from("click_heatmap").select("*").order("created_at", { ascending: false }).limit(500),
+        supabase.from("error_log").select("*").order("created_at", { ascending: false }).limit(200),
       ]);
       if (qRes.data?.length) setDbQuarters(qRes.data);
       if (mRes.data?.length) setDbMetrics(mRes.data[0]);
+
+      const sessions = sessRes.data || [];
+      const clicks = clickRes.data || [];
+      const errors = errRes.data || [];
+
+      // Aggregate telemetry
+      const totalSessions = sessions.length;
+      const avgDuration = totalSessions ? Math.round(sessions.reduce((a, s) => a + (s.duration_seconds || 0), 0) / totalSessions) : 0;
+      const avgScrollDepth = totalSessions ? Math.round(sessions.reduce((a, s) => a + (s.scroll_depth_max || 0), 0) / totalSessions) : 0;
+      const avgEngagement = totalSessions ? Math.round(sessions.reduce((a, s) => a + (s.engagement_score || 0), 0) / totalSessions) : 0;
+      
+      const rageClicks = clicks.filter(c => c.is_rage_click).length;
+      const deadClicks = clicks.filter(c => c.is_dead_click).length;
+
+      // Top pages
+      const pageMap = new Map<string, { count: number; totalDur: number }>();
+      sessions.forEach(s => {
+        const entry = pageMap.get(s.page_path) || { count: 0, totalDur: 0 };
+        entry.count++;
+        entry.totalDur += s.duration_seconds || 0;
+        pageMap.set(s.page_path, entry);
+      });
+      const topPages = Array.from(pageMap.entries())
+        .map(([path, v]) => ({ path, count: v.count, avgDuration: Math.round(v.totalDur / v.count) }))
+        .sort((a, b) => b.count - a.count).slice(0, 10);
+
+      // Top click elements
+      const elemMap = new Map<string, number>();
+      clicks.forEach(c => {
+        const key = `${c.element_tag || "?"}:${(c.element_text || "").slice(0, 30)}`;
+        elemMap.set(key, (elemMap.get(key) || 0) + 1);
+      });
+      const topClickElements = Array.from(elemMap.entries())
+        .map(([k, count]) => {
+          const [tag, text] = k.split(":");
+          return { tag, text: text || "(no text)", count };
+        })
+        .sort((a, b) => b.count - a.count).slice(0, 10);
+
+      // Error types
+      const errMap = new Map<string, number>();
+      errors.forEach(e => {
+        errMap.set(e.error_type, (errMap.get(e.error_type) || 0) + 1);
+      });
+      const errorTypes = Array.from(errMap.entries())
+        .map(([type, count]) => ({ type, count }))
+        .sort((a, b) => b.count - a.count);
+
+      // Hourly activity
+      const hourMap = new Map<number, number>();
+      sessions.forEach(s => {
+        const h = new Date(s.entered_at).getHours();
+        hourMap.set(h, (hourMap.get(h) || 0) + 1);
+      });
+      const hourlyActivity = Array.from({ length: 24 }, (_, i) => ({
+        hour: i, sessions: hourMap.get(i) || 0,
+      }));
+
+      setTelemetry({
+        totalSessions, avgDuration, avgScrollDepth, avgEngagement,
+        totalClicks: clicks.length, rageClicks, deadClicks,
+        totalErrors: errors.length, topPages, topClickElements,
+        errorTypes, hourlyActivity, deviceBreakdown: [],
+      });
     };
     fetchData();
   }, []);
