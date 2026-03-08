@@ -355,7 +355,7 @@ const SuccessStoriesPage = () => {
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-foreground">{story.name}</h3>
-                      <p className="text-[10px] text-skill-green font-medium">{story.role}</p>
+                      <p className="text-[10px] text-foreground font-medium">{story.role}</p>
                     </div>
                   </div>
                   <p className="mb-3 text-[10px] text-muted-foreground">From: {story.from}</p>
