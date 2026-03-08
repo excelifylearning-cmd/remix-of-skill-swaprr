@@ -84,6 +84,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <AnimatedRoutes />
+        <LiveChatWidget />
         <CookieConsent />
       </BrowserRouter>
     </TooltipProvider>
