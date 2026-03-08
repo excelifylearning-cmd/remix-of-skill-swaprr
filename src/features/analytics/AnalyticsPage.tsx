@@ -205,8 +205,35 @@ const contentMetrics = [
 const AnalyticsPage = () => {
   const [activeQuarter, setActiveQuarter] = useState("q1-2026");
   const [chartMetric, setChartMetric] = useState<"users" | "gigs">("users");
+  const [dbQuarters, setDbQuarters] = useState<any[]>([]);
+  const [dbMetrics, setDbMetrics] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const [qRes, mRes] = await Promise.all([
+        supabase.from("quarterly_reports").select("*").order("quarter_id"),
+        supabase.from("platform_metrics").select("*").order("metric_date", { ascending: false }).limit(1),
+      ]);
+      if (qRes.data?.length) setDbQuarters(qRes.data);
+      if (mRes.data?.length) setDbMetrics(mRes.data[0]);
+    };
+    fetchData();
+  }, []);
+
+  const displayQuarters = dbQuarters.length > 0 ? dbQuarters.map((q) => ({
+    id: q.quarter_id,
+    label: q.label,
+    period: q.period,
+    status: q.status,
+    kpis: q.kpis as any,
+    growth: q.growth as any,
+    highlights: q.highlights as string[],
+    monthlyBreakdown: q.monthly_breakdown as any[],
+    topSkills: q.top_skills as any[],
+  })) : quarters;
+
   const maxVal = Math.max(...growthTimeline.map((d) => d[chartMetric]));
-  const currentQuarter = quarters.find((q) => q.id === activeQuarter)!;
+  const currentQuarter = displayQuarters.find((q) => q.id === activeQuarter) || displayQuarters[0];
 
   return (
     <PageTransition>
