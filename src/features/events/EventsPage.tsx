@@ -654,7 +654,7 @@ const EventsPage = () => {
           </div>
         </section>
 
-        <Footer />
+        <CTAFooterSection />
       </div>
     </PageTransition>
   );
