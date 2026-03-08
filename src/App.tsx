@@ -17,6 +17,8 @@ const FeaturesPage = lazy(() => import("./features/features/FeaturesPage"));
 const HowItWorksPage = lazy(() => import("./features/how-it-works/HowItWorksPage"));
 const PricingPage = lazy(() => import("./features/pricing/PricingPage"));
 const EnterprisePage = lazy(() => import("./features/enterprise/EnterprisePage"));
+const EnterpriseDashboardPage = lazy(() => import("./features/enterprise/EnterpriseDashboardPage"));
+const GuildDashboardPage = lazy(() => import("./features/guild/GuildDashboardPage"));
 const MarketplacePage = lazy(() => import("./features/marketplace/MarketplacePage"));
 const LegalPage = lazy(() => import("./features/legal/LegalPage"));
 const RoadmapPage = lazy(() => import("./features/roadmap/RoadmapPage"));
