@@ -365,13 +365,45 @@ const HelpPage = () => {
                 style={{ paddingLeft: "3.25rem" }}
               />
             </motion.div>
+
+            {/* Search Results */}
+            {searchQuery.trim().length > 1 && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 mx-auto max-w-xl">
+                <div className="rounded-2xl border border-border bg-card overflow-hidden max-h-64 overflow-y-auto">
+                  {helpArticles
+                    .filter(a => a.title.toLowerCase().includes(searchQuery.toLowerCase()) || a.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) || a.category.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .slice(0, 8)
+                    .map((article) => (
+                      <div key={article.id} className="flex items-center gap-3 border-b border-border/30 last:border-0 px-5 py-3 hover:bg-surface-2 transition-colors cursor-pointer">
+                        <FileText size={14} className="text-muted-foreground shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-foreground truncate">{article.title}</p>
+                          <p className="text-[10px] text-muted-foreground truncate">{article.category} · {article.excerpt}</p>
+                        </div>
+                        <ArrowRight size={12} className="text-muted-foreground shrink-0" />
+                      </div>
+                    ))}
+                  {helpArticles.filter(a => a.title.toLowerCase().includes(searchQuery.toLowerCase()) || a.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                    <div className="px-5 py-6 text-center text-xs text-muted-foreground">
+                      No articles found for "{searchQuery}". Try a different search term.
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {[
-                { label: "Help Articles", value: "160+" },
-                { label: "Avg Response", value: "<4h" },
-                { label: "Satisfaction", value: "98.2%" },
-                { label: "Uptime", value: "99.97%" },
-              ].map((s) => (
+              {(() => {
+                const opCount = liveServices.filter(s => s.status === "operational").length;
+                const totalCount = liveServices.length || 12;
+                const uptimePct = liveServices.length ? (liveServices.reduce((a, s) => a + s.uptime, 0) / totalCount).toFixed(2) : "99.97";
+                return [
+                  { label: "Help Articles", value: articleCount > 0 ? `${articleCount}` : "160+" },
+                  { label: "Avg Response", value: "<4h" },
+                  { label: "Services Up", value: liveServices.length ? `${opCount}/${totalCount}` : "98.2%" },
+                  { label: "Uptime", value: `${uptimePct}%` },
+                ];
+              })().map((s) => (
                 <div key={s.label} className="rounded-xl border border-border bg-card p-3">
                   <p className="font-mono text-lg font-bold text-foreground">{s.value}</p>
                   <p className="text-[10px] text-muted-foreground">{s.label}</p>
