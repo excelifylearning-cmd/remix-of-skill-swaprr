@@ -731,8 +731,8 @@ const EventsPage = () => {
                   whileHover={{ y: -2 }}
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-badge-gold/10 border border-badge-gold/20">
-                      <Trophy size={18} className="text-badge-gold" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-skill-green/10 border border-skill-green/20">
+                      <Trophy size={18} className="text-skill-green" />
                     </div>
                     <div className="min-w-0">
                       <h3 className="font-heading text-sm font-bold text-foreground truncate">{event.title}</h3>
@@ -742,7 +742,7 @@ const EventsPage = () => {
                   <div className="space-y-1.5 text-xs text-muted-foreground">
                     <p className="flex items-center gap-1.5">🏆 <span className="text-foreground font-medium">{event.winner}</span></p>
                     <p className="flex items-center gap-1.5"><Users size={11} /> {event.participants.toLocaleString()} participants</p>
-                    <p className="flex items-center gap-1.5"><Zap size={11} className="text-badge-gold" /> <span className="font-mono text-badge-gold font-bold">{event.prize}</span></p>
+                    <p className="flex items-center gap-1.5"><Zap size={11} className="text-skill-green" /> <span className="font-mono text-skill-green font-bold">{event.prize}</span></p>
                   </div>
                 </motion.div>
               ))}
