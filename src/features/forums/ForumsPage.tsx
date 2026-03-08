@@ -499,6 +499,7 @@ const ForumsPage = () => {
   const [collapsedReplies, setCollapsedReplies] = useState<Set<number>>(new Set());
 
   const handleVote = (threadId: string, direction: "up" | "down") => {
+    if (!user) { setShowLoginPrompt(true); return; }
     setVotedThreads((prev) => {
       if (prev[threadId] === direction) {
         const next = { ...prev };
