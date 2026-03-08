@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Github } from "lucide-react";
 import PageTransition from "@/components/shared/PageTransition";
+import { validateEmail } from "@/lib/email-validation";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
