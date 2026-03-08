@@ -518,17 +518,9 @@ const AnalyticsPage = () => {
             <div className="mx-auto max-w-6xl px-6">
               <h2 className="font-heading text-3xl font-bold text-foreground mb-8 text-center">Community Impact</h2>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {communityImpact.map((ci: any, i: number) => {
-                  const { count, ref } = useCountUp(ci.value || 0, 2500);
-                  return (
-                    <motion.div key={ci.metric} ref={ref} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="rounded-2xl border border-border bg-card p-6 text-center">
-                      <ci.icon size={22} className="mx-auto mb-3 text-muted-foreground" />
-                      <p className="font-heading text-3xl font-black text-foreground">{count.toLocaleString()}{ci.suffix}</p>
-                      <p className="text-xs font-semibold text-foreground mt-1">{ci.metric}</p>
-                      <p className="text-[10px] text-muted-foreground mt-1">{ci.desc}</p>
-                    </motion.div>
-                  );
-                })}
+                {communityImpact.map((ci: any, i: number) => (
+                  <CountUpCard key={ci.metric} ci={ci} i={i} />
+                ))}
               </div>
             </div>
           </section>
