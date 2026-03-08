@@ -682,7 +682,7 @@ const LeaderboardPage = () => {
           </div>
         </section>
 
-        <CTAFooterSection />
+        <Footer />
       </div>
     </PageTransition>
   );

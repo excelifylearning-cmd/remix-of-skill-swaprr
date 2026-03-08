@@ -990,7 +990,7 @@ const TransactionLookupPage = () => {
           )}
         </AnimatePresence>
 
-        <CTAFooterSection />
+        <Footer />
       </div>
     </PageTransition>
   );

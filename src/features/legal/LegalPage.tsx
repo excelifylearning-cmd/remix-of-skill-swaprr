@@ -122,7 +122,7 @@ const LegalPage = () => {
           </div>
         </div>
 
-        <CTAFooterSection />
+        <Footer />
       </div>
     </PageTransition>
   );

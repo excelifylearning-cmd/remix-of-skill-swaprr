@@ -30,7 +30,7 @@ const AboutPage = () => (
       <CommunityStatsSection />
       <ValuesCultureSection />
       <AboutCTASection />
-      <CTAFooterSection />
+      <Footer />
     </div>
   </PageTransition>
 );

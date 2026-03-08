@@ -155,7 +155,7 @@ const DashboardPage = () => {
           </div>
         </section>
 
-        <CTAFooterSection />
+        <Footer />
       </div>
     </PageTransition>
   );

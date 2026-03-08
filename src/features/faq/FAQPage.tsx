@@ -416,7 +416,7 @@ const FAQPage = () => {
           </div>
         </section>
 
-        <CTAFooterSection />
+        <Footer />
       </div>
     </PageTransition>
   );

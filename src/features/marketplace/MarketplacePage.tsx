@@ -685,7 +685,7 @@ const MarketplacePage = () => {
           )}
         </AnimatePresence>
 
-        <CTAFooterSection />
+        <Footer />
       </div>
     </PageTransition>
   );

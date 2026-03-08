@@ -763,7 +763,7 @@ const FeaturesPage = () => {
           </div>
         </section>
 
-        <CTAFooterSection />
+        <Footer />
       </div>
     </PageTransition>
   );
