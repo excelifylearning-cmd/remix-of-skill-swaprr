@@ -962,7 +962,7 @@ const MembersPanel = ({ workspaceId, userId, userRole }: { workspaceId: string; 
 
   const changeRole = async (member: WsMember, newRole: string) => {
     if (userRole !== "owner") { toast.error("Only owners can change roles"); return; }
-    await supabase.from("workspace_members").update({ role: newRole }).eq("id", member.id);
+    await supabase.from("workspace_members").update({ role: newRole as "editor" | "owner" | "viewer" }).eq("id", member.id);
     logActivity("workspace:member_role_changed", { entity_type: "workspace", entity_id: workspaceId, context: { user: member.user_id, from: member.role, to: newRole } });
     toast.success("Role updated");
     fetchMembers();
