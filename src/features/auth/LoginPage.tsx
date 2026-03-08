@@ -5,6 +5,7 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle2, Loader2
 import PageTransition from "@/components/shared/PageTransition";
 import { validateEmail } from "@/lib/email-validation";
 import { useAuth } from "@/lib/auth-context";
+import { logFormSubmission, logInteraction } from "@/lib/activity-logger";
 import { lovable } from "@/integrations/lovable/index";
 
 const LoginPage = () => {

@@ -19,6 +19,7 @@ import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
+import { logFormSubmission, logInteraction, logPageView } from "@/lib/activity-logger";
 
 const kbCategories = [
   { icon: BookOpen, title: "Getting Started", desc: "Account setup, profile creation, and first gig", articles: 24, popular: ["Create your account", "Set up your profile", "Post your first gig", "Earn your first SP"] },

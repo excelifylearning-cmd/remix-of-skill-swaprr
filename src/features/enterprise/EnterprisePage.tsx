@@ -14,6 +14,7 @@ import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
 import { supabase } from "@/integrations/supabase/client";
+import { logFormSubmission, logPageView } from "@/lib/activity-logger";
 
 
 /* ─── Data ─── */

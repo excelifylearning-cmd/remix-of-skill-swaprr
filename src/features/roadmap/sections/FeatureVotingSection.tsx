@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
+import { logInteraction } from "@/lib/activity-logger";
 import LoginPrompt from "@/components/shared/LoginPrompt";
 
 type Category = "all" | "ai" | "social" | "tools" | "mobile" | "enterprise";

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import PageTransition from "@/components/shared/PageTransition";
 import { useAuth } from "@/lib/auth-context";
+import { logFormSubmission } from "@/lib/activity-logger";
 
 const TOTAL_STEPS = 12;
 
