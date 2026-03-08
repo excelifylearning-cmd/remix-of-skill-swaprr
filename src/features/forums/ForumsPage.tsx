@@ -328,6 +328,7 @@ const dailyChallenge = {
 };
 
 const ForumsPage = () => {
+  const { user, profile } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortType>("hot");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -338,6 +339,156 @@ const ForumsPage = () => {
   const [replyText, setReplyText] = useState("");
   const [showComposer, setShowComposer] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState("");
+
+  // Database state
+  const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
+  const [dbThreads, setDbThreads] = useState<DbThread[]>([]);
+  const [dbComments, setDbComments] = useState<DbComment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Combined categories (DB + fallback)
+  const forumCategories = dbCategories.length > 0 
+    ? dbCategories.map(c => ({
+        icon: iconMap[c.icon] || MessageSquare,
+        name: c.name,
+        desc: c.description || "",
+        threads: c.thread_count,
+        posts: c.thread_count * 6, // estimate
+        color: c.color,
+        online: Math.floor(Math.random() * 50) + 10,
+        id: c.id,
+        slug: c.slug
+      }))
+    : defaultForumCategories;
+
+  // Fetch data from database
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch categories
+        const { data: categories } = await supabase
+          .from("forum_categories")
+          .select("*")
+          .order("thread_count", { ascending: false });
+        
+        if (categories) setDbCategories(categories);
+
+        // Fetch threads
+        const { data: threads } = await supabase
+          .from("forum_threads")
+          .select("*")
+          .order("created_at", { ascending: false });
+        
+        if (threads) setDbThreads(threads);
+      } catch (error) {
+        console.error("Error fetching forum data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Fetch comments when a thread is selected
+  useEffect(() => {
+    if (!selectedThread) return;
+
+    const fetchComments = async () => {
+      const { data: comments } = await supabase
+        .from("forum_comments")
+        .select("*")
+        .eq("thread_id", selectedThread)
+        .order("created_at", { ascending: true });
+      
+      if (comments) setDbComments(comments);
+    };
+
+    fetchComments();
+  }, [selectedThread]);
+
+  // Helper to format time ago
+  const formatTimeAgo = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+  };
+
+  // Submit new thread
+  const handleSubmitThread = async () => {
+    if (!user) {
+      toast.error("Please log in to post");
+      return;
+    }
+    if (!newPostTitle.trim() || !newPostContent.trim()) {
+      toast.error("Please fill in title and content");
+      return;
+    }
+
+    const { error } = await supabase.from("forum_threads").insert({
+      title: newPostTitle,
+      content: newPostContent,
+      author_id: user.id,
+      author_name: profile?.display_name || profile?.full_name || "Anonymous",
+      category_id: newPostCategory || null,
+      tags: []
+    });
+
+    if (error) {
+      toast.error("Failed to create thread");
+      console.error(error);
+    } else {
+      toast.success("Thread created!");
+      setShowComposer(false);
+      setNewPostTitle("");
+      setNewPostContent("");
+      // Refresh threads
+      const { data: threads } = await supabase
+        .from("forum_threads")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (threads) setDbThreads(threads);
+    }
+  };
+
+  // Submit comment
+  const handleSubmitComment = async () => {
+    if (!user) {
+      toast.error("Please log in to comment");
+      return;
+    }
+    if (!replyText.trim() || !selectedThread) return;
+
+    const { error } = await supabase.from("forum_comments").insert({
+      thread_id: selectedThread,
+      author_id: user.id,
+      author_name: profile?.display_name || profile?.full_name || "Anonymous",
+      content: replyText
+    });
+
+    if (error) {
+      toast.error("Failed to add comment");
+      console.error(error);
+    } else {
+      toast.success("Comment added!");
+      setReplyText("");
+      // Refresh comments
+      const { data: comments } = await supabase
+        .from("forum_comments")
+        .select("*")
+        .eq("thread_id", selectedThread)
+        .order("created_at", { ascending: true });
+      if (comments) setDbComments(comments);
+    }
+  };
   const [newPostContent, setNewPostContent] = useState("");
   const [newPostCategory, setNewPostCategory] = useState("");
   const [showRules, setShowRules] = useState(false);
