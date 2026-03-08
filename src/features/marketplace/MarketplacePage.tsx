@@ -46,7 +46,7 @@ const sidebarNav = [
   { label: "For You", icon: Sparkles, section: "recommended", badge: "AI" },
 ];
 
-const formats = ["All Formats", "Direct Swap", "Auction", "Co-Creation", "Skill Fusion", "Projects", "Flash Market"];
+const formats = ["All Formats", "Direct Swap", "SP Only", "Auction", "Co-Creation", "Skill Fusion", "Projects", "Flash Market"];
 const sortOptions = ["Trending", "Newest", "Highest ELO", "Most Points", "Most Views", "Ending Soon"];
 const eloRanges = ["Any ELO", "Bronze (0-1299)", "Silver (1300-1499)", "Gold (1500-1699)", "Diamond (1700+)"];
 const verifiedFilters = ["All Users", "Verified Only", "University Verified"];
