@@ -714,14 +714,31 @@ const DisputePanel = ({ workspaceId, userId, escrow }: { workspaceId: string; us
    SETTINGS PANEL
 ═══════════════════════════════════════════════════════════════════════════ */
 
-const SettingsPanel = ({ workspaceId, escrow, partnerName }: { workspaceId: string; escrow: Escrow | null; partnerName: string }) => {
+const SettingsPanel = ({ workspaceId, escrow, partnerName, transactionCode }: { workspaceId: string; escrow: Escrow | null; partnerName: string; transactionCode: string | null }) => {
   const [notifications, setNotifications] = useState(true);
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col h-full overflow-y-auto p-4">
       <h3 className="font-medium text-foreground mb-6 flex items-center gap-2"><Settings size={16} /> Workspace Settings</h3>
 
       <div className="space-y-4">
+        {/* Transaction ID Card */}
+        {transactionCode && (
+          <div className="rounded-xl border border-skill-green/20 bg-skill-green/5 p-4">
+            <h4 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2"><CheckCircle2 size={14} className="text-skill-green" /> Transaction ID</h4>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 rounded-lg bg-surface-1 px-3 py-2 font-mono text-xs text-foreground">{transactionCode}</code>
+              <button onClick={() => { navigator.clipboard.writeText(transactionCode); toast.success("Copied!"); }} className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-1">
+                <Copy size={14} />
+              </button>
+            </div>
+            <button onClick={() => navigate(`/transaction?code=${transactionCode}`)} className="mt-2 w-full rounded-lg border border-skill-green/20 py-1.5 text-xs text-skill-green hover:bg-skill-green/10 flex items-center justify-center gap-1 transition-colors">
+              <ExternalLink size={12} /> View Full Transaction
+            </button>
+          </div>
+        )}
+
         <div className="rounded-xl border border-border bg-card p-4">
           <h4 className="text-sm font-medium text-foreground mb-3">Workspace Info</h4>
           <div className="space-y-2 text-sm">
