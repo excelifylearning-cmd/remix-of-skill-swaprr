@@ -276,6 +276,41 @@ const EventsPage = () => {
           </motion.div>
         </section>
 
+        {/* ────── NEXT BIG EVENT SPOTLIGHT ────── */}
+        <section className="py-16 px-6">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="rounded-2xl border border-border bg-card p-6 sm:p-8"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <Flame size={16} className="text-destructive" />
+                <span className="font-mono text-xs text-destructive uppercase tracking-wider font-bold">Next Big Event</span>
+              </div>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">{nextBigEvent.title}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{nextBigEvent.subtitle}</p>
+              <p className="text-sm text-muted-foreground mt-3 max-w-2xl">{nextBigEvent.description}</p>
+              <div className="flex flex-wrap gap-2 mt-4">
+                {nextBigEvent.tags.map(t => (
+                  <span key={t} className="rounded-full border border-badge-gold/30 bg-badge-gold/10 px-3 py-1 text-xs text-badge-gold">{t}</span>
+                ))}
+              </div>
+              <div className="mt-5 w-full bg-surface-2 rounded-full h-2 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-badge-gold to-destructive"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: `${(nextBigEvent.spotsFilled / nextBigEvent.spots) * 100}%` }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3, duration: 1 }}
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-2">{nextBigEvent.spotsFilled} / {nextBigEvent.spots} spots filled</p>
+            </motion.div>
+          </div>
+        </section>
+
         {/* ────── 3. PLATFORM STATS ────── */}
         <section className="py-16 px-6">
           <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
