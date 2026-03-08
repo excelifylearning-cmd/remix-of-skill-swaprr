@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Search, CheckCircle2, Clock, Shield, FileText, ArrowRight, Flag,
   Star, User, Coins, AlertTriangle, Eye, MessageSquare, Video, PenTool,
