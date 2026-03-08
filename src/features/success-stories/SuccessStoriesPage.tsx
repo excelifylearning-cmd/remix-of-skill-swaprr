@@ -361,7 +361,7 @@ const SuccessStoriesPage = () => {
                   <p className="mb-3 text-[10px] text-muted-foreground">From: {story.from}</p>
                   <p className="mb-4 text-xs text-muted-foreground italic">"{story.quote}"</p>
                   <div className="flex items-center justify-between text-[10px]">
-                    <span className="rounded-full bg-skill-green/10 px-2 py-0.5 font-semibold text-skill-green">+{story.increase}</span>
+                    <span className="rounded-full bg-surface-2 px-2 py-0.5 font-semibold text-foreground">+{story.increase}</span>
                     <span className="text-muted-foreground">{story.swaps} swaps</span>
                   </div>
                 </motion.div>
