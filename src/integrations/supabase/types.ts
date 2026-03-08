@@ -2430,11 +2430,16 @@ export type Database = {
       }
       workspace_deliverables: {
         Row: {
+          ai_feedback: string | null
+          ai_quality_score: number | null
           created_at: string
           description: string
           file_urls: Json | null
           id: string
+          max_revisions: number | null
+          requirements: Json | null
           reviewer_notes: string | null
+          revision_count: number | null
           stage_id: string | null
           status: string
           submitted_by: string
@@ -2442,11 +2447,16 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          ai_feedback?: string | null
+          ai_quality_score?: number | null
           created_at?: string
           description?: string
           file_urls?: Json | null
           id?: string
+          max_revisions?: number | null
+          requirements?: Json | null
           reviewer_notes?: string | null
+          revision_count?: number | null
           stage_id?: string | null
           status?: string
           submitted_by: string
@@ -2454,11 +2464,16 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          ai_feedback?: string | null
+          ai_quality_score?: number | null
           created_at?: string
           description?: string
           file_urls?: Json | null
           id?: string
+          max_revisions?: number | null
+          requirements?: Json | null
           reviewer_notes?: string | null
+          revision_count?: number | null
           stage_id?: string | null
           status?: string
           submitted_by?: string
@@ -2516,36 +2531,81 @@ export type Database = {
       }
       workspace_files: {
         Row: {
+          access_level: string | null
           created_at: string
+          description: string | null
           file_name: string
           file_size: string
           file_type: string
           file_url: string
           id: string
+          tags: string[] | null
           uploaded_by: string
           version: number
           workspace_id: string
         }
         Insert: {
+          access_level?: string | null
           created_at?: string
+          description?: string | null
           file_name?: string
           file_size?: string
           file_type?: string
           file_url?: string
           id?: string
+          tags?: string[] | null
           uploaded_by: string
           version?: number
           workspace_id: string
         }
         Update: {
+          access_level?: string | null
           created_at?: string
+          description?: string | null
           file_name?: string
           file_size?: string
           file_type?: string
           file_url?: string
           id?: string
+          tags?: string[] | null
           uploaded_by?: string
           version?: number
+          workspace_id?: string
+        }
+        Relationships: []
+      }
+      workspace_members: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          id: string
+          invited_at: string
+          invited_by: string | null
+          role: Database["public"]["Enums"]["workspace_role"]
+          status: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          id?: string
+          invited_at?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["workspace_role"]
+          status?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          id?: string
+          invited_at?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["workspace_role"]
+          status?: string
+          user_id?: string
           workspace_id?: string
         }
         Relationships: []
@@ -2558,6 +2618,7 @@ export type Database = {
           message_type: string
           metadata: Json | null
           sender_id: string
+          translated_text: Json | null
           workspace_id: string
         }
         Insert: {
@@ -2567,6 +2628,7 @@ export type Database = {
           message_type?: string
           metadata?: Json | null
           sender_id: string
+          translated_text?: Json | null
           workspace_id: string
         }
         Update: {
@@ -2576,6 +2638,7 @@ export type Database = {
           message_type?: string
           metadata?: Json | null
           sender_id?: string
+          translated_text?: Json | null
           workspace_id?: string
         }
         Relationships: []
@@ -2613,6 +2676,39 @@ export type Database = {
         }
         Relationships: []
       }
+      workspace_voice_messages: {
+        Row: {
+          audio_url: string
+          created_at: string
+          duration_seconds: number
+          id: string
+          sender_id: string
+          transcript: string | null
+          translated_text: Json | null
+          workspace_id: string
+        }
+        Insert: {
+          audio_url: string
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          sender_id: string
+          transcript?: string | null
+          translated_text?: Json | null
+          workspace_id: string
+        }
+        Update: {
+          audio_url?: string
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          sender_id?: string
+          transcript?: string | null
+          translated_text?: Json | null
+          workspace_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -2628,6 +2724,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "enterprise"
+      workspace_role: "owner" | "editor" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2756,6 +2853,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user", "enterprise"],
+      workspace_role: ["owner", "editor", "viewer"],
     },
   },
 } as const
