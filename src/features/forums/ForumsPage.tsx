@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageSquare, Users, Flame, Pin, ArrowRight, ArrowLeft, ThumbsUp,
@@ -8,18 +8,69 @@ import {
   TrendingUp, Lock, Globe, CheckCircle2, AlertCircle, Heart, AtSign,
   BarChart3, Layers, ChevronRight, Bot, Gift, Crown, Sparkles, Copy, Play,
   Calendar, Target, Swords, GraduationCap, BookOpen, Lightbulb, Megaphone,
-  ThumbsDown, Mic, Video, PenTool, ArrowUp, ExternalLink, Medal, Wifi
+  ThumbsDown, Mic, Video, PenTool, ArrowUp, ExternalLink, Medal, Wifi, Loader2
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
-
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
+import { toast } from "sonner";
 
 type SortType = "hot" | "new" | "top" | "rising";
 
-const forumCategories = [
+// Database types
+interface DbCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  icon: string;
+  color: string;
+  thread_count: number;
+  created_at: string;
+}
+
+interface DbThread {
+  id: string;
+  category_id: string | null;
+  author_id: string | null;
+  author_name: string;
+  title: string;
+  content: string;
+  is_pinned: boolean;
+  is_locked: boolean;
+  view_count: number;
+  upvotes: number;
+  downvotes: number;
+  comment_count: number;
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+  category?: DbCategory;
+}
+
+interface DbComment {
+  id: string;
+  thread_id: string;
+  parent_id: string | null;
+  author_id: string | null;
+  author_name: string;
+  content: string;
+  upvotes: number;
+  downvotes: number;
+  created_at: string;
+}
+
+// Icon mapping for categories
+const iconMap: Record<string, any> = {
+  MessageSquare, Palette, Code, Trophy, Shield, Users, Zap, Hash,
+  BarChart3, Globe, Lightbulb, Video, GraduationCap, Bot, Star, BookOpen
+};
+
+const defaultForumCategories = [
   { icon: MessageSquare, name: "General Discussion", desc: "Talk about anything related to SkillSwappr", threads: 1240, posts: 8930, color: "foreground", online: 89 },
   { icon: Palette, name: "Design Corner", desc: "Share design work, get feedback, discuss trends", threads: 890, posts: 5670, color: "court-blue", online: 42 },
   { icon: Code, name: "Dev Talk", desc: "Programming, architecture, and tech discussions", threads: 1100, posts: 7240, color: "skill-green", online: 67 },
@@ -277,6 +328,7 @@ const dailyChallenge = {
 };
 
 const ForumsPage = () => {
+  const { user, profile } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortType>("hot");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -287,6 +339,156 @@ const ForumsPage = () => {
   const [replyText, setReplyText] = useState("");
   const [showComposer, setShowComposer] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState("");
+
+  // Database state
+  const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
+  const [dbThreads, setDbThreads] = useState<DbThread[]>([]);
+  const [dbComments, setDbComments] = useState<DbComment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Combined categories (DB + fallback)
+  const forumCategories = dbCategories.length > 0 
+    ? dbCategories.map(c => ({
+        icon: iconMap[c.icon] || MessageSquare,
+        name: c.name,
+        desc: c.description || "",
+        threads: c.thread_count,
+        posts: c.thread_count * 6, // estimate
+        color: c.color,
+        online: Math.floor(Math.random() * 50) + 10,
+        id: c.id,
+        slug: c.slug
+      }))
+    : defaultForumCategories;
+
+  // Fetch data from database
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch categories
+        const { data: categories } = await supabase
+          .from("forum_categories")
+          .select("*")
+          .order("thread_count", { ascending: false });
+        
+        if (categories) setDbCategories(categories);
+
+        // Fetch threads
+        const { data: threads } = await supabase
+          .from("forum_threads")
+          .select("*")
+          .order("created_at", { ascending: false });
+        
+        if (threads) setDbThreads(threads);
+      } catch (error) {
+        console.error("Error fetching forum data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Fetch comments when a thread is selected
+  useEffect(() => {
+    if (!selectedThread) return;
+
+    const fetchComments = async () => {
+      const { data: comments } = await supabase
+        .from("forum_comments")
+        .select("*")
+        .eq("thread_id", selectedThread)
+        .order("created_at", { ascending: true });
+      
+      if (comments) setDbComments(comments);
+    };
+
+    fetchComments();
+  }, [selectedThread]);
+
+  // Helper to format time ago
+  const formatTimeAgo = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+  };
+
+  // Submit new thread
+  const handleSubmitThread = async () => {
+    if (!user) {
+      toast.error("Please log in to post");
+      return;
+    }
+    if (!newPostTitle.trim() || !newPostContent.trim()) {
+      toast.error("Please fill in title and content");
+      return;
+    }
+
+    const { error } = await supabase.from("forum_threads").insert({
+      title: newPostTitle,
+      content: newPostContent,
+      author_id: user.id,
+      author_name: profile?.display_name || profile?.full_name || "Anonymous",
+      category_id: newPostCategory || null,
+      tags: []
+    });
+
+    if (error) {
+      toast.error("Failed to create thread");
+      console.error(error);
+    } else {
+      toast.success("Thread created!");
+      setShowComposer(false);
+      setNewPostTitle("");
+      setNewPostContent("");
+      // Refresh threads
+      const { data: threads } = await supabase
+        .from("forum_threads")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (threads) setDbThreads(threads);
+    }
+  };
+
+  // Submit comment
+  const handleSubmitComment = async () => {
+    if (!user) {
+      toast.error("Please log in to comment");
+      return;
+    }
+    if (!replyText.trim() || !selectedThread) return;
+
+    const { error } = await supabase.from("forum_comments").insert({
+      thread_id: selectedThread,
+      author_id: user.id,
+      author_name: profile?.display_name || profile?.full_name || "Anonymous",
+      content: replyText
+    });
+
+    if (error) {
+      toast.error("Failed to add comment");
+      console.error(error);
+    } else {
+      toast.success("Comment added!");
+      setReplyText("");
+      // Refresh comments
+      const { data: comments } = await supabase
+        .from("forum_comments")
+        .select("*")
+        .eq("thread_id", selectedThread)
+        .order("created_at", { ascending: true });
+      if (comments) setDbComments(comments);
+    }
+  };
   const [newPostContent, setNewPostContent] = useState("");
   const [newPostCategory, setNewPostCategory] = useState("");
   const [showRules, setShowRules] = useState(false);
@@ -319,7 +521,37 @@ const ForumsPage = () => {
     });
   };
 
-  const sortedThreads = [...allThreads]
+  // Convert DB threads to display format and merge with hardcoded fallback
+  const allThreadsDisplay = dbThreads.length > 0 
+    ? dbThreads.map(t => ({
+        id: t.id,
+        title: t.title,
+        author: t.author_name,
+        authorAvatar: t.author_name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase(),
+        authorFlair: "Member",
+        authorKarma: 100,
+        authorJoined: "2025",
+        authorGigs: 0,
+        replies: t.comment_count,
+        views: t.view_count,
+        upvotes: t.upvotes,
+        downvotes: t.downvotes,
+        hot: t.upvotes > 50,
+        category: forumCategories.find(c => 'id' in c && c.id === t.category_id)?.name || "General",
+        timeAgo: formatTimeAgo(t.created_at),
+        tags: t.tags || [],
+        hasImage: false,
+        hasPoll: false,
+        hasCode: false,
+        hasAttachment: false,
+        locked: t.is_locked,
+        sticky: t.is_pinned,
+        content: t.content,
+        awards: [] as { icon: string; count: number }[],
+      }))
+    : allThreads;
+
+  const sortedThreads = [...allThreadsDisplay]
     .filter((t) => !selectedCategory || t.category === selectedCategory)
     .filter((t) => !searchQuery || t.title.toLowerCase().includes(searchQuery.toLowerCase()) || t.tags.some((tag) => tag.includes(searchQuery.toLowerCase())))
     .sort((a, b) => {
@@ -331,8 +563,30 @@ const ForumsPage = () => {
       return b.views - a.views;
     });
 
-  const openThread = allThreads.find((t) => t.id === selectedThread);
-  const replies = selectedThread ? (threadReplies[selectedThread] || []) : [];
+  const openThread = allThreadsDisplay.find((t) => t.id === selectedThread);
+  
+  // Convert DB comments to display format
+  const replies = dbComments.length > 0 
+    ? dbComments.filter(c => !c.parent_id).map(c => ({
+        author: c.author_name,
+        avatar: c.author_name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase(),
+        flair: "Member",
+        text: c.content,
+        time: formatTimeAgo(c.created_at),
+        upvotes: c.upvotes,
+        downvotes: c.downvotes,
+        replies: dbComments.filter(r => r.parent_id === c.id).length,
+        awards: [] as { icon: string; count: number }[],
+        nested: dbComments.filter(r => r.parent_id === c.id).map(r => ({
+          author: r.author_name,
+          avatar: r.author_name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase(),
+          flair: "Member",
+          text: r.content,
+          time: formatTimeAgo(r.created_at),
+          upvotes: r.upvotes,
+        }))
+      }))
+    : (selectedThread ? (threadReplies[selectedThread] || []) : []);
 
   // ============ THREAD DETAIL VIEW ============
   if (openThread) {
@@ -657,7 +911,7 @@ const ForumsPage = () => {
                   <div className="rounded-2xl border border-border bg-card p-5">
                     <h3 className="mb-3 text-xs font-bold text-foreground">Related Threads</h3>
                     <div className="space-y-2.5">
-                      {allThreads.filter(t => t.id !== openThread.id && t.category === openThread.category).slice(0, 3).map((t) => (
+                      {allThreadsDisplay.filter(t => t.id !== openThread.id && t.category === openThread.category).slice(0, 3).map((t) => (
                         <button key={t.id} onClick={() => setSelectedThread(t.id)} className="block w-full text-left group">
                           <p className="text-[11px] font-medium text-foreground line-clamp-2 group-hover:text-muted-foreground transition-colors">{t.title}</p>
                           <div className="mt-0.5 flex items-center gap-2 text-[9px] text-muted-foreground">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Clock, ArrowRight, ArrowLeft, Tag, TrendingUp, User, Heart, MessageSquare,
@@ -7,13 +7,49 @@ import {
   ThumbsUp, Send, MoreHorizontal, Link2, Twitter, Facebook, Copy, CheckCircle2,
   ChevronDown, Play, Quote, List, Image as ImageIcon, Code, Crown, Flame,
   ArrowUp, Layers, Globe, PenTool, Lightbulb, Shield, Users, Target,
-  BarChart3, Hash, Mic, Coffee
+  BarChart3, Hash, Mic, Coffee, Loader2
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
+import { toast } from "sonner";
+
+// Database types
+interface DbBlogPost {
+  id: string;
+  author_id: string | null;
+  author_name: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: any;
+  cover_image: string | null;
+  category: string;
+  tags: string[];
+  read_time: number;
+  is_featured: boolean;
+  is_published: boolean;
+  view_count: number;
+  like_count: number;
+  comment_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface DbBlogComment {
+  id: string;
+  post_id: string;
+  parent_id: string | null;
+  author_id: string | null;
+  author_name: string;
+  content: string;
+  like_count: number;
+  created_at: string;
+}
 
 
 const categories = [
@@ -242,6 +278,7 @@ const readingLists = [
 ];
 
 const BlogPage = () => {
+  const { user, profile } = useAuth();
   const [active, setActive] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
@@ -252,7 +289,136 @@ const BlogPage = () => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [email, setEmail] = useState("");
 
-  const filtered = (active === "All" ? posts : posts.filter((p) => p.category === active))
+  // Database state
+  const [dbPosts, setDbPosts] = useState<DbBlogPost[]>([]);
+  const [dbComments, setDbComments] = useState<DbBlogComment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Helper to format time ago
+  const formatTimeAgo = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  };
+
+  // Convert DB content format to display format
+  const parseContent = (content: any) => {
+    if (!content || !Array.isArray(content)) return [];
+    return content.map((block: any) => {
+      if (block.type === "paragraph") return { type: "paragraph", text: block.content };
+      if (block.type === "heading") return { type: "heading", text: block.content, level: block.level };
+      if (block.type === "quote") return { type: "quote", text: block.content, author: block.author };
+      if (block.type === "list") return { type: "list", items: block.items };
+      if (block.type === "code") return { type: "code", text: block.content, language: block.language || "text" };
+      return block;
+    });
+  };
+
+  // Fetch data from database
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const { data: blogPosts } = await supabase
+          .from("blog_posts")
+          .select("*")
+          .eq("is_published", true)
+          .order("created_at", { ascending: false });
+        
+        if (blogPosts) setDbPosts(blogPosts);
+      } catch (error) {
+        console.error("Error fetching blog data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Fetch comments when a post is selected
+  useEffect(() => {
+    if (!selectedPost) return;
+
+    const fetchComments = async () => {
+      const { data: comments } = await supabase
+        .from("blog_comments")
+        .select("*")
+        .eq("post_id", selectedPost)
+        .order("created_at", { ascending: true });
+      
+      if (comments) setDbComments(comments);
+    };
+
+    fetchComments();
+  }, [selectedPost]);
+
+  // Submit comment
+  const handleSubmitComment = async () => {
+    if (!user) {
+      toast.error("Please log in to comment");
+      return;
+    }
+    if (!commentText.trim() || !selectedPost) return;
+
+    const { error } = await supabase.from("blog_comments").insert({
+      post_id: selectedPost,
+      author_id: user.id,
+      author_name: profile?.display_name || profile?.full_name || "Anonymous",
+      content: commentText
+    });
+
+    if (error) {
+      toast.error("Failed to add comment");
+      console.error(error);
+    } else {
+      toast.success("Comment added!");
+      setCommentText("");
+      // Refresh comments
+      const { data: comments } = await supabase
+        .from("blog_comments")
+        .select("*")
+        .eq("post_id", selectedPost)
+        .order("created_at", { ascending: true });
+      if (comments) setDbComments(comments);
+    }
+  };
+
+  // Convert DB posts to display format
+  const allPosts = dbPosts.length > 0 
+    ? dbPosts.map(p => ({
+        id: p.id,
+        title: p.title,
+        excerpt: p.excerpt || "",
+        category: p.category,
+        author: {
+          name: p.author_name,
+          role: "Author",
+          avatar: p.author_name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase(),
+          bio: ""
+        },
+        date: formatTimeAgo(p.created_at),
+        readTime: `${p.read_time} min`,
+        featured: p.is_featured,
+        image: p.cover_image || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=400&fit=crop",
+        tags: p.tags || [],
+        likes: p.like_count,
+        comments: p.comment_count,
+        views: p.view_count,
+        bookmarks: 0,
+        series: null as string | null,
+        seriesNum: 0,
+        content: parseContent(p.content)
+      }))
+    : posts;
+
+  const filtered = (active === "All" ? allPosts : allPosts.filter((p) => p.category === active))
     .filter((p) => !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase())))
     .sort((a, b) => {
       if (sortBy === "popular") return b.likes - a.likes;
@@ -260,11 +426,12 @@ const BlogPage = () => {
       return 0;
     });
 
-  const featured = posts.find((p) => p.featured);
-  const openPost = posts.find((p) => p.id === selectedPost);
-  const editorsPicks = posts.filter((p) => editorsPickIds.includes(p.id));
-  const popularPosts = [...posts].sort((a, b) => b.views - a.views).slice(0, 5);
-  const mostDiscussed = [...posts].sort((a, b) => b.comments - a.comments).slice(0, 4);
+  const featured = allPosts.find((p) => p.featured);
+  const openPost = allPosts.find((p) => p.id === selectedPost);
+  const editorsPicks = allPosts.filter((p) => editorsPickIds.includes(p.id)).slice(0, 3);
+  const popularPosts = [...allPosts].sort((a, b) => b.views - a.views).slice(0, 5);
+  const mostDiscussed = [...allPosts].sort((a, b) => b.comments - a.comments).slice(0, 4);
+  
 
   const toggleLike = (id: string) => {
     setLikedPosts((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
