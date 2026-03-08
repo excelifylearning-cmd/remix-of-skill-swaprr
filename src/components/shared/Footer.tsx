@@ -46,9 +46,6 @@ const Footer = () => (
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             The skill exchange platform for students. Trade what you know for what you need.
           </p>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            The skill exchange platform for students. Trade what you know for what you need.
-          </p>
           <div className="mt-5 flex gap-3">
             {socials.map((s) => (
               <motion.a

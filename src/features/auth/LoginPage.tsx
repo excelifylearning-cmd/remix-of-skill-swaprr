@@ -57,20 +57,6 @@ const LoginPage = () => {
     }
   };
 
-  // Demo mode login
-  const handleDemoLogin = async () => {
-    setLoading(true);
-    setError("");
-    // Use demo credentials
-    const result = await login("demo@skillswappr.com", "Demo123!");
-    setLoading(false);
-    if (result.success) {
-      setSuccess(true);
-      setTimeout(() => navigate("/dashboard"), 800);
-    } else {
-      setError("Demo mode unavailable. Please sign up first or use Google login.");
-    }
-  };
 
   if (isAuthenticated && !success) {
     navigate("/dashboard");
