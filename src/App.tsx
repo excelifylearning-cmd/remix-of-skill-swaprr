@@ -57,6 +57,7 @@ const AnimatedRoutes = () => {
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/transaction" element={<TransactionLookupPage />} />
+          <Route path="/faq" element={<FAQPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

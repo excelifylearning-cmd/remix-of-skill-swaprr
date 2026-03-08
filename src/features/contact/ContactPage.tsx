@@ -24,6 +24,7 @@ const topics = [
   { icon: Users, label: "Partnerships" },
   { icon: MessageSquare, label: "Support" },
   { icon: Zap, label: "Bug Report" },
+  { icon: Globe, label: "Other" },
 ];
 
 const slaCards = [
