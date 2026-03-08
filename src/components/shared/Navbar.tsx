@@ -19,6 +19,8 @@ const Navbar = () => {
   const [isLight, setIsLight] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
 
   useEffect(() => {
     const stored = localStorage.getItem("theme");
