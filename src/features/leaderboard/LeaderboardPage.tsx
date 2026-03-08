@@ -164,9 +164,7 @@ const LeaderboardPage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <CustomCursor />
-        <CursorGlow />
-        <Navbar />
+        <AppNav backLabel="Leaderboard" />
 
         {/* Hero */}
         <section className="relative pt-32 pb-20 overflow-hidden">
