@@ -14,18 +14,6 @@ import Footer from "@/components/shared/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { validateEmail } from "@/lib/email-validation";
-  Mail, MessageSquare, MapPin, Clock, Send, Building2, Users, HelpCircle,
-  Phone, Paperclip, X, ChevronDown, CheckCircle2, Twitter, Linkedin,
-  Github, Globe, Headphones, Zap, ArrowRight, Star, Shield, Sparkles,
-  AlertCircle, User, AtSign, FileText
-} from "lucide-react";
-import Navbar from "@/components/shared/Navbar";
-import CustomCursor from "@/components/shared/CustomCursor";
-import CursorGlow from "@/components/shared/CursorGlow";
-import PageTransition from "@/components/shared/PageTransition";
-import Footer from "@/components/shared/Footer";
-
-import { validateEmail } from "@/lib/email-validation";
 
 const contactMethods = [
   { icon: Mail, title: "Email Us", desc: "hello@skillswappr.com", detail: "Response within 24 hours", color: "text-court-blue", bg: "bg-court-blue/10" },
