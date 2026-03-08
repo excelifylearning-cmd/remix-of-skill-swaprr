@@ -776,9 +776,9 @@ const EventsPage = () => {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.06 }}
                 >
-                  <span className={`font-heading text-lg font-black w-8 ${i < 3 ? "text-badge-gold" : "text-muted-foreground"}`}>#{p.rank}</span>
+                  <span className={`font-heading text-lg font-black w-8 ${i < 3 ? "text-skill-green" : "text-muted-foreground"}`}>#{p.rank}</span>
                   <div className={`flex h-9 w-9 items-center justify-center rounded-full border border-border font-heading text-xs font-bold text-foreground ${
-                    i === 0 ? "bg-badge-gold/10" : i === 1 ? "bg-court-blue/10" : i === 2 ? "bg-skill-green/10" : "bg-surface-2"
+                    i === 0 ? "bg-skill-green/10" : i === 1 ? "bg-court-blue/10" : i === 2 ? "bg-foreground/10" : "bg-surface-2"
                   }`}>
                     {p.name.split(" ").map(n => n[0]).join("")}
                   </div>
@@ -789,9 +789,9 @@ const EventsPage = () => {
                   <span className={`hidden sm:inline-block rounded-full px-2 py-0.5 text-[9px] font-semibold ${
                     p.badge === "Diamond" ? "bg-court-blue/10 text-court-blue border border-court-blue/20" :
                     p.badge === "Platinum" ? "bg-foreground/10 text-foreground border border-border" :
-                    "bg-badge-gold/10 text-badge-gold border border-badge-gold/20"
+                    "bg-skill-green/10 text-skill-green border border-skill-green/20"
                   }`}>{p.badge}</span>
-                  <span className="font-mono text-sm text-badge-gold font-bold">{p.sp} SP</span>
+                  <span className="font-mono text-sm text-skill-green font-bold">{p.sp} SP</span>
                 </motion.div>
               ))}
             </div>
