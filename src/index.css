@@ -60,53 +60,53 @@
   }
 
   .light {
-    --background: 210 20% 98%;
-    --foreground: 222 47% 11%;
+    --background: 220 20% 97%;
+    --foreground: 224 50% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 224 50% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 224 50% 10%;
 
-    --primary: 222 47% 11%;
-    --primary-foreground: 210 20% 98%;
+    --primary: 224 50% 10%;
+    --primary-foreground: 220 20% 97%;
 
-    --secondary: 214 20% 94%;
-    --secondary-foreground: 215 16% 40%;
+    --secondary: 218 22% 93%;
+    --secondary-foreground: 218 18% 38%;
 
-    --muted: 214 20% 94%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 218 22% 93%;
+    --muted-foreground: 218 14% 45%;
 
-    --accent: 214 18% 90%;
-    --accent-foreground: 222 30% 18%;
+    --accent: 218 20% 89%;
+    --accent-foreground: 224 35% 16%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 20% 88%;
-    --input: 214 20% 88%;
-    --ring: 222 47% 30%;
+    --border: 218 22% 86%;
+    --input: 218 22% 86%;
+    --ring: 224 50% 28%;
 
-    --silver: 215 16% 47%;
-    --silver-accent: 222 30% 25%;
-    --skill-green: 160 84% 30%;
-    --alert-red: 0 72% 51%;
-    --badge-gold: 38 92% 44%;
-    --court-blue: 217 91% 52%;
+    --silver: 218 14% 45%;
+    --silver-accent: 224 35% 22%;
+    --skill-green: 160 84% 28%;
+    --alert-red: 0 72% 48%;
+    --badge-gold: 38 92% 42%;
+    --court-blue: 217 91% 48%;
 
-    --surface-1: 214 25% 96%;
-    --surface-2: 214 22% 93%;
-    --surface-3: 214 18% 88%;
+    --surface-1: 220 24% 96%;
+    --surface-2: 218 22% 93%;
+    --surface-3: 218 20% 88%;
 
-    --sidebar-background: 214 25% 96%;
-    --sidebar-foreground: 215 16% 47%;
-    --sidebar-primary: 222 47% 11%;
-    --sidebar-primary-foreground: 210 20% 98%;
-    --sidebar-accent: 214 20% 94%;
-    --sidebar-accent-foreground: 222 30% 18%;
-    --sidebar-border: 214 20% 88%;
-    --sidebar-ring: 222 47% 30%;
+    --sidebar-background: 220 24% 96%;
+    --sidebar-foreground: 218 14% 45%;
+    --sidebar-primary: 224 50% 10%;
+    --sidebar-primary-foreground: 220 20% 97%;
+    --sidebar-accent: 218 22% 93%;
+    --sidebar-accent-foreground: 224 35% 16%;
+    --sidebar-border: 218 22% 86%;
+    --sidebar-ring: 224 50% 28%;
   }
 }
 
@@ -210,25 +210,97 @@
 .light {
   /* Cards get subtle elevation shadows */
   & [class*="border-border"][class*="bg-card"] {
-    box-shadow: 0 1px 3px hsl(222 47% 11% / 0.05), 0 1px 2px hsl(222 47% 11% / 0.03);
+    box-shadow: 0 1px 4px hsl(224 50% 10% / 0.06), 0 1px 2px hsl(224 50% 10% / 0.04);
   }
 
   & [class*="border-border"][class*="bg-card"]:hover {
-    box-shadow: 0 4px 12px hsl(222 47% 11% / 0.08), 0 2px 4px hsl(222 47% 11% / 0.04);
+    box-shadow: 0 6px 16px hsl(224 50% 10% / 0.08), 0 2px 6px hsl(224 50% 10% / 0.05);
   }
 
   /* Refined input styling */
   & input, & textarea, & select {
-    box-shadow: 0 1px 2px hsl(222 47% 11% / 0.04) inset;
+    box-shadow: 0 1px 2px hsl(224 50% 10% / 0.05) inset;
   }
 
   /* Better badge/pill backgrounds */
   & [class*="bg-surface-2"][class*="rounded-full"] {
-    box-shadow: 0 1px 2px hsl(222 47% 11% / 0.03);
+    box-shadow: 0 1px 2px hsl(224 50% 10% / 0.04);
   }
 
-  /* Smoother radial gradients */
+  /* Smoother radial gradients — reduce intensity in light */
   & [style*="radial-gradient"] {
-    filter: saturate(1.1) contrast(1.02);
+    filter: saturate(0.85) contrast(1.01);
   }
+
+  /* Improve text contrast on colored backgrounds */
+  & .text-skill-green { color: hsl(160 84% 24%); }
+  & .text-badge-gold { color: hsl(38 92% 36%); }
+  & .text-court-blue { color: hsl(217 91% 42%); }
+
+  /* Softer background tint for colored badges in light */
+  & [class*="bg-skill-green\\/5"] { background-color: hsl(160 84% 28% / 0.08); }
+  & [class*="bg-badge-gold\\/5"] { background-color: hsl(38 92% 42% / 0.08); }
+  & [class*="bg-court-blue\\/5"] { background-color: hsl(217 91% 48% / 0.08); }
+  & [class*="bg-skill-green\\/10"] { background-color: hsl(160 84% 28% / 0.12); }
+  & [class*="bg-badge-gold\\/10"] { background-color: hsl(38 92% 42% / 0.12); }
+  & [class*="bg-court-blue\\/10"] { background-color: hsl(217 91% 48% / 0.12); }
+
+  /* Better navbar glass in light */
+  & .glass {
+    background-color: hsl(0 0% 100% / 0.82);
+    box-shadow: 0 1px 4px hsl(224 50% 10% / 0.06);
+  }
+}
+
+/* ──── Global mobile responsiveness fixes ──── */
+@media (max-width: 640px) {
+  /* Tighter page padding on small screens */
+  section > div[class*="max-w-"] {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Prevent text overflow */
+  h1 { font-size: clamp(2rem, 8vw, 3.5rem) !important; line-height: 1.1 !important; }
+  h2 { font-size: clamp(1.5rem, 6vw, 2.5rem) !important; line-height: 1.15 !important; }
+
+  /* Cards breathe on mobile */
+  [class*="rounded-2xl"][class*="border-border"] {
+    border-radius: 1rem;
+  }
+
+  /* Grids collapse cleanly */
+  .grid[class*="lg:grid-cols"] {
+    gap: 0.75rem;
+  }
+
+  /* Horizontal scroll containers get momentum */
+  .overflow-x-auto, .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Font mono sizing */
+  .font-mono {
+    font-size: 0.8125rem;
+  }
+
+  /* Spline iframes scale down on mobile */
+  iframe[title*="3D"], iframe[title*="Spline"], iframe[title*="Scene"] {
+    min-height: 280px;
+    max-height: 380px;
+  }
+}
+
+/* Tablet tweaks */
+@media (min-width: 641px) and (max-width: 1024px) {
+  h1 { font-size: clamp(2.5rem, 6vw, 4rem) !important; }
+}
+
+/* Smooth transitions for theme switching */
+body, .bg-background, .bg-card, .bg-surface-1, .bg-surface-2, .bg-surface-3 {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.border-border {
+  transition: border-color 0.3s ease;
 }
