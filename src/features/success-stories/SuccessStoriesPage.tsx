@@ -579,9 +579,9 @@ const SuccessStoriesPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="rounded-2xl border border-border bg-card p-6 text-center hover:border-badge-gold/30 transition-colors"
+                  className="rounded-2xl border border-border bg-card p-6 text-center hover:border-foreground/20 transition-colors"
                 >
-                  <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-badge-gold/10 font-heading text-2xl font-bold text-badge-gold ring-4 ring-badge-gold/20">
+                  <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-foreground/10 font-heading text-2xl font-bold text-foreground ring-4 ring-foreground/10">
                     {mentor.avatar}
                   </div>
                   <h3 className="font-heading text-lg font-bold text-foreground">{mentor.name}</h3>
@@ -594,7 +594,7 @@ const SuccessStoriesPage = () => {
                     </div>
                     <div className="h-8 w-px bg-border" />
                     <div className="text-center">
-                      <p className="font-bold text-foreground flex items-center gap-1"><Star size={10} fill="currentColor" className="text-badge-gold" /> {mentor.rating}</p>
+                      <p className="font-bold text-foreground flex items-center gap-1"><Star size={10} fill="currentColor" className="text-skill-green" /> {mentor.rating}</p>
                       <p className="text-[9px] text-muted-foreground">Rating</p>
                     </div>
                   </div>
