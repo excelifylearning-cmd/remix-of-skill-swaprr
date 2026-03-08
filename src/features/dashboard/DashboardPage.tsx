@@ -762,11 +762,32 @@ const SkillCourtTab = () => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const GuildsTab = () => {
-  const myGuilds = [
-    { id: 1, name: "Design Masters", members: 128, rank: 3, role: "Member", icon: "🎨" },
-    { id: 2, name: "Code Ninjas", members: 256, rank: 1, role: "Officer", icon: "⚔️" },
-    { id: 3, name: "Creative Collective", members: 89, rank: 7, role: "Leader", icon: "✨" },
-  ];
+  const { user } = useAuth();
+  const [myGuilds, setMyGuilds] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const { data } = await supabase
+        .from("guild_members")
+        .select("role, guilds(id, name, rank, avatar_url)")
+        .eq("user_id", user.id);
+      if (data?.length) {
+        setMyGuilds(data.map((g: any) => ({
+          id: g.guilds?.id || "", name: g.guilds?.name || "Guild",
+          members: 0, rank: g.guilds?.rank || 0, role: g.role, icon: "⚔️",
+        })));
+      } else {
+        setMyGuilds([
+          { id: 1, name: "Design Masters", members: 128, rank: 3, role: "Member", icon: "🎨" },
+          { id: 2, name: "Code Ninjas", members: 256, rank: 1, role: "Officer", icon: "⚔️" },
+        ]);
+      }
+      setLoading(false);
+    };
+    load();
+  }, [user]);
 
   return (
     <div className="space-y-6">
