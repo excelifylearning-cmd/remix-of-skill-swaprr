@@ -542,7 +542,7 @@ const SuccessStoriesPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className="rounded-2xl border border-border bg-card p-5 hover:border-skill-green/30 transition-colors"
+                  className="rounded-2xl border border-border bg-card p-5 hover:border-foreground/20 transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-skill-green/10 font-heading text-xl font-black text-skill-green">
