@@ -17,7 +17,7 @@ import { validateEmail } from "@/lib/email-validation";
 const contactMethods = [
   { icon: Mail, title: "Email Us", desc: "hello@skillswappr.com", detail: "Response within 24 hours", color: "text-court-blue", bg: "bg-court-blue/10" },
   { icon: Headphones, title: "Live Chat", desc: "Talk to our team", detail: "Avg response: 5 minutes", color: "text-skill-green", bg: "bg-skill-green/10" },
-  { icon: MapPin, title: "Office", desc: "San Francisco, CA", detail: "By appointment only", color: "text-badge-gold", bg: "bg-badge-gold/10" },
+  { icon: MapPin, title: "Office", desc: "San Francisco, CA", detail: "By appointment only", color: "text-muted-foreground", bg: "bg-surface-2" },
   { icon: Clock, title: "Support Hours", desc: "Mon–Fri, 9am–6pm EST", detail: "Weekend email support", color: "text-muted-foreground", bg: "bg-surface-2" },
 ];
 
