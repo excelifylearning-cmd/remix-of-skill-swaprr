@@ -195,6 +195,37 @@ const priorityLevels = [
   { value: "critical", label: "Critical", desc: "Safety risk / blocking", color: "text-destructive", bg: "bg-destructive/10" },
 ];
 
+interface HelpArticle {
+  id: string;
+  category: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+}
+
+interface ServiceStatus {
+  id: string;
+  name: string;
+  status: string;
+  uptime: number;
+  latency: string;
+  icon: string;
+  region: string;
+}
+
+interface Incident {
+  id: string;
+  title: string;
+  severity: string;
+  status: string;
+  duration: string;
+  started_at: string;
+}
+
+const iconLookup: Record<string, any> = {
+  Package, MessageSquare, Video, Shield, Server, Zap, HardDrive, Key, Search, Activity, Cloud, Database,
+};
+
 const HelpPage = () => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
@@ -213,6 +244,35 @@ const HelpPage = () => {
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [statusTab, setStatusTab] = useState<"services" | "incidents" | "uptime">("services");
   const [feedbackSent, setFeedbackSent] = useState(false);
+
+  // Backend-driven state
+  const [helpArticles, setHelpArticles] = useState<HelpArticle[]>([]);
+  const [liveServices, setLiveServices] = useState<ServiceStatus[]>([]);
+  const [liveIncidents, setLiveIncidents] = useState<Incident[]>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const [articlesRes, servicesRes, incidentsRes] = await Promise.all([
+        supabase.from("help_articles").select("id, category, title, slug, excerpt").order("category"),
+        supabase.from("service_status").select("*").order("name"),
+        supabase.from("service_incidents").select("*").order("started_at", { ascending: false }).limit(10),
+      ]);
+      if (articlesRes.data) setHelpArticles(articlesRes.data as any);
+      if (servicesRes.data) setLiveServices(servicesRes.data as any);
+      if (incidentsRes.data) setLiveIncidents(incidentsRes.data as any);
+    };
+    loadData();
+  }, []);
+
+  // Group articles by category
+  const articlesByCategory = helpArticles.reduce<Record<string, HelpArticle[]>>((acc, a) => {
+    (acc[a.category] = acc[a.category] || []).push(a);
+    return acc;
+  }, {});
+
+  // Use live services if available, fall back to hardcoded
+  const activeServices = liveServices.length > 0 ? liveServices : services.map(s => ({ ...s, id: s.name })) as any;
+  const activeIncidents = liveIncidents.length > 0 ? liveIncidents : recentIncidents.map((inc, i) => ({ ...inc, id: String(i), started_at: inc.date })) as any;
 
   const handleCopy = (path: string, idx: number) => {
     navigator.clipboard.writeText(path);
