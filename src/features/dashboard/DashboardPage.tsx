@@ -627,7 +627,38 @@ const CreateGigTab = () => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const SkillCourtTab = () => {
-  const [activeCase, setActiveCase] = useState<typeof courtCases[0] | null>(null);
+  const { user } = useAuth();
+  const [myDisputes, setMyDisputes] = useState<any[]>([]);
+  const [juryDisputes, setJuryDisputes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [courtStats, setCourtStats] = useState({ judged: 0, earned: 0 });
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      setLoading(true);
+      // My disputes
+      const { data: mine } = await supabase
+        .from("disputes")
+        .select("*")
+        .or(`filed_by.eq.${user.id},filed_against.eq.${user.id}`)
+        .order("created_at", { ascending: false });
+      setMyDisputes(mine || []);
+
+      // All open disputes for jury duty (not involving this user)
+      const { data: open } = await supabase
+        .from("disputes")
+        .select("*")
+        .eq("status", "Open")
+        .neq("filed_by", user.id)
+        .neq("filed_against", user.id)
+        .limit(10);
+      setJuryDisputes(open || []);
+
+      setLoading(false);
+    };
+    load();
+  }, [user]);
 
   return (
     <div className="space-y-6">
@@ -645,20 +676,19 @@ const SkillCourtTab = () => {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         <div className="rounded-xl border border-border bg-card p-4 text-center">
-          <p className="font-heading text-2xl font-black text-court-blue">12</p>
+          <p className="font-heading text-2xl font-black text-court-blue">{courtStats.judged}</p>
           <p className="text-xs text-muted-foreground">Cases Judged</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 text-center">
-          <p className="font-heading text-2xl font-black text-skill-green">180</p>
+          <p className="font-heading text-2xl font-black text-skill-green">{courtStats.earned}</p>
           <p className="text-xs text-muted-foreground">SP Earned</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 text-center">
-          <p className="font-heading text-2xl font-black text-badge-gold">92%</p>
-          <p className="text-xs text-muted-foreground">Accuracy</p>
+          <p className="font-heading text-2xl font-black text-badge-gold">{myDisputes.length}</p>
+          <p className="text-xs text-muted-foreground">My Cases</p>
         </div>
       </div>
 
-      {/* Tabs */}
       <Tabs defaultValue="jury" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="jury">Jury Duty</TabsTrigger>
@@ -674,24 +704,27 @@ const SkillCourtTab = () => {
             <p className="text-xs text-muted-foreground">Free tier members must complete jury duty to maintain platform access. Premium members earn bonus SP.</p>
           </div>
 
-          {courtCases.filter(c => c.type === 'jury-duty').map((c) => (
+          {loading ? (
+            <div className="py-12 text-center">
+              <div className="h-5 w-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin mx-auto" />
+            </div>
+          ) : juryDisputes.length > 0 ? juryDisputes.map((d) => (
             <motion.div
-              key={c.id}
+              key={d.id}
               className="rounded-2xl border border-border bg-card overflow-hidden"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="flex items-center justify-between border-b border-border/50 px-4 py-3 bg-surface-1">
                 <Badge className="bg-court-blue/10 text-court-blue border-none">Jury Duty</Badge>
-                <span className="text-xs font-bold text-skill-green">+{c.reward} SP</span>
+                <span className="text-xs font-bold text-skill-green">+15 SP</span>
               </div>
               <div className="p-4">
-                <h4 className="text-base font-bold text-foreground mb-2">{c.title}</h4>
-                <p className="text-xs text-muted-foreground mb-3">Parties: {c.parties?.join(" vs ")}</p>
-                
+                <h4 className="text-base font-bold text-foreground mb-2">{d.title}</h4>
+                <p className="text-xs text-muted-foreground mb-3">{d.sp_amount} SP at stake</p>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock size={10} /> Due: {c.deadline}
+                    <Clock size={10} /> Filed {new Date(d.created_at).toLocaleDateString()}
                   </span>
                   <button className="rounded-lg bg-court-blue px-4 py-2 text-xs font-semibold text-white hover:bg-court-blue/90 transition-colors">
                     Review Case
@@ -699,9 +732,7 @@ const SkillCourtTab = () => {
                 </div>
               </div>
             </motion.div>
-          ))}
-
-          {courtCases.filter(c => c.type === 'jury-duty').length === 0 && (
+          )) : (
             <div className="py-12 text-center">
               <CheckCircle2 size={32} className="mx-auto mb-3 text-skill-green" />
               <p className="text-foreground font-medium">No pending jury duty</p>
@@ -711,15 +742,19 @@ const SkillCourtTab = () => {
         </TabsContent>
 
         <TabsContent value="my-cases" className="space-y-4">
-          {courtCases.filter(c => c.type === 'my-case').map((c) => (
-            <div key={c.id} className="rounded-2xl border border-alert-red/20 bg-card overflow-hidden">
+          {loading ? (
+            <div className="py-12 text-center">
+              <div className="h-5 w-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin mx-auto" />
+            </div>
+          ) : myDisputes.length > 0 ? myDisputes.map((d) => (
+            <div key={d.id} className="rounded-2xl border border-alert-red/20 bg-card overflow-hidden">
               <div className="flex items-center justify-between border-b border-border/50 px-4 py-3 bg-alert-red/5">
                 <Badge className="bg-alert-red/10 text-alert-red border-none">Dispute</Badge>
-                <span className="text-xs text-muted-foreground">{c.status}</span>
+                <span className="text-xs text-muted-foreground">{d.status}</span>
               </div>
               <div className="p-4">
-                <h4 className="text-base font-bold text-foreground mb-2">{c.title}</h4>
-                <p className="text-xs text-muted-foreground mb-3">vs {c.opponent} · Filed {c.filed}</p>
+                <h4 className="text-base font-bold text-foreground mb-2">{d.title}</h4>
+                <p className="text-xs text-muted-foreground mb-3">{d.sp_amount} SP · Filed {new Date(d.created_at).toLocaleDateString()}</p>
                 
                 <div className="rounded-xl bg-surface-1 p-3 mb-3">
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground/60 mb-1">Verdict Breakdown</p>
@@ -739,14 +774,18 @@ const SkillCourtTab = () => {
                   </div>
                 </div>
 
+                {d.outcome && (
+                  <div className="rounded-xl bg-skill-green/5 border border-skill-green/20 p-3 mb-3">
+                    <p className="text-xs font-medium text-skill-green">Outcome: {d.outcome}</p>
+                  </div>
+                )}
+
                 <button className="w-full rounded-lg border border-border py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
                   View Case Details
                 </button>
               </div>
             </div>
-          ))}
-
-          {courtCases.filter(c => c.type === 'my-case').length === 0 && (
+          )) : (
             <div className="py-12 text-center">
               <Shield size={32} className="mx-auto mb-3 text-muted-foreground/30" />
               <p className="text-foreground font-medium">No active disputes</p>
