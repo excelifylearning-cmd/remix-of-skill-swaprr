@@ -9,6 +9,7 @@ import {
   MapPin, Languages, Clock, Heart, ChevronRight
 } from "lucide-react";
 import PageTransition from "@/components/shared/PageTransition";
+import { useAuth } from "@/lib/auth-context";
 
 const TOTAL_STEPS = 8;
 
