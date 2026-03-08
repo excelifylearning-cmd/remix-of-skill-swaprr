@@ -185,7 +185,7 @@ const SuccessStoriesPage = () => {
                 { value: "94%", label: "Goal Achievement", icon: Target },
               ].map((stat, i) => (
                 <div key={stat.label} className="rounded-2xl border border-border bg-card p-6 text-center">
-                  <stat.icon size={20} className="mx-auto mb-2 text-badge-gold" />
+                  <stat.icon size={20} className="mx-auto mb-2 text-muted-foreground" />
                   <p className="font-heading text-3xl font-black text-foreground">{stat.value}</p>
                   <p className="text-xs text-muted-foreground">{stat.label}</p>
                 </div>
