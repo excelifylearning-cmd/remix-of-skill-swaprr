@@ -405,7 +405,7 @@ const HelpPage = () => {
           <div className="mx-auto max-w-6xl px-6">
             <div className="mb-8 flex items-center justify-between">
               <h2 className="font-heading text-2xl font-bold text-foreground">Knowledge Base</h2>
-              <span className="text-xs text-muted-foreground">160+ articles across 9 categories</span>
+              <span className="text-xs text-muted-foreground">{helpArticles.length || "160+"}  articles across {kbCategories.length} categories</span>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {kbCategories.map((cat, i) => (
