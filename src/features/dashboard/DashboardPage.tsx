@@ -12,6 +12,7 @@ import {
   Palette, Code, PenTool, Video, Music, BarChart, Megaphone, Cpu
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
