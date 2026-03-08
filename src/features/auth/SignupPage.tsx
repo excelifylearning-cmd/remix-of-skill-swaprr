@@ -6,12 +6,13 @@ import {
   Mail, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, User, GraduationCap, CheckCircle2, Github,
   Circle, AlertCircle, Camera, Globe, Briefcase, Tag, Link2, Shield, Play, SkipForward,
   Upload, Award, Users, MessageSquare, Zap, BookOpen, Star, Sparkles, FileText, IdCard,
-  MapPin, Languages, Clock, Heart, ChevronRight
+  MapPin, Languages, Clock, Heart, ChevronRight, Plus, X, FolderOpen, FileBadge, Image,
+  ShoppingCart, Wrench, Package
 } from "lucide-react";
 import PageTransition from "@/components/shared/PageTransition";
 import { useAuth } from "@/lib/auth-context";
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 9;
 
 const passwordCriteria = [
   { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
@@ -26,15 +27,42 @@ const allSkills = [
   "Data Science", "Marketing", "Illustration", "Photography", "3D Modeling",
   "Animation", "Music Production", "SEO", "Graphic Design", "Game Dev",
   "AI/ML", "Cybersecurity", "Cloud/DevOps", "Technical Writing", "Social Media",
+  "Accounting", "Legal Consulting", "Translation", "Voice Over", "Tutoring",
+  "Event Planning", "Interior Design", "Fashion Design", "Nutrition", "Fitness Coaching",
 ];
 
 const skillLevels = ["Beginner", "Intermediate", "Advanced", "Expert"];
 
-const languages = ["English", "Spanish", "French", "German", "Mandarin", "Japanese", "Korean", "Portuguese", "Arabic", "Hindi", "Russian", "Italian"];
+const defaultLanguages = [
+  "English", "Spanish", "French", "German", "Mandarin", "Japanese",
+  "Korean", "Portuguese", "Arabic", "Hindi", "Russian", "Italian",
+  "Dutch", "Turkish", "Thai", "Swahili", "Polish", "Vietnamese",
+];
 
-const interests = [
-  "Design", "Engineering", "Business", "Arts", "Science", "Music",
-  "Writing", "Gaming", "Education", "Health", "Finance", "Law",
+const needCategories = [
+  { label: "I need a website", icon: Globe, desc: "Landing pages, portfolios, web apps" },
+  { label: "I need a logo / brand", icon: Image, desc: "Logos, brand identity, style guides" },
+  { label: "I need marketing help", icon: ShoppingCart, desc: "Ads, SEO, social media, copywriting" },
+  { label: "I need an app built", icon: Package, desc: "Mobile or web applications" },
+  { label: "I need video content", icon: Play, desc: "Editing, motion graphics, YouTube" },
+  { label: "I need tutoring", icon: BookOpen, desc: "Academic help, exam prep, skills coaching" },
+  { label: "I need business help", icon: Briefcase, desc: "Strategy, finance, legal, planning" },
+  { label: "I need tech support", icon: Wrench, desc: "Bug fixes, migrations, DevOps" },
+  { label: "I need creative work", icon: Sparkles, desc: "Art, music, writing, photography" },
+  { label: "I need data work", icon: FileText, desc: "Analysis, dashboards, ML models" },
+  { label: "I need translations", icon: Languages, desc: "Documents, apps, subtitles" },
+  { label: "Something else", icon: Star, desc: "Tell us what you need" },
+];
+
+const defaultAvatars = [
+  { id: "av1", bg: "bg-court-blue/20", text: "text-court-blue", emoji: "🎨" },
+  { id: "av2", bg: "bg-skill-green/20", text: "text-skill-green", emoji: "💻" },
+  { id: "av3", bg: "bg-badge-gold/20", text: "text-badge-gold", emoji: "🚀" },
+  { id: "av4", bg: "bg-destructive/20", text: "text-destructive", emoji: "🎵" },
+  { id: "av5", bg: "bg-foreground/10", text: "text-foreground", emoji: "📸" },
+  { id: "av6", bg: "bg-court-blue/20", text: "text-court-blue", emoji: "✍️" },
+  { id: "av7", bg: "bg-skill-green/20", text: "text-skill-green", emoji: "🎮" },
+  { id: "av8", bg: "bg-badge-gold/20", text: "text-badge-gold", emoji: "📊" },
 ];
 
 const platformTourSteps = [
@@ -65,30 +93,38 @@ const SignupPage = () => {
   const [bio, setBio] = useState("");
   const [slogan, setSlogan] = useState("");
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [selectedDefaultAvatar, setSelectedDefaultAvatar] = useState<string | null>(null);
 
   // Step 3: Details
   const [university, setUniversity] = useState("");
   const [location, setLocation] = useState("");
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["English"]);
+  const [customLanguage, setCustomLanguage] = useState("");
   const [portfolioUrl, setPortfolioUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
 
-  // Step 4: Skills
+  // Step 4: Skills (what you CAN offer)
   const [skills, setSkills] = useState<string[]>([]);
   const [skillLevel, setSkillLevel] = useState<Record<string, string>>({});
+  const [customSkill, setCustomSkill] = useState("");
 
-  // Step 5: Interests (what you want to learn)
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  // Step 5: What you NEED (not "want to learn")
+  const [selectedNeeds, setSelectedNeeds] = useState<string[]>([]);
+  const [customNeed, setCustomNeed] = useState("");
 
-  // Step 6: Preferences
+  // Step 6: Portfolio & Certificates
+  const [certificates, setCertificates] = useState<{ name: string; file: string }[]>([]);
+  const [portfolioItems, setPortfolioItems] = useState<{ name: string; file: string; type: string }[]>([]);
+
+  // Step 7: Preferences
   const [availability, setAvailability] = useState("Part-time");
   const [responseTime, setResponseTime] = useState("Within 24 hours");
   const [referralCode, setReferralCode] = useState("");
 
-  // Step 7: Verification (skippable)
+  // Step 8: Verification (skippable)
   const [idUploaded, setIdUploaded] = useState(false);
 
-  // Step 8: Platform tour
+  // Step 9: Platform tour
 
   const criteriaMet = useMemo(() => passwordCriteria.map((c) => c.test(password)), [password]);
   const passedCount = criteriaMet.filter(Boolean).length;
@@ -105,13 +141,58 @@ const SignupPage = () => {
 
   const toggleSkill = (s: string) => setSkills((prev) => prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]);
   const toggleLanguage = (l: string) => setSelectedLanguages((prev) => prev.includes(l) ? prev.filter((x) => x !== l) : [...prev, l]);
-  const toggleInterest = (i: string) => setSelectedInterests((prev) => prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]);
+  const toggleNeed = (n: string) => setSelectedNeeds((prev) => prev.includes(n) ? prev.filter((x) => x !== n) : [...prev, n]);
+
+  const addCustomSkill = () => {
+    const trimmed = customSkill.trim();
+    if (trimmed && !skills.includes(trimmed)) {
+      setSkills((prev) => [...prev, trimmed]);
+      setCustomSkill("");
+    }
+  };
+
+  const addCustomLanguage = () => {
+    const trimmed = customLanguage.trim();
+    if (trimmed && !selectedLanguages.includes(trimmed)) {
+      setSelectedLanguages((prev) => [...prev, trimmed]);
+      setCustomLanguage("");
+    }
+  };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setSelectedDefaultAvatar(null);
       const reader = new FileReader();
       reader.onloadend = () => setAvatarPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const selectDefaultAvatar = (id: string) => {
+    setSelectedDefaultAvatar(id);
+    setAvatarPreview(null);
+  };
+
+  const handleCertUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCertificates((prev) => [...prev, { name: file.name, file: reader.result as string }]);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handlePortfolioUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const type = file.type.startsWith("image/") ? "image" : "document";
+        setPortfolioItems((prev) => [...prev, { name: file.name, file: reader.result as string, type }]);
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -157,7 +238,7 @@ const SignupPage = () => {
                     </div>
                     <div className="relative">
                       <Mail size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                      <input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} className={`h-11 w-full rounded-xl border ${emailError ? "border-destructive" : "border-border"} bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none`} />
+                      <input type="text" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} className={`h-11 w-full rounded-xl border ${emailError ? "border-destructive" : "border-border"} bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none`} />
                     </div>
                     {emailError && <p className="text-xs text-destructive -mt-1 ml-1">{emailError}</p>}
                     <div className="relative">
@@ -217,18 +298,20 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 2: Profile ═══ */}
+              {/* ═══ STEP 2: Profile + Default Avatars ═══ */}
               {step === 2 && (
                 <motion.div key="s2" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Customize your profile</h1>
                   <p className="mb-6 text-sm text-muted-foreground">Make a great first impression on other swappers.</p>
                   <div className="space-y-4">
-                    {/* Avatar Upload */}
+                    {/* Avatar: Upload or Default */}
                     <div className="flex flex-col items-center gap-3">
                       <label className="group relative cursor-pointer">
                         <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-border bg-surface-1 transition-colors group-hover:border-foreground/30">
                           {avatarPreview ? (
                             <img src={avatarPreview} alt="Avatar" className="h-full w-full object-cover" />
+                          ) : selectedDefaultAvatar ? (
+                            <span className="text-4xl">{defaultAvatars.find(a => a.id === selectedDefaultAvatar)?.emoji}</span>
                           ) : (
                             <Camera size={28} className="text-muted-foreground" />
                           )}
@@ -238,7 +321,25 @@ const SignupPage = () => {
                         </div>
                         <input type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
                       </label>
-                      <p className="text-[10px] text-muted-foreground">JPG, PNG or GIF · Max 5MB</p>
+                      <p className="text-[10px] text-muted-foreground">Upload a photo or pick a default below</p>
+                    </div>
+
+                    {/* Default Avatar Grid */}
+                    <div>
+                      <p className="mb-2 text-xs font-medium text-muted-foreground">Quick pick</p>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {defaultAvatars.map((av) => (
+                          <button
+                            key={av.id}
+                            onClick={() => selectDefaultAvatar(av.id)}
+                            className={`flex h-12 w-12 items-center justify-center rounded-full text-xl transition-all ${av.bg} ${
+                              selectedDefaultAvatar === av.id ? "ring-2 ring-foreground ring-offset-2 ring-offset-card scale-110" : "hover:scale-105"
+                            }`}
+                          >
+                            {av.emoji}
+                          </button>
+                        ))}
+                      </div>
                     </div>
 
                     <div className="relative">
@@ -248,12 +349,12 @@ const SignupPage = () => {
 
                     <div className="relative">
                       <Sparkles size={15} className="absolute left-4 top-3 text-muted-foreground" />
-                      <input type="text" placeholder="Tagline / Slogan (e.g. &quot;Design wizard ✨&quot;)" value={slogan} onChange={(e) => setSlogan(e.target.value)} maxLength={60} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                      <input type="text" placeholder='Tagline (e.g. "Design wizard ✨")' value={slogan} onChange={(e) => setSlogan(e.target.value)} maxLength={60} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">{slogan.length}/60</span>
                     </div>
 
                     <div>
-                      <textarea placeholder="Bio — tell others about yourself, your passions, and what you're looking for..." value={bio} onChange={(e) => setBio(e.target.value)} maxLength={300} className="h-24 w-full resize-none rounded-xl border border-border bg-surface-1 p-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                      <textarea placeholder="Bio — tell others about yourself, your passions, and what you bring to the table..." value={bio} onChange={(e) => setBio(e.target.value)} maxLength={300} className="h-24 w-full resize-none rounded-xl border border-border bg-surface-1 p-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
                       <p className="mt-1 text-right text-[9px] text-muted-foreground">{bio.length}/300</p>
                     </div>
 
@@ -267,7 +368,7 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 3: Details ═══ */}
+              {/* ═══ STEP 3: Details + Custom Languages ═══ */}
               {step === 3 && (
                 <motion.div key="s3" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Your details</h1>
@@ -290,15 +391,35 @@ const SignupPage = () => {
                       <input type="url" placeholder="LinkedIn profile (optional)" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
                     </div>
 
-                    {/* Languages */}
+                    {/* Languages with custom add */}
                     <div>
                       <p className="mb-2 text-xs font-medium text-foreground flex items-center gap-1.5"><Languages size={13} /> Languages you speak</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {languages.map((l) => (
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {defaultLanguages.map((l) => (
                           <button key={l} onClick={() => toggleLanguage(l)} className={`rounded-full px-3 py-1.5 text-[10px] font-medium transition-all ${selectedLanguages.includes(l) ? "bg-foreground text-background" : "border border-border text-muted-foreground hover:text-foreground"}`}>
                             {selectedLanguages.includes(l) && <CheckCircle2 size={10} className="inline mr-1" />}{l}
                           </button>
                         ))}
+                        {/* Show custom-added languages */}
+                        {selectedLanguages.filter(l => !defaultLanguages.includes(l)).map((l) => (
+                          <button key={l} onClick={() => toggleLanguage(l)} className="rounded-full px-3 py-1.5 text-[10px] font-medium bg-court-blue/10 text-court-blue border border-court-blue/20">
+                            <CheckCircle2 size={10} className="inline mr-1" />{l}
+                            <X size={10} className="inline ml-1" />
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Add another language..."
+                          value={customLanguage}
+                          onChange={(e) => setCustomLanguage(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && addCustomLanguage()}
+                          className="h-9 flex-1 rounded-lg border border-border bg-surface-1 px-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
+                        />
+                        <button onClick={addCustomLanguage} disabled={!customLanguage.trim()} className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground disabled:opacity-30">
+                          <Plus size={14} />
+                        </button>
                       </div>
                     </div>
 
@@ -313,27 +434,49 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 4: Skills ═══ */}
+              {/* ═══ STEP 4: Skills (what you OFFER) + Custom ═══ */}
               {step === 4 && (
                 <motion.div key="s4" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">What can you offer?</h1>
-                  <p className="mb-6 text-sm text-muted-foreground">Select skills you can teach or provide. Pick at least 1.</p>
-                  <div className="mb-4 flex flex-wrap gap-1.5">
+                  <p className="mb-4 text-sm text-muted-foreground">Select skills you can provide to others. Pick at least 1.</p>
+
+                  <div className="mb-3 flex flex-wrap gap-1.5 max-h-44 overflow-y-auto scrollbar-hide">
                     {allSkills.map((s) => (
                       <button key={s} onClick={() => toggleSkill(s)} className={`rounded-full px-3 py-1.5 text-[10px] font-medium transition-all ${skills.includes(s) ? "bg-foreground text-background" : "border border-border text-muted-foreground hover:text-foreground"}`}>
                         {skills.includes(s) && <CheckCircle2 size={10} className="inline mr-1" />}{s}
                       </button>
                     ))}
+                    {/* Custom skills */}
+                    {skills.filter(s => !allSkills.includes(s)).map((s) => (
+                      <button key={s} onClick={() => toggleSkill(s)} className="rounded-full px-3 py-1.5 text-[10px] font-medium bg-badge-gold/10 text-badge-gold border border-badge-gold/20">
+                        <CheckCircle2 size={10} className="inline mr-1" />{s} <X size={10} className="inline ml-1" />
+                      </button>
+                    ))}
                   </div>
 
-                  {/* Skill levels for selected */}
+                  {/* Add custom skill */}
+                  <div className="flex gap-2 mb-4">
+                    <input
+                      type="text"
+                      placeholder="Add a custom skill..."
+                      value={customSkill}
+                      onChange={(e) => setCustomSkill(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && addCustomSkill()}
+                      className="h-9 flex-1 rounded-lg border border-border bg-surface-1 px-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
+                    />
+                    <button onClick={addCustomSkill} disabled={!customSkill.trim()} className="flex h-9 items-center gap-1 rounded-lg border border-border px-3 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30">
+                      <Plus size={12} /> Add
+                    </button>
+                  </div>
+
+                  {/* Skill levels */}
                   {skills.length > 0 && (
                     <div className="mb-4 space-y-2 rounded-xl border border-border bg-surface-1 p-4">
                       <p className="text-[10px] font-semibold text-muted-foreground mb-2">Rate your proficiency</p>
                       {skills.map((s) => (
                         <div key={s} className="flex items-center justify-between">
-                          <span className="text-xs text-foreground">{s}</span>
-                          <div className="flex gap-1">
+                          <span className="text-xs text-foreground truncate mr-2">{s}</span>
+                          <div className="flex gap-1 shrink-0">
                             {skillLevels.map((level) => (
                               <button key={level} onClick={() => setSkillLevel((prev) => ({ ...prev, [s]: level }))} className={`rounded-md px-2 py-0.5 text-[8px] font-medium transition-colors ${skillLevel[s] === level ? "bg-foreground text-background" : "bg-surface-2 text-muted-foreground hover:text-foreground"}`}>
                                 {level}
@@ -354,19 +497,42 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 5: Interests ═══ */}
+              {/* ═══ STEP 5: What You NEED (reframed) ═══ */}
               {step === 5 && (
                 <motion.div key="s5" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-                  <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">What do you want to learn?</h1>
-                  <p className="mb-6 text-sm text-muted-foreground">We'll match you with swappers who can help. Pick as many as you like.</p>
-                  <div className="mb-6 grid grid-cols-3 gap-2">
-                    {interests.map((interest) => (
-                      <button key={interest} onClick={() => toggleInterest(interest)} className={`flex flex-col items-center gap-1.5 rounded-xl border p-4 transition-all ${selectedInterests.includes(interest) ? "border-foreground bg-foreground/5" : "border-border hover:border-foreground/20"}`}>
-                        <Heart size={16} className={selectedInterests.includes(interest) ? "text-foreground" : "text-muted-foreground"} fill={selectedInterests.includes(interest) ? "currentColor" : "none"} />
-                        <span className={`text-[10px] font-medium ${selectedInterests.includes(interest) ? "text-foreground" : "text-muted-foreground"}`}>{interest}</span>
+                  <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">What do you need?</h1>
+                  <p className="mb-6 text-sm text-muted-foreground">Tell us what you're looking for — we'll match you with people who can deliver.</p>
+                  <div className="mb-4 grid grid-cols-2 gap-2 max-h-72 overflow-y-auto scrollbar-hide">
+                    {needCategories.map((need) => (
+                      <button
+                        key={need.label}
+                        onClick={() => toggleNeed(need.label)}
+                        className={`flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition-all ${
+                          selectedNeeds.includes(need.label)
+                            ? "border-foreground bg-foreground/5"
+                            : "border-border hover:border-foreground/20"
+                        }`}
+                      >
+                        <need.icon size={16} className={selectedNeeds.includes(need.label) ? "text-foreground" : "text-muted-foreground"} />
+                        <span className={`text-[10px] font-semibold leading-tight ${selectedNeeds.includes(need.label) ? "text-foreground" : "text-muted-foreground"}`}>{need.label}</span>
+                        <span className="text-[9px] text-muted-foreground/60 leading-tight">{need.desc}</span>
                       </button>
                     ))}
                   </div>
+
+                  {/* Custom need */}
+                  {selectedNeeds.includes("Something else") && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mb-4">
+                      <input
+                        type="text"
+                        placeholder="Describe what you need..."
+                        value={customNeed}
+                        onChange={(e) => setCustomNeed(e.target.value)}
+                        className="h-10 w-full rounded-lg border border-border bg-surface-1 px-4 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
+                      />
+                    </motion.div>
+                  )}
+
                   <div className="flex gap-3">
                     <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
                     <motion.button onClick={next} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
@@ -377,13 +543,97 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 6: Preferences ═══ */}
+              {/* ═══ STEP 6: Portfolio & Certificates ═══ */}
               {step === 6 && (
                 <motion.div key="s6" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+                  <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Showcase your work</h1>
+                  <p className="mb-6 text-sm text-muted-foreground">Upload certificates, portfolio pieces, or proof of past work. This builds trust and credibility.</p>
+
+                  <div className="space-y-5">
+                    {/* Certificates */}
+                    <div>
+                      <p className="mb-2 text-xs font-medium text-foreground flex items-center gap-1.5"><FileBadge size={13} /> Certificates & Credentials</p>
+                      <p className="mb-3 text-[10px] text-muted-foreground">Google certs, Coursera, university transcripts, etc.</p>
+
+                      {certificates.length > 0 && (
+                        <div className="mb-3 space-y-1.5">
+                          {certificates.map((cert, i) => (
+                            <div key={i} className="flex items-center gap-2 rounded-lg border border-skill-green/20 bg-skill-green/5 p-2.5">
+                              <CheckCircle2 size={12} className="text-skill-green shrink-0" />
+                              <span className="text-xs text-foreground truncate flex-1">{cert.name}</span>
+                              <button onClick={() => setCertificates(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive">
+                                <X size={12} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <label className="flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-border p-4 text-center transition-all hover:border-foreground/20 hover:bg-surface-1">
+                        <Upload size={16} className="text-muted-foreground mx-auto" />
+                        <div className="text-left flex-1">
+                          <p className="text-xs font-medium text-foreground">Upload certificate</p>
+                          <p className="text-[9px] text-muted-foreground">PDF, JPG, PNG · Max 10MB</p>
+                        </div>
+                        <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={handleCertUpload} className="hidden" />
+                      </label>
+                    </div>
+
+                    {/* Portfolio Items */}
+                    <div>
+                      <p className="mb-2 text-xs font-medium text-foreground flex items-center gap-1.5"><FolderOpen size={13} /> Portfolio Pieces</p>
+                      <p className="mb-3 text-[10px] text-muted-foreground">Screenshots, case studies, designs, code samples — anything that shows your skills.</p>
+
+                      {portfolioItems.length > 0 && (
+                        <div className="mb-3 grid grid-cols-2 gap-2">
+                          {portfolioItems.map((item, i) => (
+                            <div key={i} className="relative rounded-lg border border-border bg-surface-1 p-2 group">
+                              {item.type === "image" ? (
+                                <img src={item.file} alt={item.name} className="h-20 w-full rounded object-cover" />
+                              ) : (
+                                <div className="flex h-20 items-center justify-center rounded bg-surface-2">
+                                  <FileText size={24} className="text-muted-foreground" />
+                                </div>
+                              )}
+                              <p className="mt-1 text-[9px] text-muted-foreground truncate">{item.name}</p>
+                              <button
+                                onClick={() => setPortfolioItems(prev => prev.filter((_, idx) => idx !== i))}
+                                className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background/80 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive"
+                              >
+                                <X size={10} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <label className="flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-border p-4 text-center transition-all hover:border-foreground/20 hover:bg-surface-1">
+                        <Image size={16} className="text-muted-foreground mx-auto" />
+                        <div className="text-left flex-1">
+                          <p className="text-xs font-medium text-foreground">Upload portfolio piece</p>
+                          <p className="text-[9px] text-muted-foreground">Images, PDFs, documents · Max 10MB</p>
+                        </div>
+                        <input type="file" accept="image/*,.pdf,.doc,.docx" onChange={handlePortfolioUpload} className="hidden" />
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 mt-5">
+                    <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
+                    <motion.button onClick={next} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                      Continue <ArrowRight size={15} />
+                    </motion.button>
+                  </div>
+                  <button onClick={next} className="mt-2 w-full text-center text-[10px] text-muted-foreground hover:text-foreground">Skip for now</button>
+                </motion.div>
+              )}
+
+              {/* ═══ STEP 7: Preferences ═══ */}
+              {step === 7 && (
+                <motion.div key="s7" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Almost there!</h1>
                   <p className="mb-6 text-sm text-muted-foreground">Set your availability and preferences.</p>
                   <div className="space-y-4">
-                    {/* Availability */}
                     <div>
                       <p className="mb-2 text-xs font-medium text-foreground flex items-center gap-1.5"><Clock size={13} /> Availability</p>
                       <div className="grid grid-cols-3 gap-2">
@@ -395,7 +645,6 @@ const SignupPage = () => {
                       </div>
                     </div>
 
-                    {/* Response Time */}
                     <div>
                       <p className="mb-2 text-xs font-medium text-foreground flex items-center gap-1.5"><MessageSquare size={13} /> Typical response time</p>
                       <div className="grid grid-cols-2 gap-2">
@@ -407,14 +656,11 @@ const SignupPage = () => {
                       </div>
                     </div>
 
-                    {/* Referral */}
                     <div className="relative">
                       <Tag size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
                       <input type="text" placeholder="Referral code (optional — earn bonus SP!)" value={referralCode} onChange={(e) => setReferralCode(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
                     </div>
-                    {referralCode && (
-                      <p className="flex items-center gap-1 text-[10px] text-skill-green"><Zap size={10} /> You'll both earn 50 bonus SP!</p>
-                    )}
+                    {referralCode && <p className="flex items-center gap-1 text-[10px] text-skill-green"><Zap size={10} /> You'll both earn 50 bonus SP!</p>}
 
                     <div className="flex gap-3 pt-1">
                       <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
@@ -426,9 +672,9 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 7: Verification (Skippable) ═══ */}
-              {step === 7 && (
-                <motion.div key="s7" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+              {/* ═══ STEP 8: Verification (Skippable) ═══ */}
+              {step === 8 && (
+                <motion.div key="s8" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Identity verification</h1>
                   <p className="mb-6 text-sm text-muted-foreground">Optional — get a verified badge and unlock higher gig limits.</p>
 
@@ -475,13 +721,12 @@ const SignupPage = () => {
                 </motion.div>
               )}
 
-              {/* ═══ STEP 8: Platform Tour ═══ */}
-              {step === 8 && (
-                <motion.div key="s8" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-                  <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Welcome aboard! 🎉</h1>
+              {/* ═══ STEP 9: Platform Tour ═══ */}
+              {step === 9 && (
+                <motion.div key="s9" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+                  <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Welcome to SkillSwappr!</h1>
                   <p className="mb-6 text-sm text-muted-foreground">Here's a quick rundown of how SkillSwappr works.</p>
 
-                  {/* Video Preview */}
                   <div className="mb-6 overflow-hidden rounded-xl border border-border bg-surface-1">
                     <div className="aspect-video flex flex-col items-center justify-center bg-surface-2">
                       <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-foreground/10 backdrop-blur">
@@ -492,7 +737,6 @@ const SignupPage = () => {
                     </div>
                   </div>
 
-                  {/* Tour Steps */}
                   <div className="mb-6 space-y-2">
                     {platformTourSteps.map((t, i) => (
                       <motion.div
@@ -513,7 +757,6 @@ const SignupPage = () => {
                     ))}
                   </div>
 
-                  {/* Reward */}
                   <div className="mb-6 rounded-xl border border-skill-green/20 bg-skill-green/5 p-4 text-center">
                     <Zap size={20} className="mx-auto mb-1 text-skill-green" />
                     <p className="text-sm font-bold text-foreground">+100 Skill Points</p>
