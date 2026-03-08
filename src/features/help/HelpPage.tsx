@@ -202,7 +202,7 @@ const HelpPage = () => {
   const [expandedTroubleshootIssue, setExpandedTroubleshootIssue] = useState<string | null>(null);
   const [copiedEndpoint, setCopiedEndpoint] = useState<number | null>(null);
   const [bountyCode, setBountyCode] = useState("");
-  const [bountyResult, setBountyResult] = useState<null | "found" | "not_found">(null);
+  const [bountyResult, setBountyResult] = useState<null | { code: string; title: string; severity: string; status: string; reward: string } | "not_found">(null);
   const [selectedReportType, setSelectedReportType] = useState("");
   const [selectedPriority, setSelectedPriority] = useState("");
   const [reportDescription, setReportDescription] = useState("");
@@ -211,6 +211,7 @@ const HelpPage = () => {
   const [reportFiles, setReportFiles] = useState<string[]>([]);
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [statusTab, setStatusTab] = useState<"services" | "incidents" | "uptime">("services");
+  const [feedbackSent, setFeedbackSent] = useState(false);
 
   const handleCopy = (path: string, idx: number) => {
     navigator.clipboard.writeText(path);
