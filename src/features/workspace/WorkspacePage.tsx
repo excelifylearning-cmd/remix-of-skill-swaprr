@@ -790,6 +790,7 @@ const WorkspacePage = () => {
   const [activePanel, setActivePanel] = useState<Panel>("chat");
   const [escrow, setEscrow] = useState<Escrow | null>(null);
   const [stages, setStages] = useState<WsStage[]>([]);
+  const [transactionCode, setTransactionCode] = useState<string | null>(null);
   const workspaceId = id || "demo-workspace-001";
   const userId = user?.id || null;
 
