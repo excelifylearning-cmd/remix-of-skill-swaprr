@@ -121,19 +121,19 @@ const tickerItems = [
 const featuredSpeakers = [
   { name: "Sarah Chen", role: "Head of Design, SkillSwappr", topic: "Future of Collaborative Design", avatar: "SC", color: "court-blue" },
   { name: "Marcus Rivera", role: "Staff Engineer, Vercel", topic: "Building at Scale with Edge Functions", avatar: "MR", color: "skill-green" },
-  { name: "Amira Okafor", role: "Community Lead", topic: "Growing Guild Culture from Zero", avatar: "AO", color: "badge-gold" },
+  { name: "Amira Okafor", role: "Community Lead", topic: "Growing Guild Culture from Zero", avatar: "AO", color: "foreground" },
   { name: "Leo Park", role: "Founder, DesignCraft", topic: "From Side Project to 10K Users", avatar: "LP", color: "destructive" },
   { name: "Nina Petrov", role: "AI Researcher, DeepMind", topic: "AI-Assisted Skill Matching", avatar: "NP", color: "court-blue" },
   { name: "Jake Williams", role: "Pro Gamer & Streamer", topic: "Competitive Mindset in Skill Swapping", avatar: "JW", color: "skill-green" },
 ];
 
 const eventPerks = [
-  { icon: Trophy, title: "Exclusive Badges", desc: "Earn event-specific badges that permanently display on your profile", color: "badge-gold" },
+  { icon: Trophy, title: "Exclusive Badges", desc: "Earn event-specific badges that permanently display on your profile", color: "foreground" },
   { icon: Zap, title: "Bonus SP", desc: "Participants receive SP rewards — winners get the lion's share", color: "skill-green" },
   { icon: TrendingUp, title: "ELO Boost", desc: "Tournament wins give a significant ELO rating multiplier", color: "court-blue" },
   { icon: Users, title: "Networking", desc: "Connect with top swappers, guild leaders, and industry pros", color: "foreground" },
-  { icon: Gift, title: "Swag & Merch", desc: "In-person attendees receive exclusive SkillSwappr merchandise", color: "badge-gold" },
-  { icon: Star, title: "Featured Profile", desc: "Top 3 winners get featured on the homepage for a week", color: "destructive" },
+  { icon: Gift, title: "Swag & Merch", desc: "In-person attendees receive exclusive SkillSwappr merchandise", color: "muted-foreground" },
+  { icon: Star, title: "Featured Profile", desc: "Top 3 winners get featured on the homepage for a week", color: "foreground" },
 ];
 
 const communityHighlights = [
