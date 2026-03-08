@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, X, Send, Bot, User } from "lucide-react";
+import { Headset, X, Send, Bot, User } from "lucide-react";
 
 const chatBotResponses = [
   "Hi! 👋 I'm SkillBot. How can I help you today?",
