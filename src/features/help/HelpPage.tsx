@@ -67,12 +67,12 @@ const bountyTiers = [
 ];
 
 const quickActions = [
-  { icon: Rocket, label: "Post a Gig", desc: "List your skill on the marketplace" },
-  { icon: Users, label: "Find a Swapper", desc: "Browse available skill providers" },
-  { icon: Shield, label: "Open a Dispute", desc: "File a case in Skill Court" },
-  { icon: Zap, label: "Buy Skill Points", desc: "Top up your SP balance" },
-  { icon: GraduationCap, label: "Join a Guild", desc: "Find your community" },
-  { icon: Wrench, label: "Account Settings", desc: "Manage your profile & privacy" },
+  { icon: Rocket, label: "Post a Gig", desc: "List your skill on the marketplace", link: "/marketplace" },
+  { icon: Users, label: "Find a Swapper", desc: "Browse available skill providers", link: "/marketplace" },
+  { icon: Shield, label: "Open a Dispute", desc: "File a case in Skill Court", link: "/contact" },
+  { icon: Zap, label: "Buy Skill Points", desc: "Top up your SP balance", link: "/pricing" },
+  { icon: GraduationCap, label: "Join a Guild", desc: "Find your community", link: "/guild/browse" },
+  { icon: Wrench, label: "Account Settings", desc: "Manage your profile & privacy", link: "/dashboard" },
 ];
 
 const communityResources = [
