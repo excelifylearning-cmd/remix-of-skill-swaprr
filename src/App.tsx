@@ -32,6 +32,9 @@ const TransactionLookupPage = lazy(() => import("./features/transaction/Transact
 const FAQPage = lazy(() => import("./features/faq/FAQPage"));
 const EventsPage = lazy(() => import("./features/events/EventsPage"));
 const DashboardPage = lazy(() => import("./features/dashboard/DashboardPage"));
+const WorkspacePage = lazy(() => import("./features/workspace/WorkspacePage"));
+const ProfilePage = lazy(() => import("./features/profile/ProfilePage"));
+const GuildPage = lazy(() => import("./features/guild/GuildPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const MaintenancePage = lazy(() => import("./pages/Maintenance"));
 const ComingSoonPage = lazy(() => import("./pages/ComingSoon"));
@@ -70,6 +73,9 @@ const AnimatedRoutes = () => {
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/workspace/:id" element={<WorkspacePage />} />
+          <Route path="/profile/:userId" element={<ProfilePage />} />
+          <Route path="/guild/:guildId" element={<GuildPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/coming-soon" element={<ComingSoonPage />} />
           <Route path="/500" element={<ServerErrorPage />} />
