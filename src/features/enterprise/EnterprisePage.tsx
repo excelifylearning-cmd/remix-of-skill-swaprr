@@ -296,7 +296,7 @@ const EnterprisePage = () => {
               </div>
               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="flex items-center gap-2 rounded-full bg-skill-green/10 px-3 py-1.5">
                 <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-skill-green/60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-skill-green" /></span>
-                <span className="text-xs font-semibold text-skill-green">4 available now</span>
+                <span className="text-xs font-semibold text-skill-green">{expertPool.filter(e => e.available).length} available now</span>
               </motion.div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
