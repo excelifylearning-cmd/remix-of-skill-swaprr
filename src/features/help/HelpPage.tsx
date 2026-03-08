@@ -426,7 +426,7 @@ const HelpPage = () => {
                     </div>
                     <h3 className="mb-1 font-heading text-sm font-bold text-foreground">{cat.title}</h3>
                     <p className="mb-3 text-xs text-muted-foreground">{cat.desc}</p>
-                    <span className="text-[10px] text-muted-foreground/60">{cat.articles} articles</span>
+                    <span className="text-[10px] text-muted-foreground/60">{(articlesByCategory[cat.title] || []).length || cat.articles} articles</span>
                   </div>
                   <AnimatePresence>
                     {expandedKb === i && (
