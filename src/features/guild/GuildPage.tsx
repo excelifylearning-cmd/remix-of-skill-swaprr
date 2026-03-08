@@ -441,7 +441,6 @@ const GuildPage = () => {
               </div>
             </div>
           </div>
-          </div>
         </section>
 
         <Footer />
