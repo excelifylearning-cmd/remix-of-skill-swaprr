@@ -397,8 +397,10 @@ const FilesPanel = ({ workspaceId, userId }: { workspaceId: string; userId: stri
    STAGES PANEL
 ═══════════════════════════════════════════════════════════════════════════ */
 
-const StagesPanel = ({ workspaceId, userId, escrow }: { workspaceId: string; userId: string | null; escrow: Escrow | null }) => {
+const StagesPanel = ({ workspaceId, userId, escrow, onTransactionCreated }: { workspaceId: string; userId: string | null; escrow: Escrow | null; onTransactionCreated: (code: string) => void }) => {
   const [stages, setStages] = useState<WsStage[]>([]);
+  const [completing, setCompleting] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -417,7 +419,47 @@ const StagesPanel = ({ workspaceId, userId, escrow }: { workspaceId: string; use
     if (data) setStages(data as WsStage[]);
   };
 
+  const completeGig = async () => {
+    if (!escrow || !userId) return;
+    setCompleting(true);
+    try {
+      // Fetch all workspace data for the transaction
+      const [msgRes, fileRes, delRes] = await Promise.all([
+        supabase.from("workspace_messages").select("*").eq("workspace_id", workspaceId),
+        supabase.from("workspace_files").select("*").eq("workspace_id", workspaceId),
+        supabase.from("workspace_deliverables").select("*").eq("workspace_id", workspaceId),
+      ]);
+
+      const { createWorkspaceTransaction } = await import("@/lib/transaction-generator");
+      const { code, error } = await createWorkspaceTransaction({
+        workspaceId,
+        escrow,
+        stages,
+        messages: msgRes.data || [],
+        files: fileRes.data || [],
+        deliverables: delRes.data || [],
+      });
+
+      if (error) {
+        toast.error(`Transaction failed: ${error}`);
+      } else {
+        // Update escrow to released
+        await supabase.from("escrow_contracts").update({ status: "released", released_sp: escrow.total_sp, updated_at: new Date().toISOString() }).eq("id", escrow.id);
+        toast.success(`Gig completed! Transaction: ${code}`, {
+          action: { label: "View", onClick: () => navigate(`/transaction?code=${code}`) },
+          duration: 10000,
+        });
+        onTransactionCreated(code);
+        logActivity("workspace:gig_completed", { entity_type: "workspace", entity_id: workspaceId, context: { transaction_code: code, total_sp: escrow.total_sp } });
+      }
+    } catch (e: any) {
+      toast.error("Failed to complete gig");
+    }
+    setCompleting(false);
+  };
+
   const completed = stages.filter((s) => s.status === "completed").length;
+  const allDone = stages.length > 0 && completed === stages.length;
   const progress = stages.length > 0 ? (completed / stages.length) * 100 : 0;
   const totalSP = stages.reduce((a, s) => a + s.sp_allocated, 0);
 
@@ -434,6 +476,27 @@ const StagesPanel = ({ workspaceId, userId, escrow }: { workspaceId: string; use
           <span>{Math.round(progress)}% complete</span>
         </div>
       </div>
+
+      {/* Complete Gig Button */}
+      {allDone && escrow && escrow.status !== "released" && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+          <button onClick={completeGig} disabled={completing}
+            className="w-full rounded-2xl bg-skill-green py-4 text-sm font-bold text-background hover:bg-skill-green/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+            <CheckCircle2 size={18} />
+            {completing ? "Generating Transaction..." : "Complete Gig & Release Escrow"}
+          </button>
+          <p className="text-xs text-muted-foreground text-center mt-2">This will release {escrow.total_sp} SP and generate a verifiable transaction ID</p>
+        </motion.div>
+      )}
+
+      {escrow?.status === "released" && (
+        <div className="mb-6 rounded-2xl border border-skill-green/20 bg-skill-green/5 p-4 text-center">
+          <CheckCircle2 size={24} className="mx-auto mb-2 text-skill-green" />
+          <p className="text-sm font-medium text-foreground">Gig Completed & Escrow Released</p>
+          <p className="text-xs text-muted-foreground mt-1">All SP has been distributed</p>
+        </div>
+      )}
+
       <div className="space-y-3">
         {stages.map((stage) => (
           <div key={stage.id} className={`rounded-xl border p-4 ${stage.status === "completed" ? "border-skill-green/20 bg-skill-green/5" : stage.status === "active" ? "border-foreground/20 bg-card" : "border-border bg-surface-1"}`}>
