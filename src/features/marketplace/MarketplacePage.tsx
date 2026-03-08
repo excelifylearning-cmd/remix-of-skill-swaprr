@@ -14,14 +14,14 @@ import RequestCard from "./components/RequestCard";
 import FeaturedSellers from "./components/FeaturedSellers";
 import GigQuickView from "./components/GigQuickView";
 import MarketplacePagination from "./components/MarketplacePagination";
-import { useMarketplaceFilters } from "./hooks/useMarketplaceFilters";
+import { useMarketplaceData } from "./hooks/useMarketplaceData";
 import { gigs, projects, skillFusions, spOnlyGigs, requests, type Gig } from "./data/mockData";
 
 const MarketplacePage = () => {
   const {
     mode, setMode, filters, updateFilter, resetFilters, activeFilterCount,
     page, setPage, totalPages, viewMode, setViewMode, pagedGigs, totalResults,
-  } = useMarketplaceFilters();
+  } = useMarketplaceData();
 
   const [selectedGig, setSelectedGig] = useState<Gig | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);

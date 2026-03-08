@@ -12,6 +12,7 @@ import {
   Palette, Code, PenTool, Video, Music, BarChart, Megaphone, Cpu
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,6 +30,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import PageTransition from "@/components/shared/PageTransition";
+import { useNotifications } from "@/hooks/useNotifications";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SIDEBAR NAVIGATION
@@ -105,20 +108,41 @@ const eloTier = (elo: number) => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const OverviewTab = ({ profile }: { profile: any }) => {
+  const { user } = useAuth();
   const tier = eloTier(profile?.elo || 1000);
-  
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [gigCount, setGigCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const [actRes, gigRes] = await Promise.all([
+        supabase.from("activity_log").select("action, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5),
+        supabase.from("listings").select("id", { count: "exact" }).eq("user_id", user.id).eq("status", "active"),
+      ]);
+      if (actRes.data?.length) {
+        setRecentActivity(actRes.data.map((a: any) => ({
+          action: a.action,
+          time: new Date(a.created_at).toLocaleString(),
+          icon: Award,
+          color: "text-skill-green",
+        })));
+      } else {
+        setRecentActivity([
+          { action: "Completed gig: Logo Redesign", time: "2 hours ago", icon: Award, color: "text-skill-green" },
+          { action: "Earned 250 SP from auction win", time: "5 hours ago", icon: Zap, color: "text-badge-gold" },
+          { action: "Jury duty completed (+15 SP)", time: "1 day ago", icon: Scale, color: "text-court-blue" },
+        ]);
+      }
+      setGigCount(gigRes.count || 0);
+    };
+    load();
+  }, [user]);
   const quickStats = [
     { label: "Skill Points", value: profile?.sp?.toLocaleString() || "100", icon: Zap, color: "text-badge-gold" },
     { label: "ELO Rating", value: profile?.elo?.toLocaleString() || "1,000", icon: TrendingUp, color: "text-skill-green" },
-    { label: "Gigs Completed", value: profile?.total_gigs_completed || "0", icon: Trophy, color: "text-court-blue" },
+    { label: "Gigs Completed", value: profile?.total_gigs_completed || gigCount.toString(), icon: Trophy, color: "text-court-blue" },
     { label: "Current Streak", value: `${profile?.streak_days || 0}d`, icon: Calendar, color: "text-foreground" },
-  ];
-
-  const recentActivity = [
-    { action: "Completed gig: Logo Redesign", time: "2 hours ago", icon: Award, color: "text-skill-green" },
-    { action: "Earned 250 SP from auction win", time: "5 hours ago", icon: Zap, color: "text-badge-gold" },
-    { action: "Jury duty completed (+15 SP)", time: "1 day ago", icon: Scale, color: "text-court-blue" },
-    { action: "Guild Wars S4 badge unlocked", time: "2 days ago", icon: Shield, color: "text-foreground" },
   ];
 
   return (
@@ -241,14 +265,41 @@ const OverviewTab = ({ profile }: { profile: any }) => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const MyGigsTab = () => {
+  const { user } = useAuth();
   const [filter, setFilter] = useState("all");
+  const [realGigs, setRealGigs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const filteredGigs = filter === "all" ? myGigs : myGigs.filter(g => g.status === filter);
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("listings")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      setRealGigs((data || []).map((l: any) => ({
+        id: l.id,
+        title: l.title,
+        status: l.status === "active" ? "active" : l.status === "completed" ? "completed" : "pending",
+        partner: null,
+        stage: 0,
+        totalStages: 3,
+        sp: l.points || 0,
+        format: l.format || "Direct Swap",
+        deadline: null,
+      })));
+      setLoading(false);
+    };
+    load();
+  }, [user]);
+
+  const filteredGigs = filter === "all" ? realGigs : realGigs.filter(g => g.status === filter);
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-2xl font-bold text-foreground">My Gigs</h2>
         <div className="flex gap-2">
@@ -264,61 +315,48 @@ const MyGigsTab = () => {
         </div>
       </div>
 
-      {/* Gigs Grid */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {filteredGigs.map((gig) => (
-          <motion.div
-            key={gig.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl border border-border bg-card overflow-hidden cursor-pointer hover:border-foreground/20 transition-colors"
-            onClick={() => navigate(`/workspace/${gig.id}`)}
-          >
-            <div className="flex items-center justify-between border-b border-border/50 px-4 py-3">
-              <Badge className={`text-[10px] ${statusColor(gig.status)}`}>{gig.status}</Badge>
-              <span className="text-xs text-muted-foreground">{gig.format}</span>
-            </div>
-            <div className="p-4">
-              <h3 className="text-base font-bold text-foreground mb-1">{gig.title}</h3>
-              {gig.partner ? (
-                <p className="text-xs text-muted-foreground mb-3">with {gig.partner}</p>
-              ) : (
-                <p className="text-xs text-badge-gold mb-3">Awaiting match...</p>
-              )}
-
-              {gig.status === "active" && (
-                <div className="mb-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] text-muted-foreground">Progress</span>
-                    <span className="text-[10px] font-medium text-foreground">{gig.stage}/{gig.totalStages}</span>
-                  </div>
-                  <Progress value={(gig.stage / gig.totalStages) * 100} className="h-1.5" />
-                </div>
-              )}
-
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1 text-xs font-bold text-skill-green">
-                  <Coins size={12} /> {gig.sp} SP
-                </span>
-                {gig.deadline && (
-                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock size={10} /> {new Date(gig.deadline).toLocaleDateString()}
-                  </span>
+      {loading ? (
+        <div className="py-16 text-center">
+          <div className="h-5 w-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin mx-auto" />
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {filteredGigs.map((gig) => (
+            <motion.div
+              key={gig.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-2xl border border-border bg-card overflow-hidden cursor-pointer hover:border-foreground/20 transition-colors"
+              onClick={() => navigate(`/workspace/${gig.id}`)}
+            >
+              <div className="flex items-center justify-between border-b border-border/50 px-4 py-3">
+                <Badge className={`text-[10px] ${statusColor(gig.status)}`}>{gig.status}</Badge>
+                <span className="text-xs text-muted-foreground">{gig.format}</span>
+              </div>
+              <div className="p-4">
+                <h3 className="text-base font-bold text-foreground mb-1">{gig.title}</h3>
+                {gig.partner ? (
+                  <p className="text-xs text-muted-foreground mb-3">with {gig.partner}</p>
+                ) : (
+                  <p className="text-xs text-badge-gold mb-3">Awaiting match...</p>
                 )}
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1 text-xs font-bold text-skill-green">
+                    <Coins size={12} /> {gig.sp} SP
+                  </span>
+                  {gig.deadline && (
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Clock size={10} /> {new Date(gig.deadline).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-            {gig.status === "active" && (
-              <div className="border-t border-border/50 px-4 py-2.5 bg-surface-1">
-                <button className="w-full text-center text-xs font-medium text-foreground hover:text-skill-green transition-colors">
-                  Open Workspace →
-                </button>
-              </div>
-            )}
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
-      {filteredGigs.length === 0 && (
+      {!loading && filteredGigs.length === 0 && (
         <div className="py-16 text-center">
           <Briefcase size={32} className="mx-auto mb-3 text-muted-foreground/30" />
           <p className="text-foreground font-medium">No gigs found</p>
@@ -334,7 +372,10 @@ const MyGigsTab = () => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const CreateGigTab = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [saving, setSaving] = useState(false);
   const [gigData, setGigData] = useState({
     title: "",
     offering: "",
@@ -346,6 +387,10 @@ const CreateGigTab = () => {
     spBonus: 0,
     attachments: [] as string[],
   });
+
+  const formatMap: Record<string, string> = {
+    direct: "Direct Swap", auction: "Auction", cocreation: "Co-Creation", fusion: "Skill Fusion",
+  };
 
   const updateField = (field: string, value: any) => {
     setGigData(prev => ({ ...prev, [field]: value }));
@@ -543,8 +588,32 @@ const CreateGigTab = () => {
             <button onClick={() => setStep(2)} className="flex-1 rounded-xl border border-border py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Back
             </button>
-            <button className="flex-1 rounded-xl bg-skill-green py-3.5 text-sm font-semibold text-background flex items-center justify-center gap-2">
-              <Send size={16} /> Post Gig
+            <button
+              disabled={saving}
+              onClick={async () => {
+                if (!user) return;
+                setSaving(true);
+                const { error } = await supabase.from("listings").insert({
+                  title: gigData.title,
+                  description: gigData.description,
+                  wants: gigData.seeking,
+                  category: gigData.category,
+                  format: formatMap[gigData.format] || "Direct Swap",
+                  points: gigData.spBonus,
+                  delivery_days: gigData.deliveryDays,
+                  user_id: user.id,
+                  price: `${gigData.spBonus} SP`,
+                  status: "active",
+                });
+                setSaving(false);
+                if (!error) {
+                  navigate("/dashboard?tab=my-gigs");
+                  window.location.reload();
+                }
+              }}
+              className="flex-1 rounded-xl bg-skill-green py-3.5 text-sm font-semibold text-background flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <Send size={16} /> {saving ? "Posting..." : "Post Gig"}
             </button>
           </div>
         </motion.div>
@@ -695,11 +764,32 @@ const SkillCourtTab = () => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const GuildsTab = () => {
-  const myGuilds = [
-    { id: 1, name: "Design Masters", members: 128, rank: 3, role: "Member", icon: "🎨" },
-    { id: 2, name: "Code Ninjas", members: 256, rank: 1, role: "Officer", icon: "⚔️" },
-    { id: 3, name: "Creative Collective", members: 89, rank: 7, role: "Leader", icon: "✨" },
-  ];
+  const { user } = useAuth();
+  const [myGuilds, setMyGuilds] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const { data } = await supabase
+        .from("guild_members")
+        .select("role, guilds(id, name, rank, avatar_url)")
+        .eq("user_id", user.id);
+      if (data?.length) {
+        setMyGuilds(data.map((g: any) => ({
+          id: g.guilds?.id || "", name: g.guilds?.name || "Guild",
+          members: 0, rank: g.guilds?.rank || 0, role: g.role, icon: "⚔️",
+        })));
+      } else {
+        setMyGuilds([
+          { id: 1, name: "Design Masters", members: 128, rank: 3, role: "Member", icon: "🎨" },
+          { id: 2, name: "Code Ninjas", members: 256, rank: 1, role: "Officer", icon: "⚔️" },
+        ]);
+      }
+      setLoading(false);
+    };
+    load();
+  }, [user]);
 
   return (
     <div className="space-y-6">
@@ -749,13 +839,41 @@ const GuildsTab = () => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const WalletTab = ({ profile }: { profile: any }) => {
-  const transactions = [
-    { id: 1, type: "earned", desc: "Gig completion: Logo Design", amount: 30, date: "2026-03-08" },
-    { id: 2, type: "spent", desc: "Auction bid: Video Editing", amount: -25, date: "2026-03-07" },
-    { id: 3, type: "earned", desc: "Jury duty reward", amount: 15, date: "2026-03-06" },
-    { id: 4, type: "tax", desc: "Platform tax (5%)", amount: -2, date: "2026-03-06" },
-    { id: 5, type: "earned", desc: "Referral bonus", amount: 50, date: "2026-03-05" },
-  ];
+  const { user } = useAuth();
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const { data } = await supabase
+        .from("sp_transactions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(20);
+      if (data?.length) {
+        setTransactions(data.map((t: any) => ({
+          id: t.id,
+          type: t.amount > 0 ? "earned" : t.type === "tax" ? "tax" : "spent",
+          desc: t.description || t.type,
+          amount: t.amount,
+          date: new Date(t.created_at).toLocaleDateString(),
+        })));
+      } else {
+        // Fallback mock
+        setTransactions([
+          { id: 1, type: "earned", desc: "Gig completion: Logo Design", amount: 30, date: "2026-03-08" },
+          { id: 2, type: "spent", desc: "Auction bid: Video Editing", amount: -25, date: "2026-03-07" },
+          { id: 3, type: "earned", desc: "Jury duty reward", amount: 15, date: "2026-03-06" },
+          { id: 4, type: "tax", desc: "Platform tax (5%)", amount: -2, date: "2026-03-06" },
+          { id: 5, type: "earned", desc: "Referral bonus", amount: 50, date: "2026-03-05" },
+        ]);
+      }
+      setLoading(false);
+    };
+    load();
+  }, [user]);
 
   return (
     <div className="space-y-6">
@@ -920,6 +1038,7 @@ const DashboardSidebar = ({ activeTab, setActiveTab, profile }: { activeTab: str
 
 const DashboardPage = () => {
   const { user, profile, isAuthenticated, logout, updateProfile } = useAuth();
+  const { notifications, unreadCount, markAsRead, markAllRead } = useNotifications();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "overview");
@@ -962,9 +1081,44 @@ const DashboardPage = () => {
                 <h1 className="font-heading text-lg font-bold text-foreground capitalize">{activeTab.replace("-", " ")}</h1>
               </div>
               <div className="flex items-center gap-2">
-                <button className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-1 transition-colors">
-                  <Bell size={18} />
-                </button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-1 transition-colors">
+                      <Bell size={18} />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-alert-red text-[9px] font-bold text-white">
+                          {unreadCount > 9 ? "9+" : unreadCount}
+                        </span>
+                      )}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="w-80 p-0">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                      <span className="text-sm font-semibold text-foreground">Notifications</span>
+                      {unreadCount > 0 && (
+                        <button onClick={markAllRead} className="text-[10px] text-muted-foreground hover:text-foreground">
+                          Mark all read
+                        </button>
+                      )}
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <div className="py-8 text-center text-xs text-muted-foreground">No notifications yet</div>
+                      ) : (
+                        notifications.slice(0, 10).map(n => (
+                          <button
+                            key={n.id}
+                            onClick={() => { markAsRead(n.id); if (n.link) navigate(n.link); }}
+                            className={`w-full text-left px-4 py-3 border-b border-border/50 hover:bg-surface-1 transition-colors ${!n.is_read ? 'bg-surface-1/50' : ''}`}
+                          >
+                            <p className={`text-xs ${!n.is_read ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>{n.title}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{n.message}</p>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <Link to={`/profile/${user.id}`} className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-1 transition-colors">
                   <User size={18} />
                 </Link>
