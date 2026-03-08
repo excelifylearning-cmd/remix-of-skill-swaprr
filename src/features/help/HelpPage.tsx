@@ -12,6 +12,7 @@ import {
   ShieldCheck, Upload, Paperclip, ChevronUp, Monitor, Smartphone, Laptop,
   HardDrive, Cloud, Timer, TrendingDown, Package, Settings, Key
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
@@ -67,12 +68,12 @@ const bountyTiers = [
 ];
 
 const quickActions = [
-  { icon: Rocket, label: "Post a Gig", desc: "List your skill on the marketplace" },
-  { icon: Users, label: "Find a Swapper", desc: "Browse available skill providers" },
-  { icon: Shield, label: "Open a Dispute", desc: "File a case in Skill Court" },
-  { icon: Zap, label: "Buy Skill Points", desc: "Top up your SP balance" },
-  { icon: GraduationCap, label: "Join a Guild", desc: "Find your community" },
-  { icon: Wrench, label: "Account Settings", desc: "Manage your profile & privacy" },
+  { icon: Rocket, label: "Post a Gig", desc: "List your skill on the marketplace", link: "/marketplace" },
+  { icon: Users, label: "Find a Swapper", desc: "Browse available skill providers", link: "/marketplace" },
+  { icon: Shield, label: "Open a Dispute", desc: "File a case in Skill Court", link: "/contact" },
+  { icon: Zap, label: "Buy Skill Points", desc: "Top up your SP balance", link: "/pricing" },
+  { icon: GraduationCap, label: "Join a Guild", desc: "Find your community", link: "/guild/browse" },
+  { icon: Wrench, label: "Account Settings", desc: "Manage your profile & privacy", link: "/dashboard" },
 ];
 
 const communityResources = [
@@ -244,25 +245,31 @@ const HelpPage = () => {
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [statusTab, setStatusTab] = useState<"services" | "incidents" | "uptime">("services");
   const [feedbackSent, setFeedbackSent] = useState(false);
+  const [statusLoading, setStatusLoading] = useState(false);
 
   // Backend-driven state
   const [helpArticles, setHelpArticles] = useState<HelpArticle[]>([]);
   const [liveServices, setLiveServices] = useState<ServiceStatus[]>([]);
   const [liveIncidents, setLiveIncidents] = useState<Incident[]>([]);
+  const [articleCount, setArticleCount] = useState(0);
 
-  useEffect(() => {
-    const loadData = async () => {
-      const [articlesRes, servicesRes, incidentsRes] = await Promise.all([
-        supabase.from("help_articles").select("id, category, title, slug, excerpt").order("category"),
-        supabase.from("service_status").select("*").order("name"),
-        supabase.from("service_incidents").select("*").order("started_at", { ascending: false }).limit(10),
-      ]);
-      if (articlesRes.data) setHelpArticles(articlesRes.data as any);
-      if (servicesRes.data) setLiveServices(servicesRes.data as any);
-      if (incidentsRes.data) setLiveIncidents(incidentsRes.data as any);
-    };
-    loadData();
-  }, []);
+  const loadData = async () => {
+    setStatusLoading(true);
+    const [articlesRes, servicesRes, incidentsRes] = await Promise.all([
+      supabase.from("help_articles").select("id, category, title, slug, excerpt").order("category"),
+      supabase.from("service_status").select("*").order("name"),
+      supabase.from("service_incidents").select("*").order("started_at", { ascending: false }).limit(10),
+    ]);
+    if (articlesRes.data) {
+      setHelpArticles(articlesRes.data as any);
+      setArticleCount(articlesRes.data.length);
+    }
+    if (servicesRes.data) setLiveServices(servicesRes.data as any);
+    if (incidentsRes.data) setLiveIncidents(incidentsRes.data as any);
+    setStatusLoading(false);
+  };
+
+  useEffect(() => { loadData(); }, []);
 
   // Group articles by category
   const articlesByCategory = helpArticles.reduce<Record<string, HelpArticle[]>>((acc, a) => {
@@ -359,13 +366,45 @@ const HelpPage = () => {
                 style={{ paddingLeft: "3.25rem" }}
               />
             </motion.div>
+
+            {/* Search Results */}
+            {searchQuery.trim().length > 1 && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 mx-auto max-w-xl">
+                <div className="rounded-2xl border border-border bg-card overflow-hidden max-h-64 overflow-y-auto">
+                  {helpArticles
+                    .filter(a => a.title.toLowerCase().includes(searchQuery.toLowerCase()) || a.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) || a.category.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .slice(0, 8)
+                    .map((article) => (
+                      <div key={article.id} className="flex items-center gap-3 border-b border-border/30 last:border-0 px-5 py-3 hover:bg-surface-2 transition-colors cursor-pointer">
+                        <FileText size={14} className="text-muted-foreground shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-foreground truncate">{article.title}</p>
+                          <p className="text-[10px] text-muted-foreground truncate">{article.category} · {article.excerpt}</p>
+                        </div>
+                        <ArrowRight size={12} className="text-muted-foreground shrink-0" />
+                      </div>
+                    ))}
+                  {helpArticles.filter(a => a.title.toLowerCase().includes(searchQuery.toLowerCase()) || a.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                    <div className="px-5 py-6 text-center text-xs text-muted-foreground">
+                      No articles found for "{searchQuery}". Try a different search term.
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {[
-                { label: "Help Articles", value: "160+" },
-                { label: "Avg Response", value: "<4h" },
-                { label: "Satisfaction", value: "98.2%" },
-                { label: "Uptime", value: "99.97%" },
-              ].map((s) => (
+              {(() => {
+                const opCount = liveServices.filter(s => s.status === "operational").length;
+                const totalCount = liveServices.length || 12;
+                const uptimePct = liveServices.length ? (liveServices.reduce((a, s) => a + s.uptime, 0) / totalCount).toFixed(2) : "99.97";
+                return [
+                  { label: "Help Articles", value: articleCount > 0 ? `${articleCount}` : "160+" },
+                  { label: "Avg Response", value: "<4h" },
+                  { label: "Services Up", value: liveServices.length ? `${opCount}/${totalCount}` : "98.2%" },
+                  { label: "Uptime", value: `${uptimePct}%` },
+                ];
+              })().map((s) => (
                 <div key={s.label} className="rounded-xl border border-border bg-card p-3">
                   <p className="font-mono text-lg font-bold text-foreground">{s.value}</p>
                   <p className="text-[10px] text-muted-foreground">{s.label}</p>
@@ -381,20 +420,24 @@ const HelpPage = () => {
             <h2 className="mb-6 font-heading text-2xl font-bold text-foreground">Quick Actions</h2>
             <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
               {quickActions.map((a, i) => (
-                <motion.button
+                <Link
+                  to={a.link}
                   key={a.label}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.04 }}
-                  className="group flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-5 text-center transition-all hover:border-foreground/20 hover:bg-surface-2"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 text-muted-foreground transition-colors group-hover:bg-foreground group-hover:text-background">
-                    <a.icon size={18} />
-                  </div>
-                  <span className="text-xs font-semibold text-foreground">{a.label}</span>
-                  <span className="text-[10px] text-muted-foreground leading-tight">{a.desc}</span>
-                </motion.button>
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.04 }}
+                    className="group flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-5 text-center transition-all hover:border-foreground/20 hover:bg-surface-2 h-full"
+                  >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 text-muted-foreground transition-colors group-hover:bg-foreground group-hover:text-background">
+                      <a.icon size={18} />
+                    </div>
+                    <span className="text-xs font-semibold text-foreground">{a.label}</span>
+                    <span className="text-[10px] text-muted-foreground leading-tight">{a.desc}</span>
+                  </motion.div>
+                </Link>
               ))}
             </div>
           </div>
@@ -719,9 +762,15 @@ console.log(\`Found \${meta.total} gigs\`);`}</code>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-skill-green/10 px-3 py-1 text-[10px] font-semibold text-skill-green">99.97% overall uptime</span>
-                <button className="flex items-center gap-1 rounded-full border border-border px-3 py-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors">
-                  <RefreshCw size={10} /> Refresh
+                <span className="rounded-full bg-skill-green/10 px-3 py-1 text-[10px] font-semibold text-skill-green">
+                  {liveServices.length ? `${(liveServices.reduce((a, s) => a + s.uptime, 0) / liveServices.length).toFixed(2)}%` : "99.97%"} overall uptime
+                </span>
+                <button 
+                  onClick={() => loadData()} 
+                  disabled={statusLoading}
+                  className="flex items-center gap-1 rounded-full border border-border px-3 py-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                >
+                  <RefreshCw size={10} className={statusLoading ? "animate-spin" : ""} /> {statusLoading ? "Loading..." : "Refresh"}
                 </button>
               </div>
             </div>
