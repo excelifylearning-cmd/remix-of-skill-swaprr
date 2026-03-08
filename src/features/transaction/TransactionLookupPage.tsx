@@ -245,13 +245,29 @@ const QualityBar = ({ label, value, color }: { label: string; value: number; col
 );
 
 const TransactionLookupPage = () => {
-  const [code, setCode] = useState("");
+  const [searchParams] = useSearchParams();
+  const [code, setCode] = useState(searchParams.get("code") || "");
   const [searching, setSearching] = useState(false);
   const [found, setFound] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [txnData, setTxnData] = useState<any>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "details" | "security">("overview");
+  const autoSearchDone = useState(false);
+
+  // Auto-search if code is in URL params
+  useEffect(() => {
+    const urlCode = searchParams.get("code");
+    if (urlCode && !autoSearchDone[0]) {
+      autoSearchDone[1](true);
+      setCode(urlCode);
+      // Trigger search after state update
+      setTimeout(() => {
+        const btn = document.querySelector("[data-search-btn]") as HTMLButtonElement;
+        btn?.click();
+      }, 100);
+    }
+  }, [searchParams]);
 
   const handleSearch = async () => {
     if (!code.trim()) return;
