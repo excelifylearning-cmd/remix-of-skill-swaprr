@@ -701,9 +701,7 @@ const BlogPage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <CustomCursor />
-        <CursorGlow />
-        <Navbar />
+        <AppNav backLabel="Blog" />
 
         {/* ===== SECTION 1: HERO ===== */}
         <section className="relative pt-28 pb-20 overflow-hidden">
