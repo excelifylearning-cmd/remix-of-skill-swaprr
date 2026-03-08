@@ -1503,43 +1503,70 @@ export type Database = {
       }
       listings: {
         Row: {
+          bid_count: number
           category: string
           created_at: string
+          current_bid: number | null
+          delivery_days: number
           description: string
+          ends_at: string | null
+          format: string
+          hot: boolean
           id: string
           inquiries: number
+          points: number
           price: string
+          rating: number
           status: string
           title: string
           updated_at: string
           user_id: string
           views: number
+          wants: string | null
         }
         Insert: {
+          bid_count?: number
           category?: string
           created_at?: string
+          current_bid?: number | null
+          delivery_days?: number
           description?: string
+          ends_at?: string | null
+          format?: string
+          hot?: boolean
           id?: string
           inquiries?: number
+          points?: number
           price?: string
+          rating?: number
           status?: string
           title: string
           updated_at?: string
           user_id: string
           views?: number
+          wants?: string | null
         }
         Update: {
+          bid_count?: number
           category?: string
           created_at?: string
+          current_bid?: number | null
+          delivery_days?: number
           description?: string
+          ends_at?: string | null
+          format?: string
+          hot?: boolean
           id?: string
           inquiries?: number
+          points?: number
           price?: string
+          rating?: number
           status?: string
           title?: string
           updated_at?: string
           user_id?: string
           views?: number
+          wants?: string | null
         }
         Relationships: [
           {
