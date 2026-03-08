@@ -107,7 +107,7 @@ const LoginPage = () => {
               )}
 
               {/* Social Login Buttons */}
-              <div className="space-y-3 mb-6">
+              <div className="mb-6">
                 <motion.button
                   type="button"
                   onClick={handleGoogleLogin}
@@ -127,17 +127,6 @@ const LoginPage = () => {
                     </svg>
                   )}
                   Continue with Google
-                </motion.button>
-
-                <motion.button
-                  type="button"
-                  onClick={handleDemoLogin}
-                  disabled={loading || googleLoading}
-                  className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-court-blue/30 bg-court-blue/5 text-sm font-medium text-court-blue hover:bg-court-blue/10 transition-colors disabled:opacity-50"
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                >
-                  🎮 Try Demo Mode
                 </motion.button>
               </div>
 
