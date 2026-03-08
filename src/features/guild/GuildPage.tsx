@@ -115,6 +115,7 @@ const GuildPage = () => {
       toast.error("Failed to join guild");
     } else {
       toast.success(guild.is_public ? "Joined guild!" : "Application submitted!");
+      logInteraction("guild_join", { guild_id: guild.id, guild_name: guild.name, is_public: guild.is_public });
       if (guildId) loadGuild(guildId);
     }
     setJoining(false);

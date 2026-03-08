@@ -59,6 +59,7 @@ const CTAFooterSection = () => {
                 const result = validateEmail(email);
                 if (result !== true) { setEmailErr(result); return; }
                 setEmailErr("");
+                logFormSubmission("cta_email_signup", { email }, "marketing");
               }}
             >
               Get Started <ArrowRight size={16} />
