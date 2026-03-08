@@ -419,6 +419,7 @@ const ProfilePage = () => {
                     ))}
                   </div>
                 )}
+              </section>
 
               {/* RECOMMENDATIONS */}
               <section>
