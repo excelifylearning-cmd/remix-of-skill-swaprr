@@ -32,6 +32,9 @@ const TransactionLookupPage = lazy(() => import("./features/transaction/Transact
 const FAQPage = lazy(() => import("./features/faq/FAQPage"));
 const EventsPage = lazy(() => import("./features/events/EventsPage"));
 const DashboardPage = lazy(() => import("./features/dashboard/DashboardPage"));
+const WorkspacePage = lazy(() => import("./features/workspace/WorkspacePage"));
+const ProfilePage = lazy(() => import("./features/profile/ProfilePage"));
+const GuildPage = lazy(() => import("./features/guild/GuildPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const MaintenancePage = lazy(() => import("./pages/Maintenance"));
 const ComingSoonPage = lazy(() => import("./pages/ComingSoon"));
