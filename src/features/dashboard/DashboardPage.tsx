@@ -1088,9 +1088,7 @@ const DashboardSidebar = ({ activeTab, setActiveTab, profile }: { activeTab: str
                   >
                     <item.icon size={18} />
                     {!collapsed && <span>{item.label}</span>}
-                    {!collapsed && item.id === "skill-court" && courtCases.length > 0 && (
-                      <Badge className="ml-auto bg-alert-red/10 text-alert-red border-none text-[9px]">{courtCases.length}</Badge>
-                    )}
+                    {/* Court badge removed - now uses real data inside the tab */}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
