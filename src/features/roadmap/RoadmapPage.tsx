@@ -365,7 +365,7 @@ const RoadmapPage = () => {
               />
               <motion.button
                 type="submit"
-                disabled={!featureIdea.trim()}
+                disabled={!featureIdea.trim() || submitting}
                 className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all ${
                   featureIdea.trim() ? "bg-foreground text-background" : "bg-muted text-muted-foreground cursor-not-allowed"
                 }`}
