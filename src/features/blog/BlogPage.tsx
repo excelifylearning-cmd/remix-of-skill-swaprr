@@ -502,8 +502,6 @@ const BlogPage = () => {
               </div>
             </div>
           </article>
-
-          <CTAFooterSection />
         </div>
       </PageTransition>
     );
