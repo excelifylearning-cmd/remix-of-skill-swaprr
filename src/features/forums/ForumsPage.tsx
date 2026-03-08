@@ -1725,6 +1725,7 @@ const ForumsPage = () => {
           </div>
         </section>
         <Footer />
+        <LoginPrompt open={showLoginPrompt} onOpenChange={setShowLoginPrompt} message="Sign in to vote, comment, and participate in forum discussions." />
       </div>
     </PageTransition>
   );
