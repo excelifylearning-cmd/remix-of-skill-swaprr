@@ -149,7 +149,7 @@ const SuccessStoriesPage = () => {
 
         {/* SECTION 1: HERO */}
         <section className="relative pt-28 pb-20 overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--badge-gold)/0.08),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--court-blue)/0.06),transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,hsl(var(--skill-green)/0.05),transparent_40%)]" />
 
           <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
