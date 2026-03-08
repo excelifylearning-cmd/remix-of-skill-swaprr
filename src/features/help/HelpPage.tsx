@@ -324,8 +324,8 @@ const HelpPage = () => {
     setTimeout(() => setReportSubmitted(false), 5000);
   };
 
-  const operationalCount = services.filter(s => s.status === "operational").length;
-  const degradedCount = services.filter(s => s.status === "degraded").length;
+  const operationalCount = activeServices.filter((s: any) => s.status === "operational").length;
+  const degradedCount = activeServices.filter((s: any) => s.status === "degraded").length;
   const overallStatus = degradedCount === 0 ? "All Systems Operational" : `${degradedCount} Service${degradedCount > 1 ? "s" : ""} Degraded`;
 
   return (
