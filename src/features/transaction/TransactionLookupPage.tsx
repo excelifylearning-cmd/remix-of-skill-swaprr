@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -244,13 +245,29 @@ const QualityBar = ({ label, value, color }: { label: string; value: number; col
 );
 
 const TransactionLookupPage = () => {
-  const [code, setCode] = useState("");
+  const [searchParams] = useSearchParams();
+  const [code, setCode] = useState(searchParams.get("code") || "");
   const [searching, setSearching] = useState(false);
   const [found, setFound] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [txnData, setTxnData] = useState<any>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "details" | "security">("overview");
+  const autoSearchDone = useState(false);
+
+  // Auto-search if code is in URL params
+  useEffect(() => {
+    const urlCode = searchParams.get("code");
+    if (urlCode && !autoSearchDone[0]) {
+      autoSearchDone[1](true);
+      setCode(urlCode);
+      // Trigger search after state update
+      setTimeout(() => {
+        const btn = document.querySelector("[data-search-btn]") as HTMLButtonElement;
+        btn?.click();
+      }, 100);
+    }
+  }, [searchParams]);
 
   const handleSearch = async () => {
     if (!code.trim()) return;
@@ -338,7 +355,7 @@ const TransactionLookupPage = () => {
                     className="h-14 w-full rounded-2xl border border-border bg-card pl-12 pr-4 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
                   />
                 </div>
-                <motion.button onClick={handleSearch} className="flex h-14 items-center gap-2 rounded-2xl bg-foreground px-6 text-sm font-semibold text-background" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <motion.button data-search-btn onClick={handleSearch} className="flex h-14 items-center gap-2 rounded-2xl bg-foreground px-6 text-sm font-semibold text-background" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   Verify
                 </motion.button>
               </div>
