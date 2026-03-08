@@ -26,7 +26,7 @@ const SUSPICIOUS_TLD = [".tk", ".ml", ".ga", ".cf", ".gq", ".xyz"];
 const BOT_PATTERNS = [
   /^test[0-9]*@/i,
   /^user[0-9]*@/i,
-  /^admin[0-9]*@/i,
+  /^fake[0-9]*@/i,
   /^fake[0-9]*@/i,
   /^bot[0-9]*@/i,
   /^spam[0-9]*@/i,
