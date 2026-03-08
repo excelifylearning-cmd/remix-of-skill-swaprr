@@ -6,7 +6,7 @@ import HeroSection from "./sections/HeroSection";
 import WhatIsSection from "./sections/WhatIsSection";
 import HowSwappingWorksSection from "./sections/HowSwappingWorksSection";
 
-import SkillPointsSection from "./sections/SkillPointsSection";
+
 import MarketplacePreviewSection from "./sections/MarketplacePreviewSection";
 import PlatformFormatsSection from "./sections/PlatformFormatsSection";
 import GamificationSection from "./sections/GamificationSection";
