@@ -197,6 +197,23 @@ const PricingPage = () => {
   const [calcTier, setCalcTier] = useState<"free" | "pro">("free");
   const [calcGuild, setCalcGuild] = useState(false);
   const [calcMembers, setCalcMembers] = useState(5);
+  const [entCompany, setEntCompany] = useState("");
+  const [entEmail, setEntEmail] = useState("");
+  const [entTeamSize, setEntTeamSize] = useState("");
+  const [entSubmitted, setEntSubmitted] = useState(false);
+
+  const handleEnterpriseQuote = async () => {
+    if (!entCompany.trim() || !entEmail.trim()) { toast.error("Please fill company name and email"); return; }
+    const { error } = await supabase.from("enterprise_quotes").insert({
+      company_name: entCompany.trim(),
+      email: entEmail.trim(),
+      team_size: entTeamSize || "Not specified",
+      source: "pricing",
+    });
+    if (error) { toast.error("Failed to submit. Please try again."); return; }
+    setEntSubmitted(true);
+    toast.success("Quote request submitted! We'll be in touch.");
+  };
 
   const calcResult = useMemo(() => {
     const skill = calcSkills.find((s) => s.name === calcSkill) || calcSkills[0];
