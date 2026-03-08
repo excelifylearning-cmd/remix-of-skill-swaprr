@@ -1114,14 +1114,52 @@ const ForumsPage = () => {
                   </AnimatePresence>
                 </div>
 
+                {/* Daily Challenge */}
+                <div className="rounded-2xl border border-badge-gold/20 bg-badge-gold/5 p-5">
+                  <h3 className="mb-2 flex items-center gap-2 font-heading text-xs font-bold text-foreground">
+                    <Target size={12} className="text-badge-gold" /> Daily Challenge
+                  </h3>
+                  <p className="text-xs font-medium text-foreground mb-1">{dailyChallenge.title}</p>
+                  <p className="text-[9px] text-muted-foreground mb-3">{dailyChallenge.description}</p>
+                  <div className="flex items-center justify-between text-[9px] text-muted-foreground mb-3">
+                    <span className="flex items-center gap-1"><Users size={9} /> {dailyChallenge.entries} entries</span>
+                    <span className="flex items-center gap-1"><Clock size={9} /> {dailyChallenge.timeLeft}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs font-bold text-badge-gold">{dailyChallenge.prize}</span>
+                    <button className="rounded-full bg-foreground px-4 py-1.5 text-[10px] font-semibold text-background">Enter</button>
+                  </div>
+                </div>
+
                 {/* Trending Tags */}
                 <div className="rounded-2xl border border-border bg-card p-5">
                   <h3 className="mb-3 font-heading text-xs font-bold text-foreground flex items-center gap-2">
                     <TrendingUp size={12} className="text-skill-green" /> Trending Tags
                   </h3>
                   <div className="flex flex-wrap gap-1.5">
-                    {["guild-wars", "tier-up", "auction", "co-creation", "court-tips", "sp-earning", "design", "api", "webhooks", "mentorship", "portfolio", "review"].map((tag) => (
+                    {["guild-wars", "tier-up", "auction", "co-creation", "court-tips", "sp-earning", "design", "api", "webhooks", "mentorship", "portfolio", "review", "ai-tools", "freelance", "streaming"].map((tag) => (
                       <span key={tag} className="rounded-md border border-border bg-surface-1 px-2 py-1 text-[9px] text-muted-foreground hover:text-foreground hover:border-foreground/20 cursor-pointer transition-colors">#{tag}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Moderators Mini */}
+                <div className="rounded-2xl border border-border bg-card p-5">
+                  <h3 className="mb-3 font-heading text-xs font-bold text-foreground flex items-center gap-2">
+                    <Shield size={12} className="text-court-blue" /> Moderators
+                  </h3>
+                  <div className="space-y-2">
+                    {forumModerators.map((mod) => (
+                      <div key={mod.name} className="flex items-center gap-2">
+                        <div className="relative">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-2 font-mono text-[9px] font-bold text-foreground">{mod.avatar}</div>
+                          <span className={`absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border border-card ${mod.online ? "bg-skill-green" : "bg-muted-foreground/30"}`} />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-semibold text-foreground">{mod.name}</p>
+                          <p className="text-[8px] text-muted-foreground">{mod.role}</p>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
