@@ -259,7 +259,7 @@ const EventsPage = () => {
                 loading="lazy"
               />
               {/* Fallback gradient overlay in case Spline doesn't load */}
-              <div className="pointer-events-none absolute inset-0 rounded-2xl border border-border bg-gradient-to-br from-badge-gold/5 via-transparent to-court-blue/5" />
+              <div className="pointer-events-none absolute inset-0 rounded-2xl border border-border bg-gradient-to-br from-skill-green/5 via-transparent to-court-blue/5" />
             </motion.div>
           </div>
         </section>
@@ -295,12 +295,12 @@ const EventsPage = () => {
               <p className="text-sm text-muted-foreground mt-3 max-w-2xl">{nextBigEvent.description}</p>
               <div className="flex flex-wrap gap-2 mt-4">
                 {nextBigEvent.tags.map(t => (
-                  <span key={t} className="rounded-full border border-badge-gold/30 bg-badge-gold/10 px-3 py-1 text-xs text-badge-gold">{t}</span>
+                  <span key={t} className="rounded-full border border-skill-green/30 bg-skill-green/10 px-3 py-1 text-xs text-skill-green">{t}</span>
                 ))}
               </div>
               <div className="mt-5 w-full bg-surface-2 rounded-full h-2 overflow-hidden">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-badge-gold to-destructive"
+                  className="h-full rounded-full bg-gradient-to-r from-skill-green to-court-blue"
                   initial={{ width: 0 }}
                   whileInView={{ width: `${(nextBigEvent.spotsFilled / nextBigEvent.spots) * 100}%` }}
                   viewport={{ once: true }}
@@ -340,7 +340,7 @@ const EventsPage = () => {
         <section className="py-16 px-6 bg-surface-1">
           <div className="max-w-6xl mx-auto">
             <motion.div className="text-center mb-12" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <span className="mb-3 inline-block rounded-full border border-badge-gold/30 bg-badge-gold/10 px-4 py-1.5 font-mono text-xs text-badge-gold">
+              <span className="mb-3 inline-block rounded-full border border-skill-green/30 bg-skill-green/10 px-4 py-1.5 font-mono text-xs text-skill-green">
                 <Gift size={12} className="inline mr-1.5 -mt-0.5" /> Rewards
               </span>
               <h2 className="font-heading text-3xl sm:text-4xl font-bold text-foreground">Why Participate?</h2>
@@ -420,7 +420,7 @@ const EventsPage = () => {
                         </div>
                       </div>
                       {event.prize && (
-                        <span className="rounded-full bg-badge-gold/10 border border-badge-gold/30 px-2.5 py-1 text-xs font-mono text-badge-gold">{event.prize}</span>
+                        <span className="rounded-full bg-skill-green/10 border border-skill-green/30 px-2.5 py-1 text-xs font-mono text-skill-green">{event.prize}</span>
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground mt-3 line-clamp-2">{event.description}</p>
@@ -433,7 +433,7 @@ const EventsPage = () => {
                       <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                         event.type === "Tournament" ? "bg-court-blue/10 text-court-blue border border-court-blue/20" :
                         event.type === "In-Person" ? "bg-skill-green/10 text-skill-green border border-skill-green/20" :
-                        event.type === "Workshop" ? "bg-badge-gold/10 text-badge-gold border border-badge-gold/20" :
+                        event.type === "Workshop" ? "bg-foreground/10 text-foreground border border-border" :
                         "bg-surface-2 text-muted-foreground border border-border"
                       }`}>{event.type}</span>
                     </div>
@@ -482,7 +482,7 @@ const EventsPage = () => {
                   <div className="rounded-lg bg-surface-2 p-3 text-center">
                     {selectedEvent.prize ? (
                       <>
-                        <Trophy size={14} className="mx-auto mb-1 text-badge-gold" />
+                        <Trophy size={14} className="mx-auto mb-1 text-skill-green" />
                         <p className="text-xs text-foreground font-medium">{selectedEvent.prize}</p>
                         <p className="text-[10px] text-muted-foreground">Prize Pool</p>
                       </>
@@ -565,19 +565,19 @@ const EventsPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  whileHover={{ y: -3, borderColor: "hsl(var(--badge-gold) / 0.3)" }}
+                  whileHover={{ y: -3, borderColor: "hsl(var(--skill-green) / 0.3)" }}
                 >
-                  <t.icon size={24} className="mx-auto mb-3 text-badge-gold" />
+                  <t.icon size={24} className="mx-auto mb-3 text-foreground" />
                   <h3 className="font-heading text-base font-bold text-foreground">{t.name}</h3>
                   <span className={`mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${
                     t.status === "Registration Open" ? "bg-skill-green/10 text-skill-green border border-skill-green/20" :
-                    t.status === "Coming Soon" ? "bg-badge-gold/10 text-badge-gold border border-badge-gold/20" :
+                    t.status === "Coming Soon" ? "bg-court-blue/10 text-court-blue border border-court-blue/20" :
                     "bg-surface-2 text-muted-foreground border border-border"
                   }`}>{t.status}</span>
                   <div className="mt-3 space-y-1 text-xs text-muted-foreground">
                     <p>{t.teams}</p>
                     <p>{t.format}</p>
-                    <p className="font-mono text-badge-gold font-bold">{t.prize}</p>
+                    <p className="font-mono text-skill-green font-bold">{t.prize}</p>
                   </div>
                 </motion.div>
               ))}
@@ -609,21 +609,21 @@ const EventsPage = () => {
                     key={d.day}
                     className={`relative flex h-9 sm:h-10 items-center justify-center rounded-lg text-sm cursor-pointer transition-colors ${
                       d.hasEvent
-                        ? "bg-badge-gold/10 text-badge-gold font-bold border border-badge-gold/20 hover:bg-badge-gold/20"
+                        ? "bg-skill-green/10 text-skill-green font-bold border border-skill-green/20 hover:bg-skill-green/20"
                         : "text-muted-foreground hover:bg-surface-2"
                     }`}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     {d.day}
-                    {d.hasEvent && <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-badge-gold" />}
+                    {d.hasEvent && <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-skill-green" />}
                   </motion.div>
                 ))}
               </div>
 
               {/* Calendar legend */}
               <div className="mt-4 flex items-center gap-4 pt-3 border-t border-border/30">
-                <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-badge-gold" /><span className="text-[10px] text-muted-foreground">Event Day</span></div>
+                <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-skill-green" /><span className="text-[10px] text-muted-foreground">Event Day</span></div>
                 <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-surface-2 border border-border" /><span className="text-[10px] text-muted-foreground">No Events</span></div>
               </div>
             </motion.div>
@@ -696,7 +696,7 @@ const EventsPage = () => {
                 >
                   <div className="flex gap-1 mb-3">
                     {[1, 2, 3, 4, 5].map(s => (
-                      <Star key={s} size={12} className="text-badge-gold fill-badge-gold" />
+                      <Star key={s} size={12} className="text-skill-green fill-skill-green" />
                     ))}
                   </div>
                   <p className="text-sm text-foreground leading-relaxed flex-1">"{h.quote}"</p>
@@ -731,8 +731,8 @@ const EventsPage = () => {
                   whileHover={{ y: -2 }}
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-badge-gold/10 border border-badge-gold/20">
-                      <Trophy size={18} className="text-badge-gold" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-skill-green/10 border border-skill-green/20">
+                      <Trophy size={18} className="text-skill-green" />
                     </div>
                     <div className="min-w-0">
                       <h3 className="font-heading text-sm font-bold text-foreground truncate">{event.title}</h3>
@@ -742,7 +742,7 @@ const EventsPage = () => {
                   <div className="space-y-1.5 text-xs text-muted-foreground">
                     <p className="flex items-center gap-1.5">🏆 <span className="text-foreground font-medium">{event.winner}</span></p>
                     <p className="flex items-center gap-1.5"><Users size={11} /> {event.participants.toLocaleString()} participants</p>
-                    <p className="flex items-center gap-1.5"><Zap size={11} className="text-badge-gold" /> <span className="font-mono text-badge-gold font-bold">{event.prize}</span></p>
+                    <p className="flex items-center gap-1.5"><Zap size={11} className="text-skill-green" /> <span className="font-mono text-skill-green font-bold">{event.prize}</span></p>
                   </div>
                 </motion.div>
               ))}
@@ -776,9 +776,9 @@ const EventsPage = () => {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.06 }}
                 >
-                  <span className={`font-heading text-lg font-black w-8 ${i < 3 ? "text-badge-gold" : "text-muted-foreground"}`}>#{p.rank}</span>
+                  <span className={`font-heading text-lg font-black w-8 ${i < 3 ? "text-skill-green" : "text-muted-foreground"}`}>#{p.rank}</span>
                   <div className={`flex h-9 w-9 items-center justify-center rounded-full border border-border font-heading text-xs font-bold text-foreground ${
-                    i === 0 ? "bg-badge-gold/10" : i === 1 ? "bg-court-blue/10" : i === 2 ? "bg-skill-green/10" : "bg-surface-2"
+                    i === 0 ? "bg-skill-green/10" : i === 1 ? "bg-court-blue/10" : i === 2 ? "bg-foreground/10" : "bg-surface-2"
                   }`}>
                     {p.name.split(" ").map(n => n[0]).join("")}
                   </div>
@@ -789,9 +789,9 @@ const EventsPage = () => {
                   <span className={`hidden sm:inline-block rounded-full px-2 py-0.5 text-[9px] font-semibold ${
                     p.badge === "Diamond" ? "bg-court-blue/10 text-court-blue border border-court-blue/20" :
                     p.badge === "Platinum" ? "bg-foreground/10 text-foreground border border-border" :
-                    "bg-badge-gold/10 text-badge-gold border border-badge-gold/20"
+                    "bg-skill-green/10 text-skill-green border border-skill-green/20"
                   }`}>{p.badge}</span>
-                  <span className="font-mono text-sm text-badge-gold font-bold">{p.sp} SP</span>
+                  <span className="font-mono text-sm text-skill-green font-bold">{p.sp} SP</span>
                 </motion.div>
               ))}
             </div>
@@ -882,7 +882,7 @@ const EventsPage = () => {
         <section className="py-24 px-6">
           <div className="max-w-3xl mx-auto text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <PartyPopper size={36} className="mx-auto mb-4 text-badge-gold" />
+              <PartyPopper size={36} className="mx-auto mb-4 text-skill-green" />
               <h2 className="font-heading text-3xl sm:text-5xl font-black text-foreground">Don't Miss Out</h2>
               <p className="text-muted-foreground mt-3 max-w-md mx-auto">
                 Subscribe to event notifications. Be the first to register for tournaments, meetups, and workshops.

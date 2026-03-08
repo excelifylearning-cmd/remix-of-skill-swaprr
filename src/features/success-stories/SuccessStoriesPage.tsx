@@ -93,7 +93,7 @@ const transformationStats = [
 const industryBreakdown = [
   { industry: "Technology", percentage: 34, icon: Code, color: "bg-skill-green" },
   { industry: "Design & Creative", percentage: 22, icon: Palette, color: "bg-court-blue" },
-  { industry: "Business & Finance", percentage: 18, icon: BarChart3, color: "bg-badge-gold" },
+  { industry: "Business & Finance", percentage: 18, icon: BarChart3, color: "bg-foreground" },
   { industry: "Data & Analytics", percentage: 14, icon: Database, color: "bg-purple-500" },
   { industry: "Marketing", percentage: 8, icon: Mic, color: "bg-alert-red" },
   { industry: "Other", percentage: 4, icon: Layers, color: "bg-muted-foreground" },
@@ -314,9 +314,9 @@ const SuccessStoriesPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className="rounded-2xl border border-border bg-card p-6 hover:border-badge-gold/30 transition-colors"
+                  className="rounded-2xl border border-border bg-card p-6 hover:border-skill-green/30 transition-colors"
                 >
-                  <stat.icon size={24} className="mb-3 text-badge-gold" />
+                  <stat.icon size={24} className="mb-3 text-skill-green" />
                   <p className="font-heading text-4xl font-black text-foreground">{stat.value}</p>
                   <p className="text-sm font-semibold text-foreground mt-1">{stat.label}</p>
                   <p className="text-xs text-muted-foreground">{stat.description}</p>
@@ -428,7 +428,7 @@ const SuccessStoriesPage = () => {
                 >
                   <div className="mb-4 flex items-center gap-3">
                     <span className="rounded-xl bg-surface-2 px-4 py-2 text-xs font-semibold text-muted-foreground">{journey.from}</span>
-                    <ArrowRight size={16} className="text-badge-gold" />
+                    <ArrowRight size={16} className="text-skill-green" />
                     <span className="rounded-xl bg-skill-green/10 px-4 py-2 text-xs font-semibold text-skill-green">{journey.to}</span>
                   </div>
                   <div className="mb-3 flex items-center gap-4 text-xs text-muted-foreground">
@@ -579,9 +579,9 @@ const SuccessStoriesPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="rounded-2xl border border-border bg-card p-6 text-center hover:border-badge-gold/30 transition-colors"
+                  className="rounded-2xl border border-border bg-card p-6 text-center hover:border-foreground/20 transition-colors"
                 >
-                  <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-badge-gold/10 font-heading text-2xl font-bold text-badge-gold ring-4 ring-badge-gold/20">
+                  <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-foreground/10 font-heading text-2xl font-bold text-foreground ring-4 ring-foreground/10">
                     {mentor.avatar}
                   </div>
                   <h3 className="font-heading text-lg font-bold text-foreground">{mentor.name}</h3>
@@ -594,7 +594,7 @@ const SuccessStoriesPage = () => {
                     </div>
                     <div className="h-8 w-px bg-border" />
                     <div className="text-center">
-                      <p className="font-bold text-foreground flex items-center gap-1"><Star size={10} fill="currentColor" className="text-badge-gold" /> {mentor.rating}</p>
+                      <p className="font-bold text-foreground flex items-center gap-1"><Star size={10} fill="currentColor" className="text-skill-green" /> {mentor.rating}</p>
                       <p className="text-[9px] text-muted-foreground">Rating</p>
                     </div>
                   </div>
@@ -642,10 +642,10 @@ const SuccessStoriesPage = () => {
 
         {/* SECTION 11: SUBMIT YOUR STORY CTA */}
         <section className="py-24 border-t border-border relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--badge-gold)/0.1),transparent_70%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--skill-green)/0.1),transparent_70%)]" />
           <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-badge-gold/30 bg-badge-gold/10 px-5 py-2 font-mono text-xs text-badge-gold">
+              <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-skill-green/30 bg-skill-green/10 px-5 py-2 font-mono text-xs text-skill-green">
                 <Heart size={12} fill="currentColor" /> Your Story Matters
               </span>
               <h2 className="mb-4 font-heading text-4xl font-black text-foreground sm:text-5xl">
@@ -655,7 +655,7 @@ const SuccessStoriesPage = () => {
                 Your transformation could inspire thousands. Submit your success story and join our hall of fame.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="flex items-center gap-2 rounded-full bg-badge-gold px-8 py-4 text-sm font-semibold text-black">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="flex items-center gap-2 rounded-full bg-skill-green px-8 py-4 text-sm font-semibold text-black">
                   Share My Story <ArrowRight size={16} />
                 </motion.button>
                 <button className="flex items-center gap-2 rounded-full border border-border px-8 py-4 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
@@ -689,7 +689,7 @@ const SuccessStoriesPage = () => {
                   <p className="text-xs text-muted-foreground italic">"{story.quote}"</p>
                   <div className="mt-3 flex items-center gap-1">
                     {[...Array(5)].map((_, j) => (
-                      <Star key={j} size={10} fill="currentColor" className="text-badge-gold" />
+                      <Star key={j} size={10} fill="currentColor" className="text-skill-green" />
                     ))}
                   </div>
                 </div>
