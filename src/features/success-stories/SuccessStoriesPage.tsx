@@ -154,8 +154,8 @@ const SuccessStoriesPage = () => {
 
           <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-              <span className="inline-flex items-center gap-2 rounded-full border border-badge-gold/30 bg-badge-gold/10 px-5 py-2 font-mono text-xs text-badge-gold">
-                <Star size={12} fill="currentColor" /> Real People, Real Transformations
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-2 px-5 py-2 font-mono text-xs text-muted-foreground">
+                <Star size={12} /> Real People, Real Transformations
               </span>
             </motion.div>
 
