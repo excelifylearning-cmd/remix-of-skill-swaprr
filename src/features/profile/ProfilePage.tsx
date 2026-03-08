@@ -132,7 +132,7 @@ const ProfilePage = () => {
     return (
       <PageTransition>
         <div className="min-h-screen bg-background">
-          <Navbar />
+          <AppNav />
           <div className="flex flex-col items-center justify-center pt-40 gap-4">
             <p className="text-sm text-muted-foreground">Profile not found.</p>
             <Link to="/" className="text-xs text-foreground hover:underline">Go Home</Link>
