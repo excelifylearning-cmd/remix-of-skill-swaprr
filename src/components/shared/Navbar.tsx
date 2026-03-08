@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sun, Moon } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Menu, X, Sun, Moon, LogOut, User } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/lib/auth-context";
 
 const navLinks = [
   { label: "Features", href: "/features" },
@@ -18,6 +19,8 @@ const Navbar = () => {
   const [isLight, setIsLight] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
 
   useEffect(() => {
     const stored = localStorage.getItem("theme");
@@ -101,16 +104,34 @@ const Navbar = () => {
               )}
             </AnimatePresence>
           </motion.button>
-
-          <Link to="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-            Log In
-          </Link>
-          <Link
-            to="/signup"
-            className="rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background transition-shadow hover:shadow-[0_0_20px_hsl(var(--silver)/0.3)]"
-          >
-            Start Swapping
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link to="/dashboard" className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-2 border border-border">
+                  <User size={13} className="text-foreground" />
+                </div>
+                <span className="hidden xl:inline">{user?.name}</span>
+              </Link>
+              <button
+                onClick={() => { logout(); navigate("/"); }}
+                className="rounded-full border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <LogOut size={14} className="inline mr-1" /> Log Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                Log In
+              </Link>
+              <Link
+                to="/signup"
+                className="rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background transition-shadow hover:shadow-[0_0_20px_hsl(var(--silver)/0.3)]"
+              >
+                Start Swapping
+              </Link>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
@@ -148,12 +169,25 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="flex gap-3 mt-2">
-                <Link to="/login" className="flex-1 rounded-full border border-border px-5 py-2.5 text-center text-sm text-muted-foreground">
-                  Log In
-                </Link>
-                <Link to="/signup" className="flex-1 rounded-full bg-foreground px-5 py-2.5 text-center text-sm font-medium text-background">
-                  Sign Up
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <Link to="/dashboard" className="flex-1 rounded-full border border-border px-5 py-2.5 text-center text-sm text-muted-foreground">
+                      Dashboard
+                    </Link>
+                    <button onClick={() => { logout(); navigate("/"); }} className="flex-1 rounded-full border border-destructive/30 px-5 py-2.5 text-center text-sm text-destructive">
+                      Log Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" className="flex-1 rounded-full border border-border px-5 py-2.5 text-center text-sm text-muted-foreground">
+                      Log In
+                    </Link>
+                    <Link to="/signup" className="flex-1 rounded-full bg-foreground px-5 py-2.5 text-center text-sm font-medium text-background">
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>

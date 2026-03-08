@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { validateEmail } from "@/lib/email-validation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Mail, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, User, GraduationCap, CheckCircle2, Github,
   Circle, AlertCircle, Camera, Globe, Briefcase, Tag, Link2, Shield, Play, SkipForward,
@@ -9,6 +9,7 @@ import {
   MapPin, Languages, Clock, Heart, ChevronRight
 } from "lucide-react";
 import PageTransition from "@/components/shared/PageTransition";
+import { useAuth } from "@/lib/auth-context";
 
 const TOTAL_STEPS = 8;
 
@@ -47,6 +48,9 @@ const platformTourSteps = [
 
 const SignupPage = () => {
   const [step, setStep] = useState(1);
+  const [signupError, setSignupError] = useState("");
+  const navigate = useNavigate();
+  const { signup } = useAuth();
 
   // Step 1: Account
   const [name, setName] = useState("");
@@ -92,7 +96,11 @@ const SignupPage = () => {
   const strengthColor = passedCount <= 1 ? "bg-destructive" : passedCount <= 3 ? "bg-badge-gold" : "bg-skill-green";
   const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
   const passwordsMismatch = confirmPassword.length > 0 && password !== confirmPassword;
-  const emailError = useMemo(() => email.trim() ? (validateEmail(email) === true ? "" : validateEmail(email) as string) : "", [email]);
+  const isTestCreds = email === "AdminTester123";
+  const emailError = useMemo(() => {
+    if (isTestCreds) return "";
+    return email.trim() ? (validateEmail(email) === true ? "" : validateEmail(email) as string) : "";
+  }, [email, isTestCreds]);
   const canContinueStep1 = name.trim() && email.trim() && !emailError && passedCount >= 4 && passwordsMatch;
 
   const toggleSkill = (s: string) => setSkills((prev) => prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]);
@@ -137,7 +145,11 @@ const SignupPage = () => {
               {step === 1 && (
                 <motion.div key="s1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Create your account</h1>
-                  <p className="mb-6 text-sm text-muted-foreground">Start your skill exchange journey.</p>
+                  <p className="mb-4 text-sm text-muted-foreground">Start your skill exchange journey.</p>
+                  <div className="mb-4 rounded-lg border border-court-blue/20 bg-court-blue/5 p-3">
+                    <p className="text-xs text-court-blue font-medium">🔑 Demo Mode</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Use <span className="font-mono font-bold text-foreground">AdminTester123</span> as email & password to test.</p>
+                  </div>
                   <div className="space-y-3">
                     <div className="relative">
                       <User size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -508,9 +520,27 @@ const SignupPage = () => {
                     <p className="text-[10px] text-muted-foreground">Welcome bonus credited to your account</p>
                   </div>
 
+                  {signupError && (
+                    <div className="mb-3 rounded-lg border border-destructive/20 bg-destructive/5 p-3">
+                      <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle size={12} /> {signupError}</p>
+                    </div>
+                  )}
+
                   <div className="flex gap-3">
                     <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
-                    <motion.button className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                    <motion.button
+                      onClick={() => {
+                        const result = signup(name, email, password);
+                        if (result.success) {
+                          navigate("/dashboard");
+                        } else {
+                          setSignupError(result.error || "Signup failed.");
+                        }
+                      }}
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-background"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
                       Start Swapping <ArrowRight size={15} />
                     </motion.button>
                   </div>

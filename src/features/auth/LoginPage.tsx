@@ -1,21 +1,51 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Github } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Github, AlertCircle, CheckCircle2 } from "lucide-react";
 import PageTransition from "@/components/shared/PageTransition";
 import { validateEmail } from "@/lib/email-validation";
+import { useAuth } from "@/lib/auth-context";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
-  const emailError = useMemo(() => email.trim() ? (validateEmail(email) === true ? "" : validateEmail(email) as string) : "", [email]);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
+
+  // Skip email validation for test credentials
+  const isTestCreds = email === "AdminTester123";
+  const emailError = useMemo(() => {
+    if (isTestCreds) return "";
+    return email.trim() ? (validateEmail(email) === true ? "" : validateEmail(email) as string) : "";
+  }, [email, isTestCreds]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (!email.trim() || !password.trim()) { setError("Please fill in all fields."); return; }
+    if (emailError && !isTestCreds) { setError(emailError); return; }
+
+    const result = login(email, password);
+    if (result.success) {
+      setSuccess(true);
+      setTimeout(() => navigate("/dashboard"), 800);
+    } else {
+      setError(result.error || "Login failed.");
+    }
+  };
+
+  if (isAuthenticated && !success) {
+    navigate("/dashboard");
+    return null;
+  }
 
   return (
     <PageTransition>
       <div className="flex min-h-screen items-center justify-center bg-background px-6 py-12">
         <div className="w-full max-w-md">
-          {/* Logo */}
           <div className="mb-10 text-center">
             <Link to="/" className="inline-block font-heading text-2xl font-bold text-foreground">
               Skill<span className="text-muted-foreground">Swappr</span>
@@ -26,15 +56,35 @@ const LoginPage = () => {
             <h1 className="mb-2 text-center font-heading text-3xl font-bold text-foreground">Welcome back</h1>
             <p className="mb-8 text-center text-sm text-muted-foreground">Log in to continue swapping skills.</p>
 
-            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+            {/* Test credentials hint */}
+            <div className="mb-5 rounded-lg border border-court-blue/20 bg-court-blue/5 p-3">
+              <p className="text-xs text-court-blue font-medium">🔑 Demo Mode</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Use <span className="font-mono font-bold text-foreground">AdminTester123</span> as both email & password to log in.</p>
+            </div>
+
+            {error && (
+              <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/5 p-3">
+                <AlertCircle size={14} className="text-destructive shrink-0" />
+                <p className="text-xs text-destructive">{error}</p>
+              </motion.div>
+            )}
+
+            {success && (
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mb-4 flex items-center gap-2 rounded-lg border border-skill-green/20 bg-skill-green/5 p-3">
+                <CheckCircle2 size={14} className="text-skill-green shrink-0" />
+                <p className="text-xs text-skill-green">Login successful! Redirecting to dashboard...</p>
+              </motion.div>
+            )}
+
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="relative">
                 <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} className={`h-12 w-full rounded-xl border ${emailError ? "border-destructive" : "border-border"} bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none`} />
+                <input type="text" placeholder="Email address" value={email} onChange={(e) => { setEmail(e.target.value); setError(""); }} className={`h-12 w-full rounded-xl border ${emailError ? "border-destructive" : "border-border"} bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none`} />
               </div>
               {emailError && <p className="text-xs text-destructive -mt-2">{emailError}</p>}
               <div className="relative">
                 <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input type={showPass ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-11 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                <input type={showPass ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} className="h-12 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-11 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
                 <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -48,8 +98,14 @@ const LoginPage = () => {
                 <Link to="/forgot-password" className="text-muted-foreground hover:text-foreground transition-colors">Forgot password?</Link>
               </div>
 
-              <motion.button type="submit" className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                Log In <ArrowRight size={16} />
+              <motion.button
+                type="submit"
+                disabled={success}
+                className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all ${success ? "bg-skill-green text-background" : "bg-foreground text-background"}`}
+                whileHover={!success ? { scale: 1.01 } : {}}
+                whileTap={!success ? { scale: 0.99 } : {}}
+              >
+                {success ? "✓ Logged In" : <>Log In <ArrowRight size={16} /></>}
               </motion.button>
             </form>
 

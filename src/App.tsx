@@ -9,6 +9,7 @@ import ScrollToTop from "@/components/shared/ScrollToTop";
 import LoadingScreen from "@/components/shared/LoadingScreen";
 import LiveChatWidget from "@/components/shared/LiveChatWidget";
 import CookieConsent from "@/components/shared/CookieConsent";
+import { AuthProvider } from "@/lib/auth-context";
 
 const HomePage = lazy(() => import("./features/home/HomePage"));
 const AboutPage = lazy(() => import("./features/about/AboutPage"));
@@ -30,6 +31,7 @@ const LeaderboardPage = lazy(() => import("./features/leaderboard/LeaderboardPag
 const TransactionLookupPage = lazy(() => import("./features/transaction/TransactionLookupPage"));
 const FAQPage = lazy(() => import("./features/faq/FAQPage"));
 const EventsPage = lazy(() => import("./features/events/EventsPage"));
+const DashboardPage = lazy(() => import("./features/dashboard/DashboardPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const MaintenancePage = lazy(() => import("./pages/Maintenance"));
 const ComingSoonPage = lazy(() => import("./pages/ComingSoon"));
@@ -66,6 +68,7 @@ const AnimatedRoutes = () => {
           <Route path="/transaction" element={<TransactionLookupPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/events" element={<EventsPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/coming-soon" element={<ComingSoonPage />} />
           <Route path="/500" element={<ServerErrorPage />} />
@@ -81,14 +84,16 @@ const AnimatedRoutes = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <ScrollToTop />
-        <AnimatedRoutes />
-        <LiveChatWidget />
-        <CookieConsent />
-      </BrowserRouter>
+      <AuthProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <ScrollToTop />
+          <AnimatedRoutes />
+          <LiveChatWidget />
+          <CookieConsent />
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
