@@ -223,9 +223,9 @@ const LeaderboardPage = () => {
                   </motion.div>
 
                   {/* #1 */}
-                  <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="rounded-2xl border border-badge-gold/30 bg-badge-gold/5 p-5 text-center -mt-6">
-                    <Crown size={24} className="mx-auto mb-2 text-badge-gold" />
-                    <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-badge-gold/10 ring-2 ring-badge-gold/30 font-mono text-base font-bold text-foreground">CL</div>
+                  <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="rounded-2xl border border-border bg-card p-5 text-center -mt-6">
+                    <Crown size={24} className="mx-auto mb-2 text-foreground" />
+                    <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-surface-2 ring-2 ring-border font-mono text-base font-bold text-foreground">CL</div>
                     <p className="text-sm font-bold text-foreground">Chen L.</p>
                     <p className="text-[10px] text-muted-foreground">MIT</p>
                     <span className="mt-1 inline-block rounded-full bg-court-blue/10 px-2 py-0.5 text-[9px] font-semibold text-court-blue">Diamond</span>
