@@ -258,8 +258,8 @@ const EventsPage = () => {
                 title="Events 3D Scene"
                 loading="lazy"
               />
-              {/* Fallback gradient overlay in case Spline doesn't load */}
-              <div className="pointer-events-none absolute inset-0 rounded-2xl border border-border bg-gradient-to-br from-skill-green/5 via-transparent to-court-blue/5" />
+              {/* Fallback overlay in case Spline doesn't load */}
+              <div className="pointer-events-none absolute inset-0 rounded-2xl border border-border" />
             </motion.div>
           </div>
         </section>
