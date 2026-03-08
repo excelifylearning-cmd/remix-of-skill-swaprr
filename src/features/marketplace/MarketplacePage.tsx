@@ -21,7 +21,7 @@ const MarketplacePage = () => {
   const {
     mode, setMode, filters, updateFilter, resetFilters, activeFilterCount,
     page, setPage, totalPages, viewMode, setViewMode, pagedGigs, totalResults,
-  } = useMarketplaceFilters();
+  } = useMarketplaceData();
 
   const [selectedGig, setSelectedGig] = useState<Gig | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
