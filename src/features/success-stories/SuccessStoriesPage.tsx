@@ -227,7 +227,7 @@ const SuccessStoriesPage = () => {
                           <span className="text-[9px] text-muted-foreground">{story.stats.swaps} swaps</span>
                         </div>
                       </div>
-                      <ChevronRight size={16} className={`transition-transform ${activeStory === i ? "rotate-90 text-badge-gold" : "text-muted-foreground"}`} />
+                      <ChevronRight size={16} className={`transition-transform ${activeStory === i ? "rotate-90 text-foreground" : "text-muted-foreground"}`} />
                     </div>
                   </motion.button>
                 ))}
