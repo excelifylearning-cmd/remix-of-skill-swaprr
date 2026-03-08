@@ -1384,6 +1384,30 @@ export type Database = {
         }
         Relationships: []
       }
+      leaderboard_achievements: {
+        Row: {
+          achieved_at: string
+          badge: string
+          created_at: string
+          id: string
+          user_name: string
+        }
+        Insert: {
+          achieved_at?: string
+          badge?: string
+          created_at?: string
+          id?: string
+          user_name?: string
+        }
+        Update: {
+          achieved_at?: string
+          badge?: string
+          created_at?: string
+          id?: string
+          user_name?: string
+        }
+        Relationships: []
+      }
       listings: {
         Row: {
           category: string
@@ -1433,6 +1457,78 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      platform_metrics: {
+        Row: {
+          active_guilds: number
+          avg_satisfaction: number
+          community_impact: Json
+          content_metrics: Json
+          created_at: string
+          disputes_resolved: number
+          economy_health: Json
+          enterprise_clients: number
+          format_distribution: Json
+          hall_of_fame: Json
+          id: string
+          metric_date: string
+          monthly_revenue: string | null
+          monthly_signups: number
+          platform_uptime: Json
+          points_circulated: number
+          retention_data: Json
+          revenue_breakdown: Json
+          total_gigs: number
+          total_users: number
+          universities: number
+        }
+        Insert: {
+          active_guilds?: number
+          avg_satisfaction?: number
+          community_impact?: Json
+          content_metrics?: Json
+          created_at?: string
+          disputes_resolved?: number
+          economy_health?: Json
+          enterprise_clients?: number
+          format_distribution?: Json
+          hall_of_fame?: Json
+          id?: string
+          metric_date?: string
+          monthly_revenue?: string | null
+          monthly_signups?: number
+          platform_uptime?: Json
+          points_circulated?: number
+          retention_data?: Json
+          revenue_breakdown?: Json
+          total_gigs?: number
+          total_users?: number
+          universities?: number
+        }
+        Update: {
+          active_guilds?: number
+          avg_satisfaction?: number
+          community_impact?: Json
+          content_metrics?: Json
+          created_at?: string
+          disputes_resolved?: number
+          economy_health?: Json
+          enterprise_clients?: number
+          format_distribution?: Json
+          hall_of_fame?: Json
+          id?: string
+          metric_date?: string
+          monthly_revenue?: string | null
+          monthly_signups?: number
+          platform_uptime?: Json
+          points_circulated?: number
+          retention_data?: Json
+          revenue_breakdown?: Json
+          total_gigs?: number
+          total_users?: number
+          universities?: number
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -1572,6 +1668,75 @@ export type Database = {
         }
         Relationships: []
       }
+      quarterly_reports: {
+        Row: {
+          created_at: string
+          growth: Json
+          highlights: Json
+          id: string
+          kpis: Json
+          label: string
+          monthly_breakdown: Json
+          period: string
+          quarter_id: string
+          status: string
+          top_skills: Json
+        }
+        Insert: {
+          created_at?: string
+          growth?: Json
+          highlights?: Json
+          id?: string
+          kpis?: Json
+          label?: string
+          monthly_breakdown?: Json
+          period?: string
+          quarter_id: string
+          status?: string
+          top_skills?: Json
+        }
+        Update: {
+          created_at?: string
+          growth?: Json
+          highlights?: Json
+          id?: string
+          kpis?: Json
+          label?: string
+          monthly_breakdown?: Json
+          period?: string
+          quarter_id?: string
+          status?: string
+          top_skills?: Json
+        }
+        Relationships: []
+      }
+      ranking_history: {
+        Row: {
+          category: string
+          changes: Json
+          created_at: string
+          id: string
+          rankings: Json
+          snapshot_date: string
+        }
+        Insert: {
+          category?: string
+          changes?: Json
+          created_at?: string
+          id?: string
+          rankings?: Json
+          snapshot_date?: string
+        }
+        Update: {
+          category?: string
+          changes?: Json
+          created_at?: string
+          id?: string
+          rankings?: Json
+          snapshot_date?: string
+        }
+        Relationships: []
+      }
       tournament_participants: {
         Row: {
           id: string
@@ -1679,6 +1844,117 @@ export type Database = {
           status?: string
           team_size?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          ai_insights: Json
+          blockchain_hash: string | null
+          buyer_data: Json
+          buyer_id: string | null
+          category: string
+          code: string
+          comments: Json
+          communication_heatmap: Json
+          completed_date: string | null
+          compliance: Json
+          created_at: string
+          date: string
+          deliverables: Json
+          device_info: Json
+          dispute_history: string | null
+          duration: string | null
+          escrow: Json
+          fingerprint: string | null
+          format: string
+          gig_title: string
+          id: string
+          performance: Json
+          points: Json
+          quality: Json
+          recommendations: Json
+          satisfaction_survey: Json
+          security_data: Json
+          seller_data: Json
+          seller_id: string | null
+          skill_impact: Json
+          stages: Json
+          status: string
+          timeline: Json
+          workspace: Json
+        }
+        Insert: {
+          ai_insights?: Json
+          blockchain_hash?: string | null
+          buyer_data?: Json
+          buyer_id?: string | null
+          category?: string
+          code: string
+          comments?: Json
+          communication_heatmap?: Json
+          completed_date?: string | null
+          compliance?: Json
+          created_at?: string
+          date?: string
+          deliverables?: Json
+          device_info?: Json
+          dispute_history?: string | null
+          duration?: string | null
+          escrow?: Json
+          fingerprint?: string | null
+          format?: string
+          gig_title?: string
+          id?: string
+          performance?: Json
+          points?: Json
+          quality?: Json
+          recommendations?: Json
+          satisfaction_survey?: Json
+          security_data?: Json
+          seller_data?: Json
+          seller_id?: string | null
+          skill_impact?: Json
+          stages?: Json
+          status?: string
+          timeline?: Json
+          workspace?: Json
+        }
+        Update: {
+          ai_insights?: Json
+          blockchain_hash?: string | null
+          buyer_data?: Json
+          buyer_id?: string | null
+          category?: string
+          code?: string
+          comments?: Json
+          communication_heatmap?: Json
+          completed_date?: string | null
+          compliance?: Json
+          created_at?: string
+          date?: string
+          deliverables?: Json
+          device_info?: Json
+          dispute_history?: string | null
+          duration?: string | null
+          escrow?: Json
+          fingerprint?: string | null
+          format?: string
+          gig_title?: string
+          id?: string
+          performance?: Json
+          points?: Json
+          quality?: Json
+          recommendations?: Json
+          satisfaction_survey?: Json
+          security_data?: Json
+          seller_data?: Json
+          seller_id?: string | null
+          skill_impact?: Json
+          stages?: Json
+          status?: string
+          timeline?: Json
+          workspace?: Json
         }
         Relationships: []
       }
