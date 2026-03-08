@@ -420,7 +420,7 @@ const EventsPage = () => {
                         </div>
                       </div>
                       {event.prize && (
-                        <span className="rounded-full bg-badge-gold/10 border border-badge-gold/30 px-2.5 py-1 text-xs font-mono text-badge-gold">{event.prize}</span>
+                        <span className="rounded-full bg-skill-green/10 border border-skill-green/30 px-2.5 py-1 text-xs font-mono text-skill-green">{event.prize}</span>
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground mt-3 line-clamp-2">{event.description}</p>
@@ -433,7 +433,7 @@ const EventsPage = () => {
                       <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                         event.type === "Tournament" ? "bg-court-blue/10 text-court-blue border border-court-blue/20" :
                         event.type === "In-Person" ? "bg-skill-green/10 text-skill-green border border-skill-green/20" :
-                        event.type === "Workshop" ? "bg-badge-gold/10 text-badge-gold border border-badge-gold/20" :
+                        event.type === "Workshop" ? "bg-foreground/10 text-foreground border border-border" :
                         "bg-surface-2 text-muted-foreground border border-border"
                       }`}>{event.type}</span>
                     </div>
