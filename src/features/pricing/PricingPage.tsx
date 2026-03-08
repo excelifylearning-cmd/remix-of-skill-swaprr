@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
-  Check, Sparkles, Building2, Zap, ChevronDown, Coins, Shield, Trophy,
-  Calculator, Award, Star, ArrowRight, Users, Target
+  Check, X, Sparkles, Building2, Zap, Coins, Shield, Trophy,
+  Award, Star, ArrowRight, Users, Target, TrendingUp, Flame,
+  BarChart3, Clock, Eye, Crown, Gem, Medal, CircleDot, Activity
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
@@ -10,77 +11,142 @@ import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import CTAFooterSection from "@/features/home/sections/CTAFooterSection";
 
+/* ─── Data ─── */
+
 const tiers = [
   {
-    name: "Free", price: "$0", priceYearly: "$0", period: "forever", icon: Zap,
-    description: "Get started with skill swapping",
-    features: ["5 gigs per month", "Direct swap format only", "Standard profile", "Basic search & filters", "Must do court duty", "5% gig tax"],
+    name: "Free", price: "$0", priceYearly: "$0", period: "forever", icon: Zap, color: "text-muted-foreground",
+    tagline: "Everything you need to start swapping",
+    features: [
+      { text: "5 gigs per month", included: true },
+      { text: "Direct Swap format", included: true },
+      { text: "Standard profile", included: true },
+      { text: "Basic search", included: true },
+      { text: "Community support", included: true },
+      { text: "5% gig tax", included: true },
+      { text: "All formats", included: false },
+      { text: "Featured listings", included: false },
+      { text: "Analytics dashboard", included: false },
+      { text: "Priority support", included: false },
+    ],
     cta: "Start Free", highlight: false,
   },
   {
-    name: "Pro", price: "$12", priceYearly: "$10", period: "/month", icon: Sparkles,
-    description: "Unlock all formats and boost visibility",
-    features: ["Unlimited gigs", "All formats unlocked", "Featured listings", "Profile highlighting", "Advanced analytics", "3% reduced tax rate", "Priority support", "Custom portfolio themes"],
+    name: "Pro", price: "$12", priceYearly: "$10", period: "/mo", icon: Sparkles, color: "text-badge-gold",
+    tagline: "For serious swappers who want maximum visibility",
+    features: [
+      { text: "Unlimited gigs", included: true },
+      { text: "All 6 gig formats", included: true },
+      { text: "Featured listings", included: true },
+      { text: "Profile highlighting", included: true },
+      { text: "Advanced analytics", included: true },
+      { text: "3% reduced tax", included: true },
+      { text: "Priority support", included: true },
+      { text: "Custom portfolio themes", included: true },
+      { text: "Early access to features", included: true },
+      { text: "Monthly bonus 50 SP", included: true },
+    ],
     cta: "Go Pro", highlight: true,
   },
   {
-    name: "Enterprise", price: "Custom", priceYearly: "Custom", period: "", icon: Building2,
-    description: "For teams and organizations",
-    features: ["Everything in Pro", "Vetted expert access", "Hiring pipeline", "Custom integrations", "Dedicated support", "API access", "NDA & IP protection"],
+    name: "Enterprise", price: "Custom", priceYearly: "Custom", period: "", icon: Building2, color: "text-court-blue",
+    tagline: "For teams, universities, and organizations",
+    features: [
+      { text: "Everything in Pro", included: true },
+      { text: "Vetted expert access", included: true },
+      { text: "Hiring pipeline", included: true },
+      { text: "Custom integrations", included: true },
+      { text: "API access", included: true },
+      { text: "NDA & IP protection", included: true },
+      { text: "Dedicated account manager", included: true },
+      { text: "Custom SLA", included: true },
+      { text: "SSO / SAML", included: true },
+      { text: "1% tax rate", included: true },
+    ],
     cta: "Contact Sales", highlight: false,
   },
 ];
 
 const pointPackages = [
-  { points: 50, price: "$5", perPoint: "$0.10", label: "Starter" },
-  { points: 200, price: "$16", perPoint: "$0.08", label: "Builder", popular: true },
-  { points: 500, price: "$35", perPoint: "$0.07", label: "Power User" },
-  { points: 1000, price: "$60", perPoint: "$0.06", label: "Guild Leader" },
+  { points: 50, price: "$5", perPoint: "$0.10", label: "Starter", icon: Coins },
+  { points: 200, price: "$16", perPoint: "$0.08", label: "Builder", icon: Zap, popular: true },
+  { points: 500, price: "$35", perPoint: "$0.07", label: "Power User", icon: Flame },
+  { points: 1000, price: "$60", perPoint: "$0.06", label: "Guild Leader", icon: Crown },
 ];
 
 const lifetimeTiers = [
-  { name: "Bronze", requirement: "0 lifetime gigs", unlocks: "Basic marketplace access", color: "text-orange-400" },
-  { name: "Silver", requirement: "25 lifetime gigs", unlocks: "Co-Creation Studio unlocked", color: "text-muted-foreground" },
-  { name: "Gold", requirement: "100 lifetime gigs", unlocks: "Projects mode unlocked", color: "text-badge-gold" },
-  { name: "Platinum", requirement: "250 lifetime gigs", unlocks: "All formats + reduced tax", color: "text-foreground" },
-  { name: "Diamond", requirement: "500 lifetime gigs", unlocks: "1% tax rate + exclusive badges", color: "text-court-blue" },
+  { name: "Bronze", req: "0 gigs", icon: CircleDot, color: "text-orange-400", bg: "bg-orange-400/10", perks: ["Basic marketplace access", "Standard search", "5% tax rate"] },
+  { name: "Silver", req: "25 gigs", icon: Shield, color: "text-muted-foreground", bg: "bg-surface-2", perks: ["Co-Creation Studio", "Guild membership", "4.5% tax rate"] },
+  { name: "Gold", req: "100 gigs", icon: Trophy, color: "text-badge-gold", bg: "bg-badge-gold/10", perks: ["Projects mode", "Priority matching", "4% tax rate"] },
+  { name: "Platinum", req: "250 gigs", icon: Gem, color: "text-foreground", bg: "bg-surface-2", perks: ["All formats unlocked", "Featured profile", "3% tax rate"] },
+  { name: "Diamond", req: "500 gigs", icon: Crown, color: "text-court-blue", bg: "bg-court-blue/10", perks: ["Exclusive badges", "Beta access", "1% tax rate"] },
 ];
 
 const badges = [
-  { name: "First Swap", desc: "Complete your first gig", benefit: "Profile badge", rarity: "Common" },
-  { name: "Speed Demon", desc: "Complete a gig in under 24h", benefit: "Priority listing", rarity: "Rare" },
-  { name: "Court Regular", desc: "Judge 5 Skill Court cases", benefit: "Reduced tax 0.5%", rarity: "Uncommon" },
-  { name: "Guild Leader", desc: "Lead a guild with 10+ members", benefit: "Treasury bonus", rarity: "Epic" },
-  { name: "Diamond Hands", desc: "Reach Diamond lifetime tier", benefit: "1% tax rate", rarity: "Legendary" },
-  { name: "Perfect Score", desc: "Maintain 5.0 rating for 20 gigs", benefit: "Featured profile", rarity: "Epic" },
-  { name: "Campus Hero", desc: "Top rated at your university", benefit: "University badge", rarity: "Rare" },
-  { name: "Streak Master", desc: "30-day activity streak", benefit: "+50 SP bonus", rarity: "Uncommon" },
+  { name: "First Swap", desc: "Complete your first gig", benefit: "Profile badge", rarity: "Common", icon: Star },
+  { name: "Speed Demon", desc: "Complete a gig in under 24h", benefit: "Priority listing boost", rarity: "Rare", icon: Zap },
+  { name: "Court Regular", desc: "Judge 5 Skill Court cases", benefit: "0.5% tax reduction", rarity: "Uncommon", icon: Shield },
+  { name: "Guild Leader", desc: "Lead a guild with 10+ members", benefit: "Treasury bonus 2x", rarity: "Epic", icon: Users },
+  { name: "Diamond Hands", desc: "Reach Diamond lifetime tier", benefit: "1% tax rate forever", rarity: "Legendary", icon: Crown },
+  { name: "Perfect Score", desc: "Maintain 5.0 for 20 gigs", benefit: "Featured profile", rarity: "Epic", icon: Award },
+  { name: "Campus Hero", desc: "Top rated at your university", benefit: "University badge", rarity: "Rare", icon: Medal },
+  { name: "Streak Master", desc: "30-day activity streak", benefit: "+50 SP monthly bonus", rarity: "Uncommon", icon: Flame },
 ];
 
-const testimonials = [
-  { name: "Aisha K.", tier: "Free", quote: "I earned enough points through gigs alone to never need to buy any. The free tier is genuinely powerful.", rating: 4.9 },
-  { name: "Marco R.", tier: "Pro", quote: "The reduced tax rate and featured listings paid for Pro in the first week. My gigs get 3x more views now.", rating: 5.0 },
-  { name: "TechCorp Inc.", tier: "Enterprise", quote: "We've hired 12 students through the platform. The quality of talent is exceptional.", rating: 5.0 },
+const rarityColor = (r: string) => {
+  if (r === "Legendary") return "bg-badge-gold/10 text-badge-gold";
+  if (r === "Epic") return "bg-court-blue/10 text-court-blue";
+  if (r === "Rare") return "bg-skill-green/10 text-skill-green";
+  if (r === "Uncommon") return "bg-surface-2 text-foreground";
+  return "bg-surface-2 text-muted-foreground";
+};
+
+const liveStats = [
+  { label: "Active Swaps Right Now", value: 847, icon: Activity, color: "text-skill-green" },
+  { label: "Points Exchanged Today", value: 23450, icon: Coins, color: "text-badge-gold" },
+  { label: "Avg Gig Completion", value: "4.2h", icon: Clock, color: "text-court-blue" },
+  { label: "Users Online", value: 1243, icon: Users, color: "text-foreground" },
+  { label: "Gigs Posted Today", value: 312, icon: TrendingUp, color: "text-skill-green" },
+  { label: "5-Star Reviews Today", value: 189, icon: Star, color: "text-badge-gold" },
 ];
 
-const faqs = [
-  { q: "Can I earn without paying?", a: "Absolutely. Earn points through gigs, referrals, court duty, achievements, and streaks. Most users never need to buy points." },
-  { q: "What happens to my points if I cancel Pro?", a: "Your points stay forever. Pro just unlocks premium features — your earned points are always yours." },
-  { q: "How does the tax system work?", a: "Both parties pay 5% (or 3% for Pro) of gig value on completion. This prevents inflation and keeps the economy healthy." },
-  { q: "Is there a student discount?", a: "SkillSwappr is built for students. The Free tier is genuinely powerful, and Pro is priced for student budgets." },
-  { q: "Can I transfer points to other users?", a: "Yes, through guild lending, gifting, or direct transfers. All tracked with transaction codes." },
+const skillDemand = [
+  { skill: "UI/UX Design", demand: 94, avgValue: "35 SP", swapsToday: 47, trend: "+12%" },
+  { skill: "Full-Stack Dev", demand: 91, avgValue: "45 SP", swapsToday: 38, trend: "+8%" },
+  { skill: "Video Editing", demand: 82, avgValue: "30 SP", swapsToday: 29, trend: "+15%" },
+  { skill: "Copywriting", demand: 78, avgValue: "20 SP", swapsToday: 34, trend: "+5%" },
+  { skill: "Data Science", demand: 75, avgValue: "40 SP", swapsToday: 21, trend: "+22%" },
+  { skill: "Mobile Dev", demand: 88, avgValue: "42 SP", swapsToday: 32, trend: "+10%" },
+  { skill: "Marketing", demand: 70, avgValue: "25 SP", swapsToday: 26, trend: "+7%" },
+  { skill: "Illustration", demand: 73, avgValue: "28 SP", swapsToday: 19, trend: "+18%" },
 ];
+
+const socialProof = [
+  { name: "Aisha K.", tier: "Free → Pro", quote: "The reduced tax rate paid for Pro in the first week. My gigs get 3x more views.", stat: "+340% visibility" },
+  { name: "Marco R.", tier: "Pro", quote: "I earned 2,400 SP last month — more than enough to fund every project I need.", stat: "2,400 SP/mo" },
+  { name: "Team Nexus", tier: "Enterprise", quote: "We've onboarded 50 interns through SkillSwappr. Quality of talent is unmatched.", stat: "50 hires" },
+];
+
+/* ─── Component ─── */
 
 const PricingPage = () => {
   const [annual, setAnnual] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [gigsPerMonth, setGigsPerMonth] = useState(5);
-  const [complexity, setComplexity] = useState(2);
-  const [roiSkill, setRoiSkill] = useState("UI/UX Design");
+  const [animatedStats, setAnimatedStats] = useState(liveStats.map(() => 0));
 
-  const recommendedTier = gigsPerMonth <= 5 ? "Free" : "Pro";
-  const estimatedEarnings = gigsPerMonth * complexity * 15;
-  const taxImpact = estimatedEarnings * (recommendedTier === "Free" ? 0.05 : 0.03);
+  // Animate stat counters on mount
+  useEffect(() => {
+    const targets = liveStats.map((s) => (typeof s.value === "number" ? s.value : 0));
+    const duration = 2000;
+    const start = Date.now();
+    const tick = () => {
+      const elapsed = Date.now() - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setAnimatedStats(targets.map((t) => Math.round(t * eased)));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, []);
 
   return (
     <PageTransition>
@@ -93,18 +159,21 @@ const PricingPage = () => {
         <section className="relative pt-32 pb-20">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(var(--silver)/0.04),transparent_60%)]" />
           <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="mb-6 font-heading text-5xl font-black text-foreground sm:text-6xl lg:text-7xl">
-              Invest in Your <span className="text-muted-foreground">Skills</span>
+            <motion.span initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-4 inline-block rounded-full border border-border bg-surface-2 px-4 py-1.5 font-mono text-xs text-muted-foreground">
+              <Sparkles size={12} className="mr-1.5 inline text-badge-gold" /> Simple, transparent pricing
+            </motion.span>
+            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-6 font-heading text-5xl font-black text-foreground sm:text-6xl lg:text-7xl">
+              Invest in Your <span className="text-muted-foreground">Growth</span>
             </motion.h1>
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mx-auto mb-8 max-w-xl text-lg text-muted-foreground">
-              Start free. Upgrade when you're ready to unlock everything.
+              Start free forever. Upgrade when you're ready to unlock unlimited potential. No hidden fees, no lock-in.
             </motion.p>
-            <div className="inline-flex items-center gap-3 rounded-full border border-border bg-card p-1">
-              <button onClick={() => setAnnual(false)} className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${!annual ? "bg-foreground text-background" : "text-muted-foreground"}`}>Monthly</button>
-              <button onClick={() => setAnnual(true)} className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${annual ? "bg-foreground text-background" : "text-muted-foreground"}`}>
-                Yearly <span className="ml-1.5 text-xs text-skill-green">−20%</span>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="inline-flex items-center gap-3 rounded-full border border-border bg-card p-1">
+              <button onClick={() => setAnnual(false)} className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${!annual ? "bg-foreground text-background" : "text-muted-foreground"}`}>Monthly</button>
+              <button onClick={() => setAnnual(true)} className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${annual ? "bg-foreground text-background" : "text-muted-foreground"}`}>
+                Yearly <span className="ml-1.5 rounded-full bg-skill-green/10 px-2 py-0.5 text-[10px] font-bold text-skill-green">Save 20%</span>
               </button>
-            </div>
+            </motion.div>
           </div>
         </section>
 
@@ -112,25 +181,41 @@ const PricingPage = () => {
         <section className="pb-24">
           <div className="mx-auto grid max-w-5xl gap-5 px-6 lg:grid-cols-3">
             {tiers.map((tier, i) => (
-              <motion.div key={tier.name} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.12 }} className="card-3d group">
-                <div className={`card-3d-inner h-full rounded-2xl border p-6 transition-all duration-300 ${tier.highlight ? "border-foreground/30 bg-card shadow-[0_0_40px_hsl(var(--silver)/0.08)]" : "border-border bg-card hover:border-foreground/20"}`}>
-                  {tier.highlight && <div className="mb-4 inline-block rounded-full bg-foreground px-3 py-1 text-xs font-semibold text-background">Most Popular</div>}
+              <motion.div key={tier.name} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.12 }}>
+                <div className={`relative h-full rounded-2xl border p-7 transition-all duration-300 ${tier.highlight ? "border-foreground/30 bg-card shadow-[0_0_60px_hsl(var(--silver)/0.08)]" : "border-border bg-card hover:border-foreground/20"}`}>
+                  {tier.highlight && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-foreground px-4 py-1 text-xs font-bold text-background">Most Popular</div>
+                  )}
                   <div className="mb-1 flex items-center gap-2">
-                    <tier.icon size={18} className="text-muted-foreground" />
-                    <h3 className="font-heading text-lg font-semibold text-foreground">{tier.name}</h3>
+                    <tier.icon size={18} className={tier.color} />
+                    <h3 className="font-heading text-lg font-bold text-foreground">{tier.name}</h3>
                   </div>
-                  <p className="mb-4 text-xs text-muted-foreground">{tier.description}</p>
+                  <p className="mb-5 text-xs text-muted-foreground">{tier.tagline}</p>
                   <div className="mb-6">
                     <span className="font-heading text-4xl font-black text-foreground">{annual ? tier.priceYearly : tier.price}</span>
                     <span className="text-sm text-muted-foreground">{tier.period}</span>
                   </div>
-                  <ul className="mb-6 space-y-2.5">
+                  <ul className="mb-6 space-y-2">
                     {tier.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground"><Check size={14} className="mt-0.5 flex-shrink-0 text-skill-green" /> {f}</li>
+                      <li key={f.text} className="flex items-start gap-2.5 text-sm">
+                        {f.included ? (
+                          <Check size={14} className="mt-0.5 flex-shrink-0 text-skill-green" />
+                        ) : (
+                          <X size={14} className="mt-0.5 flex-shrink-0 text-muted-foreground/30" />
+                        )}
+                        <span className={f.included ? "text-muted-foreground" : "text-muted-foreground/40"}>{f.text}</span>
+                      </li>
                     ))}
                   </ul>
-                  <motion.a href={tier.name === "Enterprise" ? "/enterprise" : "/signup"} className={`block w-full rounded-full py-2.5 text-center text-sm font-medium transition-all ${tier.highlight ? "bg-foreground text-background" : "border border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"}`} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                    {tier.cta}
+                  <motion.a
+                    href={tier.name === "Enterprise" ? "/enterprise" : "/signup"}
+                    className={`block w-full rounded-xl py-3 text-center text-sm font-semibold transition-all ${
+                      tier.highlight ? "bg-foreground text-background" : "border border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {tier.cta} <ArrowRight size={14} className="ml-1 inline" />
                   </motion.a>
                 </div>
               </motion.div>
@@ -138,156 +223,146 @@ const PricingPage = () => {
           </div>
         </section>
 
-        {/* Skill Points Packages */}
+        {/* Live Platform Stats */}
         <section className="bg-surface-1 py-24">
           <div className="mx-auto max-w-5xl px-6">
-            <h2 className="mb-4 text-center font-heading text-3xl font-bold text-foreground sm:text-4xl">Skill Point Packages</h2>
-            <p className="mb-12 text-center text-muted-foreground">Buy points to balance exchanges or jumpstart your journey.</p>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {pointPackages.map((pkg, i) => (
-                <motion.div key={pkg.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className={`relative rounded-2xl border p-6 text-center transition-all duration-300 hover:border-foreground/20 ${pkg.popular ? "border-skill-green/30 bg-card" : "border-border bg-card"}`}>
-                  {pkg.popular && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-skill-green px-3 py-0.5 text-[10px] font-bold text-background">BEST VALUE</span>}
-                  <Coins size={24} className="mx-auto mb-3 text-badge-gold" />
-                  <p className="font-heading text-3xl font-black text-foreground">{pkg.points}</p>
-                  <p className="text-xs text-muted-foreground">skill points</p>
-                  <p className="mt-3 font-heading text-xl font-bold text-foreground">{pkg.price}</p>
-                  <p className="text-[10px] text-muted-foreground">{pkg.perPoint} per point</p>
-                  <motion.button className="mt-4 w-full rounded-full border border-border py-2 text-sm text-muted-foreground transition-colors hover:bg-foreground hover:text-background" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>Buy {pkg.label}</motion.button>
+            <div className="mb-4 text-center">
+              <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-3 inline-flex items-center gap-2 rounded-full bg-skill-green/10 px-3 py-1">
+                <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-skill-green/60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-skill-green" /></span>
+                <span className="text-xs font-semibold text-skill-green">Live</span>
+              </motion.div>
+              <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-3 font-heading text-3xl font-bold text-foreground sm:text-4xl">The Platform Never Sleeps</motion.h2>
+              <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-lg text-muted-foreground">
+                Right now, thousands of students are swapping skills, earning points, and building portfolios. Here's what's happening:
+              </motion.p>
+            </div>
+            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {liveStats.map((stat, i) => (
+                <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5">
+                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-surface-2">
+                    <stat.icon size={20} className={stat.color} />
+                  </div>
+                  <div>
+                    <p className="font-heading text-2xl font-black text-foreground">
+                      {typeof stat.value === "number" ? animatedStats[i].toLocaleString() : stat.value}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{stat.label}</p>
+                  </div>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Interactive Pricing Calculator */}
+        {/* Skill Demand & Value Table */}
         <section className="py-24">
-          <div className="mx-auto max-w-3xl px-6">
-            <div className="mb-8 flex items-center gap-3">
-              <Calculator size={24} className="text-foreground" />
-              <h2 className="font-heading text-3xl font-bold text-foreground">Pricing Calculator</h2>
-            </div>
-            <div className="rounded-2xl border border-border bg-card p-8">
-              <div className="space-y-6">
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-foreground">Gigs per month: {gigsPerMonth}</label>
-                  <input type="range" min={1} max={30} value={gigsPerMonth} onChange={(e) => setGigsPerMonth(Number(e.target.value))} className="w-full accent-foreground" />
-                </div>
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-foreground">Avg complexity (1-5): {complexity}</label>
-                  <input type="range" min={1} max={5} value={complexity} onChange={(e) => setComplexity(Number(e.target.value))} className="w-full accent-foreground" />
-                </div>
-                <div className="rounded-xl bg-surface-1 p-6">
-                  <div className="grid gap-4 sm:grid-cols-3">
-                    <div className="text-center">
-                      <p className="font-heading text-2xl font-black text-foreground">{recommendedTier}</p>
-                      <p className="text-[10px] text-muted-foreground">Recommended Tier</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="font-heading text-2xl font-black text-skill-green">{estimatedEarnings} SP</p>
-                      <p className="text-[10px] text-muted-foreground">Est. Monthly Earnings</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="font-heading text-2xl font-black text-destructive">-{taxImpact.toFixed(0)} SP</p>
-                      <p className="text-[10px] text-muted-foreground">Tax Impact</p>
-                    </div>
-                  </div>
-                </div>
+          <div className="mx-auto max-w-4xl px-6">
+            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-3 text-center font-heading text-3xl font-bold text-foreground sm:text-4xl">Your Skills Have Real Value</motion.h2>
+            <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-12 max-w-lg text-center text-muted-foreground">
+              See what your skills are worth on the platform. Demand updates in real-time based on marketplace activity.
+            </motion.p>
+            <div className="overflow-hidden rounded-2xl border border-border bg-card">
+              {/* Header */}
+              <div className="grid grid-cols-5 gap-4 border-b border-border bg-surface-1 px-6 py-3">
+                {["Skill", "Demand", "Avg Value", "Swaps Today", "Trend"].map((h) => (
+                  <span key={h} className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{h}</span>
+                ))}
               </div>
+              {/* Rows */}
+              {skillDemand.map((s, i) => (
+                <motion.div key={s.skill} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.04 }} className="grid grid-cols-5 items-center gap-4 border-b border-border px-6 py-4 last:border-0">
+                  <span className="text-sm font-medium text-foreground">{s.skill}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="h-1.5 w-16 overflow-hidden rounded-full bg-surface-2">
+                      <div className="h-full rounded-full bg-skill-green" style={{ width: `${s.demand}%` }} />
+                    </div>
+                    <span className="font-mono text-xs text-muted-foreground">{s.demand}%</span>
+                  </div>
+                  <span className="font-mono text-sm font-semibold text-foreground">{s.avgValue}</span>
+                  <span className="font-mono text-sm text-muted-foreground">{s.swapsToday}</span>
+                  <span className="font-mono text-xs font-semibold text-skill-green">{s.trend}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Buy Skill Points */}
+        <section className="bg-surface-1 py-24">
+          <div className="mx-auto max-w-5xl px-6">
+            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-3 text-center font-heading text-3xl font-bold text-foreground sm:text-4xl">Buy Skill Points</motion.h2>
+            <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-12 max-w-lg text-center text-muted-foreground">
+              Jumpstart your journey or balance a high-value trade. Points never expire.
+            </motion.p>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {pointPackages.map((pkg, i) => (
+                <motion.div key={pkg.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className={`relative overflow-hidden rounded-2xl border p-6 text-center transition-all duration-300 hover:border-foreground/20 ${pkg.popular ? "border-skill-green/30 bg-card" : "border-border bg-card"}`}>
+                  {pkg.popular && <span className="absolute -top-px left-0 right-0 h-0.5 bg-skill-green" />}
+                  {pkg.popular && <span className="absolute top-3 right-3 rounded-full bg-skill-green px-2 py-0.5 text-[9px] font-bold text-background">BEST VALUE</span>}
+                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-surface-2">
+                    <pkg.icon size={22} className="text-badge-gold" />
+                  </div>
+                  <p className="font-heading text-3xl font-black text-foreground">{pkg.points}</p>
+                  <p className="mb-3 text-xs text-muted-foreground">skill points</p>
+                  <p className="font-heading text-xl font-bold text-foreground">{pkg.price}</p>
+                  <p className="mb-5 text-[10px] text-muted-foreground">{pkg.perPoint} per point</p>
+                  <motion.button className="w-full rounded-xl border border-border py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-foreground hover:text-background" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    Buy {pkg.label}
+                  </motion.button>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* Lifetime Tiers */}
-        <section className="bg-surface-1 py-24">
-          <div className="mx-auto max-w-4xl px-6">
-            <h2 className="mb-12 text-center font-heading text-3xl font-bold text-foreground sm:text-4xl">Lifetime Tiers</h2>
-            <div className="space-y-4">
-              {lifetimeTiers.map((tier, i) => (
-                <motion.div key={tier.name} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
-                  <Trophy size={20} className={tier.color} />
-                  <div className="flex-1">
-                    <span className={`font-heading font-bold ${tier.color}`}>{tier.name}</span>
-                    <p className="text-xs text-muted-foreground">{tier.requirement}</p>
-                  </div>
-                  <span className="text-sm text-muted-foreground">{tier.unlocks}</span>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Badge System */}
-        <section className="py-24">
-          <div className="mx-auto max-w-6xl px-6">
-            <h2 className="mb-4 text-center font-heading text-3xl font-bold text-foreground sm:text-4xl">Badge Collection</h2>
-            <p className="mb-12 text-center text-muted-foreground">Earn badges for milestones. Each comes with real benefits.</p>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {badges.map((b, i) => (
-                <motion.div key={b.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="group rounded-2xl border border-border bg-card p-5 transition-all hover:border-foreground/20">
-                  <div className="mb-2 flex items-center justify-between">
-                    <Award size={18} className="text-badge-gold" />
-                    <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${
-                      b.rarity === "Legendary" ? "bg-badge-gold/10 text-badge-gold" :
-                      b.rarity === "Epic" ? "bg-court-blue/10 text-court-blue" :
-                      b.rarity === "Rare" ? "bg-skill-green/10 text-skill-green" :
-                      "bg-surface-2 text-muted-foreground"
-                    }`}>{b.rarity}</span>
-                  </div>
-                  <h3 className="mb-1 font-heading text-sm font-bold text-foreground">{b.name}</h3>
-                  <p className="mb-2 text-[10px] text-muted-foreground">{b.desc}</p>
-                  <p className="text-[10px] font-medium text-skill-green">Benefit: {b.benefit}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ROI Calculator */}
-        <section className="bg-surface-1 py-24">
-          <div className="mx-auto max-w-3xl px-6">
-            <div className="mb-8 flex items-center gap-3">
-              <Target size={24} className="text-foreground" />
-              <h2 className="font-heading text-3xl font-bold text-foreground">What's Your Skill Worth?</h2>
-            </div>
-            <div className="rounded-2xl border border-border bg-card p-8">
-              <select value={roiSkill} onChange={(e) => setRoiSkill(e.target.value)} className="mb-6 h-12 w-full rounded-xl border border-border bg-surface-1 px-4 text-sm text-foreground focus:border-ring focus:outline-none">
-                {["UI/UX Design", "Full-Stack Dev", "Mobile Dev", "Video Editing", "Copywriting", "Data Science", "Marketing", "Illustration"].map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-xl bg-surface-1 p-4 text-center">
-                  <p className="font-heading text-2xl font-black text-foreground">High</p>
-                  <p className="text-[10px] text-muted-foreground">Market Demand</p>
-                </div>
-                <div className="rounded-xl bg-surface-1 p-4 text-center">
-                  <p className="font-heading text-2xl font-black text-skill-green">25-40 SP</p>
-                  <p className="text-[10px] text-muted-foreground">Avg Gig Value</p>
-                </div>
-                <div className="rounded-xl bg-surface-1 p-4 text-center">
-                  <p className="font-heading text-2xl font-black text-badge-gold">~500 SP/mo</p>
-                  <p className="text-[10px] text-muted-foreground">Potential Earnings</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Testimonials by Tier */}
         <section className="py-24">
           <div className="mx-auto max-w-5xl px-6">
-            <h2 className="mb-12 text-center font-heading text-3xl font-bold text-foreground">What Users Say</h2>
-            <div className="grid gap-6 md:grid-cols-3">
-              {testimonials.map((t, i) => (
-                <motion.div key={t.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="rounded-2xl border border-border bg-card p-6">
-                  <span className="mb-3 inline-block rounded-full bg-surface-2 px-3 py-1 text-[10px] font-semibold text-muted-foreground">{t.tier} Tier</span>
-                  <p className="mb-4 text-sm leading-relaxed text-muted-foreground">"{t.quote}"</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-foreground">{t.name}</span>
-                    <div className="flex items-center gap-1">
-                      <Star size={12} className="fill-badge-gold text-badge-gold" />
-                      <span className="font-mono text-xs text-badge-gold">{t.rating}</span>
+            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-3 text-center font-heading text-3xl font-bold text-foreground sm:text-4xl">Lifetime Tiers</motion.h2>
+            <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-12 max-w-lg text-center text-muted-foreground">
+              The more you swap, the more you unlock. Tiers are permanent — once earned, they're yours forever.
+            </motion.p>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+              {lifetimeTiers.map((tier, i) => (
+                <motion.div key={tier.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="rounded-2xl border border-border bg-card p-5 text-center transition-all hover:border-foreground/20">
+                  <div className={`mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl ${tier.bg}`}>
+                    <tier.icon size={22} className={tier.color} />
+                  </div>
+                  <h4 className={`mb-1 font-heading text-base font-bold ${tier.color}`}>{tier.name}</h4>
+                  <p className="mb-3 font-mono text-[10px] text-muted-foreground">{tier.req}</p>
+                  <ul className="space-y-1.5 text-left">
+                    {tier.perks.map((p) => (
+                      <li key={p} className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                        <Check size={10} className="mt-0.5 flex-shrink-0 text-skill-green" /> {p}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Badge Collection */}
+        <section className="bg-surface-1 py-24">
+          <div className="mx-auto max-w-6xl px-6">
+            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-3 text-center font-heading text-3xl font-bold text-foreground sm:text-4xl">Badge Collection</motion.h2>
+            <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto mb-12 max-w-lg text-center text-muted-foreground">
+              Earn badges for milestones. Each badge comes with tangible benefits that boost your standing.
+            </motion.p>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {badges.map((b, i) => (
+                <motion.div key={b.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="group rounded-2xl border border-border bg-card p-5 transition-all hover:border-foreground/20">
+                  <div className="mb-3 flex items-center justify-between">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-2">
+                      <b.icon size={16} className="text-badge-gold" />
                     </div>
+                    <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${rarityColor(b.rarity)}`}>{b.rarity}</span>
+                  </div>
+                  <h3 className="mb-1 font-heading text-sm font-bold text-foreground">{b.name}</h3>
+                  <p className="mb-3 text-[11px] text-muted-foreground">{b.desc}</p>
+                  <div className="rounded-lg bg-skill-green/5 px-2.5 py-1.5">
+                    <p className="text-[10px] font-medium text-skill-green">⚡ {b.benefit}</p>
                   </div>
                 </motion.div>
               ))}
@@ -295,12 +370,34 @@ const PricingPage = () => {
           </div>
         </section>
 
-        {/* Enterprise Quote */}
+        {/* Social Proof */}
+        <section className="py-24">
+          <div className="mx-auto max-w-5xl px-6">
+            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12 text-center font-heading text-3xl font-bold text-foreground">Real Results from Real Users</motion.h2>
+            <div className="grid gap-6 md:grid-cols-3">
+              {socialProof.map((t, i) => (
+                <motion.div key={t.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="rounded-2xl border border-border bg-card p-6">
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className="rounded-full bg-surface-2 px-3 py-1 text-[10px] font-semibold text-muted-foreground">{t.tier}</span>
+                    <span className="rounded-full bg-skill-green/10 px-3 py-1 font-mono text-[10px] font-bold text-skill-green">{t.stat}</span>
+                  </div>
+                  <p className="mb-5 text-sm leading-relaxed text-muted-foreground italic">"{t.quote}"</p>
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 font-heading text-xs font-bold text-foreground">{t.name.charAt(0)}</div>
+                    <span className="text-sm font-medium text-foreground">{t.name}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Enterprise CTA */}
         <section className="bg-surface-1 py-24">
           <div className="mx-auto max-w-xl px-6 text-center">
             <Building2 size={32} className="mx-auto mb-4 text-muted-foreground" />
-            <h2 className="mb-4 font-heading text-3xl font-bold text-foreground">Enterprise Custom Quote</h2>
-            <p className="mb-8 text-sm text-muted-foreground">Custom pricing for teams and organizations. Tell us about your needs.</p>
+            <h2 className="mb-4 font-heading text-3xl font-bold text-foreground">Need Enterprise?</h2>
+            <p className="mb-8 text-sm text-muted-foreground">Custom pricing for teams and organizations. Dedicated support, API access, and compliance tools included.</p>
             <div className="space-y-3 text-left">
               <input type="text" placeholder="Company name" className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
               <input type="email" placeholder="Work email" className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
@@ -314,30 +411,6 @@ const PricingPage = () => {
               <motion.button className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                 Get Custom Quote <ArrowRight size={16} />
               </motion.button>
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section className="py-24">
-          <div className="mx-auto max-w-3xl px-6">
-            <h2 className="mb-12 text-center font-heading text-3xl font-bold text-foreground sm:text-4xl">Frequently Asked Questions</h2>
-            <div className="space-y-3">
-              {faqs.map((faq, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-xl border border-border bg-card">
-                  <button onClick={() => setOpenFaq(openFaq === i ? null : i)} className="flex w-full items-center justify-between p-5 text-left text-sm font-medium text-foreground">
-                    {faq.q}
-                    <ChevronDown size={16} className={`text-muted-foreground transition-transform ${openFaq === i ? "rotate-180" : ""}`} />
-                  </button>
-                  <AnimatePresence>
-                    {openFaq === i && (
-                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                        <p className="px-5 pb-5 text-sm leading-relaxed text-muted-foreground">{faq.a}</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              ))}
             </div>
           </div>
         </section>
