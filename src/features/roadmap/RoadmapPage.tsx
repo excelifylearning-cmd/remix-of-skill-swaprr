@@ -361,6 +361,8 @@ const RoadmapPage = () => {
           </div>
         </section>
 
+        <ChangelogSection />
+        <FeatureVotingSection />
         <CTAFooterSection />
       </div>
     </PageTransition>
