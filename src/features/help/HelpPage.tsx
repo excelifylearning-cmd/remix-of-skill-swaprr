@@ -225,8 +225,18 @@ const HelpPage = () => {
     setBountyResult(mockValid.includes(bountyCode.toUpperCase()) ? "found" : "not_found");
   };
 
-  const handleReportSubmit = () => {
+  const handleReportSubmit = async () => {
     if (!selectedReportType || !reportDescription.trim()) return;
+
+    await supabase.from("help_reports").insert({
+      user_id: user?.id || null,
+      report_type: selectedReportType,
+      priority: selectedPriority || "low",
+      description: reportDescription,
+      reference_id: reportRef || null,
+      email: reportEmail || null,
+    });
+
     setReportSubmitted(true);
     setTimeout(() => setReportSubmitted(false), 5000);
   };
