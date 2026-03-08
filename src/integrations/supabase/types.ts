@@ -14,16 +14,213 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activity_log: {
+        Row: {
+          action: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          availability: string | null
+          avatar_emoji: string | null
+          avatar_url: string | null
+          bio: string | null
+          certificates: Json | null
+          created_at: string
+          display_name: string | null
+          education_history: Json | null
+          elo: number
+          email: string
+          full_name: string
+          github_url: string | null
+          hourly_rate: string | null
+          id: string
+          id_verified: boolean | null
+          instagram_url: string | null
+          interests: string[] | null
+          languages: string[] | null
+          linkedin_url: string | null
+          location: string | null
+          needs: string[] | null
+          onboarding_complete: boolean | null
+          personal_website: string | null
+          portfolio_items: Json | null
+          portfolio_url: string | null
+          preferred_comm: string | null
+          referral_code: string | null
+          referred_by: string | null
+          response_time: string | null
+          skill_levels: Json | null
+          skills: string[] | null
+          slogan: string | null
+          sp: number
+          streak_days: number | null
+          tier: string
+          timezone: string | null
+          total_gigs_completed: number | null
+          twitter_url: string | null
+          university: string | null
+          updated_at: string
+          user_id: string
+          work_history: Json | null
+          youtube_url: string | null
+        }
+        Insert: {
+          availability?: string | null
+          avatar_emoji?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          certificates?: Json | null
+          created_at?: string
+          display_name?: string | null
+          education_history?: Json | null
+          elo?: number
+          email?: string
+          full_name?: string
+          github_url?: string | null
+          hourly_rate?: string | null
+          id?: string
+          id_verified?: boolean | null
+          instagram_url?: string | null
+          interests?: string[] | null
+          languages?: string[] | null
+          linkedin_url?: string | null
+          location?: string | null
+          needs?: string[] | null
+          onboarding_complete?: boolean | null
+          personal_website?: string | null
+          portfolio_items?: Json | null
+          portfolio_url?: string | null
+          preferred_comm?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
+          response_time?: string | null
+          skill_levels?: Json | null
+          skills?: string[] | null
+          slogan?: string | null
+          sp?: number
+          streak_days?: number | null
+          tier?: string
+          timezone?: string | null
+          total_gigs_completed?: number | null
+          twitter_url?: string | null
+          university?: string | null
+          updated_at?: string
+          user_id: string
+          work_history?: Json | null
+          youtube_url?: string | null
+        }
+        Update: {
+          availability?: string | null
+          avatar_emoji?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          certificates?: Json | null
+          created_at?: string
+          display_name?: string | null
+          education_history?: Json | null
+          elo?: number
+          email?: string
+          full_name?: string
+          github_url?: string | null
+          hourly_rate?: string | null
+          id?: string
+          id_verified?: boolean | null
+          instagram_url?: string | null
+          interests?: string[] | null
+          languages?: string[] | null
+          linkedin_url?: string | null
+          location?: string | null
+          needs?: string[] | null
+          onboarding_complete?: boolean | null
+          personal_website?: string | null
+          portfolio_items?: Json | null
+          portfolio_url?: string | null
+          preferred_comm?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
+          response_time?: string | null
+          skill_levels?: Json | null
+          skills?: string[] | null
+          slogan?: string | null
+          sp?: number
+          streak_days?: number | null
+          tier?: string
+          timezone?: string | null
+          total_gigs_completed?: number | null
+          twitter_url?: string | null
+          university?: string | null
+          updated_at?: string
+          user_id?: string
+          work_history?: Json | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user" | "enterprise"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +347,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user", "enterprise"],
+    },
   },
 } as const
