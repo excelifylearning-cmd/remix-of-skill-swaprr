@@ -294,7 +294,22 @@ export type Database = {
           status?: string
           title?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "disputes_filed_against_profiles_fkey"
+            columns: ["filed_against"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "disputes_filed_by_profiles_fkey"
+            columns: ["filed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       forum_categories: {
         Row: {
@@ -595,6 +610,13 @@ export type Database = {
             referencedRelation: "guilds"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "guild_members_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       guilds: {
@@ -697,7 +719,15 @@ export type Database = {
           user_id?: string
           views?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "listings_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -873,6 +903,13 @@ export type Database = {
             referencedRelation: "achievements"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_achievements_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       user_badges: {
@@ -901,6 +938,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "badges"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_badges_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
           },
         ]
       }
