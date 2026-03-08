@@ -242,14 +242,41 @@ const OverviewTab = ({ profile }: { profile: any }) => {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const MyGigsTab = () => {
+  const { user } = useAuth();
   const [filter, setFilter] = useState("all");
+  const [realGigs, setRealGigs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const filteredGigs = filter === "all" ? myGigs : myGigs.filter(g => g.status === filter);
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("listings")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      setRealGigs((data || []).map((l: any) => ({
+        id: l.id,
+        title: l.title,
+        status: l.status === "active" ? "active" : l.status === "completed" ? "completed" : "pending",
+        partner: null,
+        stage: 0,
+        totalStages: 3,
+        sp: l.points || 0,
+        format: l.format || "Direct Swap",
+        deadline: null,
+      })));
+      setLoading(false);
+    };
+    load();
+  }, [user]);
+
+  const filteredGigs = filter === "all" ? realGigs : realGigs.filter(g => g.status === filter);
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-2xl font-bold text-foreground">My Gigs</h2>
         <div className="flex gap-2">
@@ -265,61 +292,48 @@ const MyGigsTab = () => {
         </div>
       </div>
 
-      {/* Gigs Grid */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {filteredGigs.map((gig) => (
-          <motion.div
-            key={gig.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl border border-border bg-card overflow-hidden cursor-pointer hover:border-foreground/20 transition-colors"
-            onClick={() => navigate(`/workspace/${gig.id}`)}
-          >
-            <div className="flex items-center justify-between border-b border-border/50 px-4 py-3">
-              <Badge className={`text-[10px] ${statusColor(gig.status)}`}>{gig.status}</Badge>
-              <span className="text-xs text-muted-foreground">{gig.format}</span>
-            </div>
-            <div className="p-4">
-              <h3 className="text-base font-bold text-foreground mb-1">{gig.title}</h3>
-              {gig.partner ? (
-                <p className="text-xs text-muted-foreground mb-3">with {gig.partner}</p>
-              ) : (
-                <p className="text-xs text-badge-gold mb-3">Awaiting match...</p>
-              )}
-
-              {gig.status === "active" && (
-                <div className="mb-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] text-muted-foreground">Progress</span>
-                    <span className="text-[10px] font-medium text-foreground">{gig.stage}/{gig.totalStages}</span>
-                  </div>
-                  <Progress value={(gig.stage / gig.totalStages) * 100} className="h-1.5" />
-                </div>
-              )}
-
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1 text-xs font-bold text-skill-green">
-                  <Coins size={12} /> {gig.sp} SP
-                </span>
-                {gig.deadline && (
-                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock size={10} /> {new Date(gig.deadline).toLocaleDateString()}
-                  </span>
+      {loading ? (
+        <div className="py-16 text-center">
+          <div className="h-5 w-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin mx-auto" />
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {filteredGigs.map((gig) => (
+            <motion.div
+              key={gig.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-2xl border border-border bg-card overflow-hidden cursor-pointer hover:border-foreground/20 transition-colors"
+              onClick={() => navigate(`/workspace/${gig.id}`)}
+            >
+              <div className="flex items-center justify-between border-b border-border/50 px-4 py-3">
+                <Badge className={`text-[10px] ${statusColor(gig.status)}`}>{gig.status}</Badge>
+                <span className="text-xs text-muted-foreground">{gig.format}</span>
+              </div>
+              <div className="p-4">
+                <h3 className="text-base font-bold text-foreground mb-1">{gig.title}</h3>
+                {gig.partner ? (
+                  <p className="text-xs text-muted-foreground mb-3">with {gig.partner}</p>
+                ) : (
+                  <p className="text-xs text-badge-gold mb-3">Awaiting match...</p>
                 )}
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1 text-xs font-bold text-skill-green">
+                    <Coins size={12} /> {gig.sp} SP
+                  </span>
+                  {gig.deadline && (
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Clock size={10} /> {new Date(gig.deadline).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-            {gig.status === "active" && (
-              <div className="border-t border-border/50 px-4 py-2.5 bg-surface-1">
-                <button className="w-full text-center text-xs font-medium text-foreground hover:text-skill-green transition-colors">
-                  Open Workspace →
-                </button>
-              </div>
-            )}
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
-      {filteredGigs.length === 0 && (
+      {!loading && filteredGigs.length === 0 && (
         <div className="py-16 text-center">
           <Briefcase size={32} className="mx-auto mb-3 text-muted-foreground/30" />
           <p className="text-foreground font-medium">No gigs found</p>
