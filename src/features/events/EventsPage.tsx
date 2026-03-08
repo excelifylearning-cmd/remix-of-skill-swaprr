@@ -565,19 +565,19 @@ const EventsPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  whileHover={{ y: -3, borderColor: "hsl(var(--badge-gold) / 0.3)" }}
+                  whileHover={{ y: -3, borderColor: "hsl(var(--skill-green) / 0.3)" }}
                 >
-                  <t.icon size={24} className="mx-auto mb-3 text-badge-gold" />
+                  <t.icon size={24} className="mx-auto mb-3 text-foreground" />
                   <h3 className="font-heading text-base font-bold text-foreground">{t.name}</h3>
                   <span className={`mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${
                     t.status === "Registration Open" ? "bg-skill-green/10 text-skill-green border border-skill-green/20" :
-                    t.status === "Coming Soon" ? "bg-badge-gold/10 text-badge-gold border border-badge-gold/20" :
+                    t.status === "Coming Soon" ? "bg-court-blue/10 text-court-blue border border-court-blue/20" :
                     "bg-surface-2 text-muted-foreground border border-border"
                   }`}>{t.status}</span>
                   <div className="mt-3 space-y-1 text-xs text-muted-foreground">
                     <p>{t.teams}</p>
                     <p>{t.format}</p>
-                    <p className="font-mono text-badge-gold font-bold">{t.prize}</p>
+                    <p className="font-mono text-skill-green font-bold">{t.prize}</p>
                   </div>
                 </motion.div>
               ))}
