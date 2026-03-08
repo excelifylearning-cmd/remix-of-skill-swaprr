@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { validateEmail } from "@/lib/email-validation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Mail, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, User, GraduationCap, CheckCircle2, Github,
   Circle, AlertCircle, Camera, Globe, Briefcase, Tag, Link2, Shield, Play, SkipForward,
