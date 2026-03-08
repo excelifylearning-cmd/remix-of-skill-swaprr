@@ -189,12 +189,30 @@ const skillFusions = [
   }
 ];
 
+// SP Only Gigs (buyers paying only with SP, no skill exchange required)
+const spOnlyGigs = [
+  { id: 401, skill: "Logo Design", spPrice: 80, seller: "Maya K.", elo: 1450, rating: 4.9, avatar: "MK", category: "Design", hot: true, posted: "1h ago", views: 234, uni: "MIT", verified: true, desc: "Professional logo design with 3 revision rounds. Pure SP purchase — no skill swap required.", deliveryDays: 5, completedGigs: 47 },
+  { id: 402, skill: "Python Backend API", spPrice: 150, seller: "James T.", elo: 1680, rating: 5.0, avatar: "JT", category: "Development", hot: true, posted: "2h ago", views: 189, uni: "Stanford", verified: true, desc: "Full REST API development with documentation. Pay with SP only.", deliveryDays: 7, completedGigs: 82 },
+  { id: 403, skill: "Video Editing", spPrice: 60, seller: "Aisha R.", elo: 1320, rating: 4.7, avatar: "AR", category: "Video", hot: false, posted: "3h ago", views: 98, uni: "Harvard", verified: true, desc: "Professional video editing for YouTube, TikTok, or Instagram. SP purchase only.", deliveryDays: 3, completedGigs: 23 },
+  { id: 404, skill: "React Dashboard", spPrice: 200, seller: "Chen L.", elo: 1750, rating: 5.0, avatar: "CL", category: "Development", hot: true, posted: "45m ago", views: 312, uni: "MIT", verified: true, desc: "Complete React dashboard with charts, auth, and responsive design. SP only.", deliveryDays: 10, completedGigs: 103 },
+  { id: 405, skill: "SEO Strategy", spPrice: 45, seller: "Emma L.", elo: 1400, rating: 4.6, avatar: "EL", category: "Marketing", hot: false, posted: "4h ago", views: 67, uni: "UC Berkeley", verified: false, desc: "Comprehensive SEO audit and strategy document. No skill swap needed.", deliveryDays: 4, completedGigs: 19 },
+  { id: 406, skill: "Mobile App Design", spPrice: 120, seller: "Priya S.", elo: 1580, rating: 4.9, avatar: "PS", category: "Design", hot: true, posted: "30m ago", views: 278, uni: "Stanford", verified: true, desc: "Complete mobile app UI/UX design in Figma. Pay with SP.", deliveryDays: 6, completedGigs: 44 },
+  { id: 407, skill: "Copywriting", spPrice: 35, seller: "Jules C.", elo: 1360, rating: 4.7, avatar: "JC", category: "Writing", hot: false, posted: "5h ago", views: 54, uni: "Harvard", verified: true, desc: "Landing page copy, email sequences, or ad copy. SP only.", deliveryDays: 2, completedGigs: 41 },
+  { id: 408, skill: "3D Modeling", spPrice: 90, seller: "Carlos M.", elo: 1550, rating: 4.8, avatar: "CM", category: "Design", hot: false, posted: "2h ago", views: 145, uni: "Georgia Tech", verified: true, desc: "3D models for games, AR/VR, or product visualization. SP purchase.", deliveryDays: 7, completedGigs: 34 },
+  { id: 409, skill: "Data Analysis", spPrice: 100, seller: "Raj P.", elo: 1720, rating: 5.0, avatar: "RP", category: "Development", hot: true, posted: "1h ago", views: 198, uni: "MIT", verified: true, desc: "Data analysis with Python/R, Tableau dashboards included. SP only.", deliveryDays: 5, completedGigs: 91 },
+  { id: 410, skill: "Brand Identity", spPrice: 150, seller: "Maya K.", elo: 1450, rating: 4.9, avatar: "MK", category: "Design", hot: true, posted: "20m ago", views: 167, uni: "MIT", verified: true, desc: "Complete brand identity: logo, colors, typography, guidelines. SP only.", deliveryDays: 8, completedGigs: 47 },
+  { id: 411, skill: "Motion Graphics", spPrice: 85, seller: "Omar H.", elo: 1600, rating: 4.9, avatar: "OH", category: "Video", hot: false, posted: "3h ago", views: 123, uni: "Stanford", verified: true, desc: "Animated explainer videos or social media clips. No swap needed.", deliveryDays: 4, completedGigs: 56 },
+  { id: 412, skill: "Cloud Setup", spPrice: 180, seller: "Niko A.", elo: 1800, rating: 5.0, avatar: "NA", category: "Development", hot: true, posted: "15m ago", views: 421, uni: "Stanford", verified: true, desc: "AWS/GCP setup, CI/CD pipelines, infrastructure as code. SP purchase.", deliveryDays: 5, completedGigs: 89 },
+];
+
 // Request Board (users posting what they need)
 const requests = [
   { id: 301, title: "Need React Dev for Portfolio", description: "I can offer logo design and brand identity work", requester: "Maya K.", requesterElo: 1450, offering: "Logo Design", seeking: "React Development", budget: 40, responses: 7, posted: "1h ago" },
   { id: 302, title: "Looking for Video Editor", description: "Have Python/Django skills to trade for promo video editing", requester: "James T.", requesterElo: 1680, offering: "Backend Development", seeking: "Video Editing", budget: 25, responses: 4, posted: "3h ago" },
   { id: 303, title: "Content Writer Needed", description: "Offering SEO strategy consultation in exchange", requester: "Emma L.", requesterElo: 1400, offering: "SEO Strategy", seeking: "Blog Writing", budget: 15, responses: 2, posted: "5h ago" },
   { id: 304, title: "UI Designer for App Mockups", description: "Can provide ML model development/integration", requester: "Victor Z.", requesterElo: 1780, offering: "Machine Learning", seeking: "UI/UX Design", budget: 50, responses: 11, posted: "30m ago" },
+  { id: 305, title: "SP Purchase: Logo + Business Cards", description: "Paying 100 SP for complete brand starter kit, no swap", requester: "Startup Inc.", requesterElo: 1200, offering: "100 SP", seeking: "Brand Design", budget: 100, responses: 9, posted: "2h ago", spOnly: true },
+  { id: 306, title: "SP Purchase: Landing Page", description: "Paying 120 SP for responsive landing page, no skill swap", requester: "Product Co.", requesterElo: 1150, offering: "120 SP", seeking: "Web Development", budget: 120, responses: 6, posted: "4h ago", spOnly: true },
 ];
 
 // Featured Sellers
