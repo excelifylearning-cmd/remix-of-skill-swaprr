@@ -1035,8 +1035,40 @@ const SignupPage = () => {
                     <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
                     <motion.button
                       onClick={async () => {
+                        setSignupError("");
                         const result = await signup(email, password, name);
                         if (result.success) {
+                          // Save all onboarding data to profile
+                          await updateProfile({
+                            display_name: displayName || name,
+                            bio,
+                            slogan,
+                            avatar_emoji: selectedDefaultAvatar ? defaultAvatars.find(a => a.id === selectedDefaultAvatar)?.emoji : undefined,
+                            university,
+                            location,
+                            languages: selectedLanguages,
+                            portfolio_url: portfolioUrl,
+                            linkedin_url: linkedinUrl,
+                            github_url: githubUrl,
+                            twitter_url: twitterUrl,
+                            instagram_url: instagramUrl,
+                            youtube_url: youtubeUrl,
+                            personal_website: personalWebsite,
+                            skills,
+                            skill_levels: skillLevel,
+                            interests,
+                            needs: selectedNeeds,
+                            work_history: workHistory,
+                            education_history: educationHistory,
+                            availability,
+                            response_time: responseTime,
+                            preferred_comm: preferredComm,
+                            hourly_rate: hourlyRate,
+                            timezone,
+                            referral_code: referralCode,
+                            id_verified: idUploaded,
+                            onboarding_complete: true,
+                          });
                           navigate("/dashboard");
                         } else {
                           setSignupError(result.error || "Signup failed.");
