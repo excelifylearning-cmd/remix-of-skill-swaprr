@@ -30,6 +30,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import PageTransition from "@/components/shared/PageTransition";
+import { useNotifications } from "@/hooks/useNotifications";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SIDEBAR NAVIGATION
