@@ -987,7 +987,6 @@ const ForumsPage = () => {
               </p>
             </motion.div>
           </div>
-          <Footer />
         </div>
       </PageTransition>
     );
