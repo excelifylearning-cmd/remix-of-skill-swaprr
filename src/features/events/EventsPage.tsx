@@ -194,8 +194,8 @@ const EventsPage = () => {
         {/* ────── 1. HERO + COUNTDOWN ────── */}
         <section className="relative pt-28 pb-20 px-6 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full bg-badge-gold/5 blur-3xl" />
-            <div className="absolute bottom-10 right-1/4 w-80 h-80 rounded-full bg-court-blue/5 blur-3xl" />
+            <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full bg-court-blue/5 blur-3xl" />
+            <div className="absolute bottom-10 right-1/4 w-80 h-80 rounded-full bg-skill-green/5 blur-3xl" />
           </div>
           <div className="max-w-7xl mx-auto relative grid grid-cols-1 lg:grid-cols-2 items-center gap-8">
             {/* Left: Content */}
