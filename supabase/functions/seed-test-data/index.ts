@@ -369,6 +369,84 @@ Deno.serve(async (req) => {
     },
   ]);
 
+  // 11. Seed workspace data (escrow, stages, messages, files, deliverable)
+  const wsId = "demo-workspace-001";
+
+  // Create a second user for the partner side
+  const { data: partnerData } = await supabase.auth.admin.createUser({
+    email: "partner@skillswappr.com",
+    password: "Partner123!",
+    email_confirm: true,
+    user_metadata: { full_name: "James T." },
+  });
+  let partnerId = partnerData?.user?.id;
+  if (!partnerId) {
+    const { data: users } = await supabase.auth.admin.listUsers();
+    const found = users?.users?.find((u: any) => u.email === "partner@skillswappr.com");
+    partnerId = found?.id;
+  }
+
+  if (partnerId) {
+    // Escrow contract
+    await supabase.from("escrow_contracts").upsert({
+      workspace_id: wsId,
+      buyer_id: userId,
+      seller_id: partnerId,
+      total_sp: 30,
+      released_sp: 8,
+      status: "partial_release",
+      terms: { insurance: true, auto_release: false, deadline: "2026-03-15" },
+    }, { onConflict: "workspace_id" });
+
+    // Stages
+    const stagesData = [
+      { workspace_id: wsId, name: "Requirements", status: "completed", sp_allocated: 5, order_index: 0, completed_at: "2026-03-02T10:00:00Z" },
+      { workspace_id: wsId, name: "First Draft", status: "completed", sp_allocated: 8, order_index: 1, completed_at: "2026-03-06T14:00:00Z" },
+      { workspace_id: wsId, name: "Revisions", status: "active", sp_allocated: 7, order_index: 2, completed_at: null },
+      { workspace_id: wsId, name: "Final Delivery", status: "locked", sp_allocated: 5, order_index: 3, completed_at: null },
+      { workspace_id: wsId, name: "Acceptance", status: "locked", sp_allocated: 5, order_index: 4, completed_at: null },
+    ];
+    // Delete old stages first to avoid duplicates
+    await supabase.from("workspace_stages").delete().eq("workspace_id", wsId);
+    await supabase.from("workspace_stages").insert(stagesData);
+
+    // Messages
+    await supabase.from("workspace_messages").delete().eq("workspace_id", wsId);
+    const msgs = [
+      { workspace_id: wsId, sender_id: partnerId, content: "Hey! Excited to work on this together 🎨", message_type: "text" },
+      { workspace_id: wsId, sender_id: userId, content: "Same here! I've attached my initial concepts", message_type: "text" },
+      { workspace_id: wsId, sender_id: partnerId, content: "These look great! I especially like option 2", message_type: "text" },
+      { workspace_id: wsId, sender_id: userId, content: "Perfect, I'll refine that one. When can you start on the React components?", message_type: "text" },
+      { workspace_id: wsId, sender_id: partnerId, content: "I can start tomorrow. I'll need the design specs for the dashboard", message_type: "text" },
+      { workspace_id: wsId, sender_id: userId, content: "I'll have them ready by tonight. The color palette is in the brand_guidelines.pdf", message_type: "text" },
+      { workspace_id: wsId, sender_id: partnerId, content: "Got it! I'll review everything and start first thing in the morning", message_type: "text" },
+      { workspace_id: wsId, sender_id: userId, content: "Sounds good. Let me know if you need anything else 🚀", message_type: "text" },
+      { workspace_id: wsId, sender_id: partnerId, content: "The first draft is looking solid. Made some tweaks to the nav", message_type: "text" },
+      { workspace_id: wsId, sender_id: userId, content: "Love the nav changes! Let's move to revisions stage", message_type: "text" },
+    ];
+    await supabase.from("workspace_messages").insert(msgs);
+
+    // Files
+    await supabase.from("workspace_files").delete().eq("workspace_id", wsId);
+    await supabase.from("workspace_files").insert([
+      { workspace_id: wsId, uploaded_by: userId, file_name: "logo_concepts_v1.fig", file_url: "", file_size: "2.4 MB", file_type: "application", version: 1 },
+      { workspace_id: wsId, uploaded_by: userId, file_name: "brand_guidelines.pdf", file_url: "", file_size: "1.2 MB", file_type: "application", version: 1 },
+      { workspace_id: wsId, uploaded_by: partnerId, file_name: "dashboard_wireframe.png", file_url: "", file_size: "856 KB", file_type: "image", version: 1 },
+    ]);
+
+    // Deliverable
+    await supabase.from("workspace_deliverables").delete().eq("workspace_id", wsId);
+    const { data: stageRows } = await supabase.from("workspace_stages").select("id").eq("workspace_id", wsId).eq("order_index", 0).single();
+    await supabase.from("workspace_deliverables").insert({
+      workspace_id: wsId,
+      submitted_by: userId,
+      stage_id: stageRows?.id || null,
+      title: "Requirements Document v1",
+      description: "Full requirements spec including user stories, acceptance criteria, and wireframes.",
+      status: "accepted",
+    });
+  }
+
   // Build links
   const links = {
     dashboard: "/dashboard",
@@ -383,7 +461,7 @@ Deno.serve(async (req) => {
     login: "/login (Admin123@skillswappr.com / Admin123!)",
   };
 
-  return new Response(JSON.stringify({ success: true, userId, guildId, links }), {
+  return new Response(JSON.stringify({ success: true, userId, partnerId, guildId, links }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 });
