@@ -420,20 +420,24 @@ const HelpPage = () => {
             <h2 className="mb-6 font-heading text-2xl font-bold text-foreground">Quick Actions</h2>
             <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
               {quickActions.map((a, i) => (
-                <motion.button
+                <Link
+                  to={a.link}
                   key={a.label}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.04 }}
-                  className="group flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-5 text-center transition-all hover:border-foreground/20 hover:bg-surface-2"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 text-muted-foreground transition-colors group-hover:bg-foreground group-hover:text-background">
-                    <a.icon size={18} />
-                  </div>
-                  <span className="text-xs font-semibold text-foreground">{a.label}</span>
-                  <span className="text-[10px] text-muted-foreground leading-tight">{a.desc}</span>
-                </motion.button>
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.04 }}
+                    className="group flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-5 text-center transition-all hover:border-foreground/20 hover:bg-surface-2 h-full"
+                  >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 text-muted-foreground transition-colors group-hover:bg-foreground group-hover:text-background">
+                      <a.icon size={18} />
+                    </div>
+                    <span className="text-xs font-semibold text-foreground">{a.label}</span>
+                    <span className="text-[10px] text-muted-foreground leading-tight">{a.desc}</span>
+                  </motion.div>
+                </Link>
               ))}
             </div>
           </div>
