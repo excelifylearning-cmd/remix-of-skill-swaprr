@@ -320,6 +320,54 @@ export type Database = {
         }
         Relationships: []
       }
+      click_heatmap: {
+        Row: {
+          created_at: string
+          element_class: string | null
+          element_id: string | null
+          element_tag: string | null
+          element_text: string | null
+          id: string
+          is_dead_click: boolean
+          is_rage_click: boolean
+          page_path: string
+          session_id: string
+          user_id: string | null
+          x_percent: number
+          y_percent: number
+        }
+        Insert: {
+          created_at?: string
+          element_class?: string | null
+          element_id?: string | null
+          element_tag?: string | null
+          element_text?: string | null
+          id?: string
+          is_dead_click?: boolean
+          is_rage_click?: boolean
+          page_path: string
+          session_id: string
+          user_id?: string | null
+          x_percent?: number
+          y_percent?: number
+        }
+        Update: {
+          created_at?: string
+          element_class?: string | null
+          element_id?: string | null
+          element_tag?: string | null
+          element_text?: string | null
+          id?: string
+          is_dead_click?: boolean
+          is_rage_click?: boolean
+          page_path?: string
+          session_id?: string
+          user_id?: string | null
+          x_percent?: number
+          y_percent?: number
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string
@@ -604,6 +652,51 @@ export type Database = {
           id?: string
           source?: string
           team_size?: string
+        }
+        Relationships: []
+      }
+      error_log: {
+        Row: {
+          col_number: number | null
+          created_at: string
+          error_type: string
+          filename: string | null
+          id: string
+          line_number: number | null
+          message: string
+          metadata: Json | null
+          page_path: string
+          session_id: string
+          stack: string | null
+          user_id: string | null
+        }
+        Insert: {
+          col_number?: number | null
+          created_at?: string
+          error_type?: string
+          filename?: string | null
+          id?: string
+          line_number?: number | null
+          message?: string
+          metadata?: Json | null
+          page_path: string
+          session_id: string
+          stack?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          col_number?: number | null
+          created_at?: string
+          error_type?: string
+          filename?: string | null
+          id?: string
+          line_number?: number | null
+          message?: string
+          metadata?: Json | null
+          page_path?: string
+          session_id?: string
+          stack?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1457,6 +1550,72 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      page_sessions: {
+        Row: {
+          clicks_count: number
+          created_at: string
+          duration_seconds: number | null
+          engagement_score: number
+          entered_at: string
+          exited_at: string | null
+          id: string
+          idle_seconds: number
+          keypresses_count: number
+          metadata: Json | null
+          mouse_distance_px: number
+          page_path: string
+          page_title: string
+          rage_clicks_count: number
+          scroll_depth_avg: number
+          scroll_depth_max: number
+          session_id: string
+          user_id: string | null
+          visibility_hidden_seconds: number
+        }
+        Insert: {
+          clicks_count?: number
+          created_at?: string
+          duration_seconds?: number | null
+          engagement_score?: number
+          entered_at?: string
+          exited_at?: string | null
+          id?: string
+          idle_seconds?: number
+          keypresses_count?: number
+          metadata?: Json | null
+          mouse_distance_px?: number
+          page_path: string
+          page_title?: string
+          rage_clicks_count?: number
+          scroll_depth_avg?: number
+          scroll_depth_max?: number
+          session_id: string
+          user_id?: string | null
+          visibility_hidden_seconds?: number
+        }
+        Update: {
+          clicks_count?: number
+          created_at?: string
+          duration_seconds?: number | null
+          engagement_score?: number
+          entered_at?: string
+          exited_at?: string | null
+          id?: string
+          idle_seconds?: number
+          keypresses_count?: number
+          metadata?: Json | null
+          mouse_distance_px?: number
+          page_path?: string
+          page_title?: string
+          rage_clicks_count?: number
+          scroll_depth_avg?: number
+          scroll_depth_max?: number
+          session_id?: string
+          user_id?: string | null
+          visibility_hidden_seconds?: number
+        }
+        Relationships: []
       }
       platform_metrics: {
         Row: {
