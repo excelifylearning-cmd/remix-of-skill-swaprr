@@ -53,6 +53,7 @@ const faqs = [
 ];
 
 const ContactPage = () => {
+  const { user } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
