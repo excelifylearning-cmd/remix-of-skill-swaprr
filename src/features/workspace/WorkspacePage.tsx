@@ -873,11 +873,11 @@ const WorkspacePage = () => {
                 {activePanel === "whiteboard" && <WhiteboardPanel />}
                 {activePanel === "video" && <VideoPanel partnerName={partnerName} workspaceId={workspaceId} />}
                 {activePanel === "files" && <FilesPanel workspaceId={workspaceId} userId={userId} />}
-                {activePanel === "stages" && <StagesPanel workspaceId={workspaceId} userId={userId} escrow={escrow} />}
+                {activePanel === "stages" && <StagesPanel workspaceId={workspaceId} userId={userId} escrow={escrow} onTransactionCreated={(code) => { setTransactionCode(code); setEscrow(prev => prev ? { ...prev, status: "released", released_sp: prev.total_sp } : null); }} />}
                 {activePanel === "escrow" && <EscrowPanel escrow={escrow} stages={stages} />}
                 {activePanel === "submit" && <SubmitPanel workspaceId={workspaceId} userId={userId} />}
                 {activePanel === "dispute" && <DisputePanel workspaceId={workspaceId} userId={userId} escrow={escrow} />}
-                {activePanel === "settings" && <SettingsPanel workspaceId={workspaceId} escrow={escrow} partnerName={partnerName} />}
+                {activePanel === "settings" && <SettingsPanel workspaceId={workspaceId} escrow={escrow} partnerName={partnerName} transactionCode={transactionCode} />}
               </motion.div>
             </AnimatePresence>
           </main>
