@@ -103,6 +103,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <TelemetryProvider />
           <AnimatedRoutes />
           <LiveChatWidget />
           <CookieConsent />
