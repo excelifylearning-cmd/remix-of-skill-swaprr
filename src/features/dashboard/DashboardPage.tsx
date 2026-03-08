@@ -1081,9 +1081,44 @@ const DashboardPage = () => {
                 <h1 className="font-heading text-lg font-bold text-foreground capitalize">{activeTab.replace("-", " ")}</h1>
               </div>
               <div className="flex items-center gap-2">
-                <button className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-1 transition-colors">
-                  <Bell size={18} />
-                </button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-1 transition-colors">
+                      <Bell size={18} />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-alert-red text-[9px] font-bold text-white">
+                          {unreadCount > 9 ? "9+" : unreadCount}
+                        </span>
+                      )}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="w-80 p-0">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                      <span className="text-sm font-semibold text-foreground">Notifications</span>
+                      {unreadCount > 0 && (
+                        <button onClick={markAllRead} className="text-[10px] text-muted-foreground hover:text-foreground">
+                          Mark all read
+                        </button>
+                      )}
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <div className="py-8 text-center text-xs text-muted-foreground">No notifications yet</div>
+                      ) : (
+                        notifications.slice(0, 10).map(n => (
+                          <button
+                            key={n.id}
+                            onClick={() => { markAsRead(n.id); if (n.link) navigate(n.link); }}
+                            className={`w-full text-left px-4 py-3 border-b border-border/50 hover:bg-surface-1 transition-colors ${!n.is_read ? 'bg-surface-1/50' : ''}`}
+                          >
+                            <p className={`text-xs ${!n.is_read ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>{n.title}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{n.message}</p>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <Link to={`/profile/${user.id}`} className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-1 transition-colors">
                   <User size={18} />
                 </Link>
