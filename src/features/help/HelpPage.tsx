@@ -219,11 +219,26 @@ const HelpPage = () => {
     setTimeout(() => setCopiedEndpoint(null), 2000);
   };
 
-  const handleBountyLookup = () => {
+  const handleBountyLookup = async () => {
     if (!bountyCode.trim()) return;
-    // Mock lookup — in production this would hit an API
-    const mockValid = ["BB-2026-001", "BB-2026-042", "BB-2025-187", "BB-2025-203"];
-    setBountyResult(mockValid.includes(bountyCode.toUpperCase()) ? "found" : "not_found");
+    const { data, error } = await supabase
+      .from("bug_bounty_submissions")
+      .select("code, title, severity, status, reward")
+      .eq("code", bountyCode.toUpperCase().trim())
+      .maybeSingle();
+    if (data) {
+      setBountyResult(data as any);
+    } else {
+      setBountyResult("not_found");
+    }
+  };
+
+  const handleFeedback = async (rating: string) => {
+    await supabase.from("help_feedback").insert({
+      rating,
+      user_id: user?.id || null,
+    });
+    setFeedbackSent(true);
   };
 
   const handleReportSubmit = async () => {
