@@ -937,6 +937,7 @@ const EventsPage = () => {
             </motion.div>
           </div>
         </section>
+        <Footer />
       </div>
     </PageTransition>
   );
