@@ -287,7 +287,7 @@ const AnalyticsPage = () => {
                 <p className="text-sm text-muted-foreground mt-1">Select a quarter to view detailed analytics</p>
               </div>
               <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1">
-                {quarters.map((q) => (
+                {displayQuarters.map((q) => (
                   <button key={q.id} onClick={() => setActiveQuarter(q.id)} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${activeQuarter === q.id ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}>
                     {q.label}{q.status === "projected" && <span className="ml-1 text-[8px] opacity-60">*</span>}
                   </button>
