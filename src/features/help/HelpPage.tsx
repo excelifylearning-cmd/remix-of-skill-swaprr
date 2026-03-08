@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, BookOpen, Code, MessageSquare, Shield, Bug, Flag, AlertTriangle,
@@ -195,6 +195,37 @@ const priorityLevels = [
   { value: "critical", label: "Critical", desc: "Safety risk / blocking", color: "text-destructive", bg: "bg-destructive/10" },
 ];
 
+interface HelpArticle {
+  id: string;
+  category: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+}
+
+interface ServiceStatus {
+  id: string;
+  name: string;
+  status: string;
+  uptime: number;
+  latency: string;
+  icon: string;
+  region: string;
+}
+
+interface Incident {
+  id: string;
+  title: string;
+  severity: string;
+  status: string;
+  duration: string;
+  started_at: string;
+}
+
+const iconLookup: Record<string, any> = {
+  Package, MessageSquare, Video, Shield, Server, Zap, HardDrive, Key, Search, Activity, Cloud, Database,
+};
+
 const HelpPage = () => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
@@ -213,6 +244,35 @@ const HelpPage = () => {
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [statusTab, setStatusTab] = useState<"services" | "incidents" | "uptime">("services");
   const [feedbackSent, setFeedbackSent] = useState(false);
+
+  // Backend-driven state
+  const [helpArticles, setHelpArticles] = useState<HelpArticle[]>([]);
+  const [liveServices, setLiveServices] = useState<ServiceStatus[]>([]);
+  const [liveIncidents, setLiveIncidents] = useState<Incident[]>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const [articlesRes, servicesRes, incidentsRes] = await Promise.all([
+        supabase.from("help_articles").select("id, category, title, slug, excerpt").order("category"),
+        supabase.from("service_status").select("*").order("name"),
+        supabase.from("service_incidents").select("*").order("started_at", { ascending: false }).limit(10),
+      ]);
+      if (articlesRes.data) setHelpArticles(articlesRes.data as any);
+      if (servicesRes.data) setLiveServices(servicesRes.data as any);
+      if (incidentsRes.data) setLiveIncidents(incidentsRes.data as any);
+    };
+    loadData();
+  }, []);
+
+  // Group articles by category
+  const articlesByCategory = helpArticles.reduce<Record<string, HelpArticle[]>>((acc, a) => {
+    (acc[a.category] = acc[a.category] || []).push(a);
+    return acc;
+  }, {});
+
+  // Use live services if available, fall back to hardcoded
+  const activeServices = liveServices.length > 0 ? liveServices : services.map(s => ({ ...s, id: s.name })) as any;
+  const activeIncidents = liveIncidents.length > 0 ? liveIncidents : recentIncidents.map((inc, i) => ({ ...inc, id: String(i), started_at: inc.date })) as any;
 
   const handleCopy = (path: string, idx: number) => {
     navigator.clipboard.writeText(path);
@@ -264,8 +324,8 @@ const HelpPage = () => {
     setTimeout(() => setReportSubmitted(false), 5000);
   };
 
-  const operationalCount = services.filter(s => s.status === "operational").length;
-  const degradedCount = services.filter(s => s.status === "degraded").length;
+  const operationalCount = activeServices.filter((s: any) => s.status === "operational").length;
+  const degradedCount = activeServices.filter((s: any) => s.status === "degraded").length;
   const overallStatus = degradedCount === 0 ? "All Systems Operational" : `${degradedCount} Service${degradedCount > 1 ? "s" : ""} Degraded`;
 
   return (
@@ -345,7 +405,7 @@ const HelpPage = () => {
           <div className="mx-auto max-w-6xl px-6">
             <div className="mb-8 flex items-center justify-between">
               <h2 className="font-heading text-2xl font-bold text-foreground">Knowledge Base</h2>
-              <span className="text-xs text-muted-foreground">160+ articles across 9 categories</span>
+              <span className="text-xs text-muted-foreground">{helpArticles.length || "160+"}  articles across {kbCategories.length} categories</span>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {kbCategories.map((cat, i) => (
@@ -366,20 +426,30 @@ const HelpPage = () => {
                     </div>
                     <h3 className="mb-1 font-heading text-sm font-bold text-foreground">{cat.title}</h3>
                     <p className="mb-3 text-xs text-muted-foreground">{cat.desc}</p>
-                    <span className="text-[10px] text-muted-foreground/60">{cat.articles} articles</span>
+                    <span className="text-[10px] text-muted-foreground/60">{(articlesByCategory[cat.title] || []).length || cat.articles} articles</span>
                   </div>
                   <AnimatePresence>
                     {expandedKb === i && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden border-t border-border/50">
                         <div className="p-4 space-y-1.5">
                           <p className="text-[10px] font-semibold text-muted-foreground mb-2">Popular Articles</p>
-                          {cat.popular.map((article) => (
-                            <div key={article} className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-foreground hover:bg-surface-2 cursor-pointer transition-colors">
-                              <FileText size={12} className="text-muted-foreground shrink-0" />
-                              {article}
-                              <ArrowRight size={10} className="ml-auto text-muted-foreground" />
-                            </div>
-                          ))}
+                          {(articlesByCategory[cat.title] || []).length > 0 ? (
+                            (articlesByCategory[cat.title] || []).slice(0, 4).map((article) => (
+                              <div key={article.id} className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-foreground hover:bg-surface-2 cursor-pointer transition-colors" title={article.excerpt}>
+                                <FileText size={12} className="text-muted-foreground shrink-0" />
+                                {article.title}
+                                <ArrowRight size={10} className="ml-auto text-muted-foreground" />
+                              </div>
+                            ))
+                          ) : (
+                            cat.popular.map((article) => (
+                              <div key={article} className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-foreground hover:bg-surface-2 cursor-pointer transition-colors">
+                                <FileText size={12} className="text-muted-foreground shrink-0" />
+                                {article}
+                                <ArrowRight size={10} className="ml-auto text-muted-foreground" />
+                              </div>
+                            ))
+                          )}
                         </div>
                       </motion.div>
                     )}
@@ -519,6 +589,67 @@ const HelpPage = () => {
                 <span key={sdk} className="rounded-lg border border-border bg-card px-3 py-1.5 font-mono text-[10px] text-muted-foreground hover:text-foreground hover:border-foreground/20 cursor-pointer transition-colors">{sdk}</span>
               ))}
             </div>
+
+            {/* Code Example */}
+            <div className="mt-6 grid gap-4 lg:grid-cols-2">
+              <div className="rounded-2xl border border-border bg-card overflow-hidden">
+                <div className="border-b border-border/50 bg-surface-1 px-5 py-2.5 flex items-center gap-2">
+                  <div className="flex gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-alert-red/60" /><div className="h-2.5 w-2.5 rounded-full bg-badge-gold/60" /><div className="h-2.5 w-2.5 rounded-full bg-skill-green/60" /></div>
+                  <span className="font-mono text-[10px] text-muted-foreground ml-2">example.js</span>
+                </div>
+                <pre className="p-5 text-xs text-muted-foreground overflow-x-auto leading-relaxed">
+                  <code>{`// Fetch gigs with filters
+const response = await fetch(
+  'https://api.skillswappr.com/v1/gigs?category=design&format=auction',
+  {
+    headers: {
+      'Authorization': 'Bearer YOUR_TOKEN',
+      'Content-Type': 'application/json'
+    }
+  }
+);
+
+const { data, meta } = await response.json();
+console.log(\`Found \${meta.total} gigs\`);`}</code>
+                </pre>
+              </div>
+              <div className="rounded-2xl border border-border bg-card overflow-hidden">
+                <div className="border-b border-border/50 bg-surface-1 px-5 py-2.5 flex items-center gap-2">
+                  <div className="flex gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-alert-red/60" /><div className="h-2.5 w-2.5 rounded-full bg-badge-gold/60" /><div className="h-2.5 w-2.5 rounded-full bg-skill-green/60" /></div>
+                  <span className="font-mono text-[10px] text-muted-foreground ml-2">response.json</span>
+                </div>
+                <pre className="p-5 text-xs text-muted-foreground overflow-x-auto leading-relaxed">
+                  <code>{`{
+  "data": [
+    {
+      "id": "gig_abc123",
+      "title": "UI/UX Design Sprint",
+      "format": "auction",
+      "current_bid": 45,
+      "seller": { "elo": 1780, "tier": "Gold" },
+      "ends_at": "2026-03-15T18:00:00Z"
+    }
+  ],
+  "meta": { "total": 142, "page": 1, "per_page": 20 }
+}`}</code>
+                </pre>
+              </div>
+            </div>
+
+            {/* Authentication & Rate Limits */}
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
+              {[
+                { title: "Authentication", desc: "Use API keys for read-only access. Bearer tokens (JWT) for write operations. Tokens expire after 1 hour.", icon: Key },
+                { title: "Rate Limiting", desc: "1,000 requests/min for API keys. 5,000 requests/min for Enterprise. 429 status on limit exceeded with Retry-After header.", icon: Timer },
+                { title: "Webhooks", desc: "Subscribe to events: gig.completed, dispute.filed, sp.transferred, user.verified. HMAC-SHA256 signature verification.", icon: Zap },
+              ].map((item) => (
+                <div key={item.title} className="rounded-xl border border-border bg-card p-5">
+                  <item.icon size={16} className="mb-2 text-court-blue" />
+                  <h4 className="text-xs font-bold text-foreground mb-1">{item.title}</h4>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -584,7 +715,7 @@ const HelpPage = () => {
                 </div>
                 <div>
                   <h2 className="font-heading text-2xl font-bold text-foreground">{overallStatus}</h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">Last checked: Just now · {operationalCount}/{services.length} services operational</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Last checked: Just now · {operationalCount}/{activeServices.length} services operational</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -617,7 +748,9 @@ const HelpPage = () => {
             {/* Services Grid */}
             {statusTab === "services" && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {services.map((s, i) => (
+                {activeServices.map((s: any, i: number) => {
+                  const IconComp = iconLookup[s.icon] || Server;
+                  return (
                   <motion.div
                     key={s.name}
                     initial={{ opacity: 0, y: 10 }}
@@ -628,7 +761,7 @@ const HelpPage = () => {
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2.5">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-2">
-                          <s.icon size={14} className="text-muted-foreground" />
+                          <IconComp size={14} className="text-muted-foreground" />
                         </div>
                         <div>
                           <span className="text-xs font-semibold text-foreground block">{s.name}</span>
@@ -654,7 +787,7 @@ const HelpPage = () => {
                       <span className="font-mono text-[9px] text-muted-foreground">{s.uptime}%</span>
                     </div>
                   </motion.div>
-                ))}
+                ); })}
               </motion.div>
             )}
 
@@ -663,10 +796,10 @@ const HelpPage = () => {
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-2xl border border-border bg-card overflow-hidden">
                 <div className="border-b border-border/50 bg-surface-1 px-6 py-3 flex items-center justify-between">
                   <span className="font-heading text-xs font-bold text-foreground">Incident History — Last 90 Days</span>
-                  <span className="text-[10px] text-muted-foreground">{recentIncidents.length} events</span>
+                  <span className="text-[10px] text-muted-foreground">{activeIncidents.length} events</span>
                 </div>
                 <div className="divide-y divide-border/30">
-                  {recentIncidents.map((inc, i) => (
+                  {activeIncidents.map((inc: any, i: number) => (
                     <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }} className="flex items-center justify-between px-6 py-4 hover:bg-surface-1 transition-colors">
                       <div className="flex items-center gap-4">
                         <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
@@ -682,7 +815,7 @@ const HelpPage = () => {
                         </div>
                         <div>
                           <span className="text-xs font-medium text-foreground block">{inc.title}</span>
-                          <span className="text-[10px] text-muted-foreground">{inc.date} · Duration: {inc.duration}</span>
+                          <span className="text-[10px] text-muted-foreground">{inc.date || new Date(inc.started_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} · Duration: {inc.duration}</span>
                         </div>
                       </div>
                       <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-semibold ${

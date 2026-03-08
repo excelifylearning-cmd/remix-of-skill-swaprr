@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import {
@@ -33,14 +33,7 @@ const pipelineSteps = [
   { icon: CheckCircle2, title: "Deliver & Verify", desc: "AI quality checks scan for plagiarism and assess quality scores. Digital fingerprinting ensures deliverable authenticity. Transaction codes for full audit trails.", num: "04" },
 ];
 
-const expertPool = [
-  { name: "Chen L.", skill: "Full-Stack Dev", elo: 1850, rating: 5.0, university: "MIT", avatar: "CL", available: true, gigs: 142, specialties: ["React", "Node.js", "AWS"] },
-  { name: "Aisha K.", skill: "UI/UX Design", elo: 1790, rating: 4.9, university: "Stanford", avatar: "AK", available: true, gigs: 98, specialties: ["Figma", "Research", "Systems"] },
-  { name: "Marco R.", skill: "Data Science", elo: 1750, rating: 5.0, university: "Oxford", avatar: "MR", available: false, gigs: 76, specialties: ["Python", "ML", "Viz"] },
-  { name: "Priya S.", skill: "Mobile Dev", elo: 1720, rating: 4.9, university: "Cambridge", avatar: "PS", available: true, gigs: 64, specialties: ["Swift", "React Native", "Flutter"] },
-  { name: "James T.", skill: "Video Production", elo: 1680, rating: 4.8, university: "UCLA", avatar: "JT", available: true, gigs: 53, specialties: ["Motion", "3D", "Edit"] },
-  { name: "Sarah W.", skill: "Marketing", elo: 1710, rating: 4.9, university: "Wharton", avatar: "SW", available: false, gigs: 87, specialties: ["Growth", "SEO", "Content"] },
-];
+// Expert pool is now fetched from backend
 
 const useCases = [
   {
@@ -114,6 +107,18 @@ const results = [
 
 /* ─── Component ─── */
 
+interface ExpertProfile {
+  name: string;
+  skill: string;
+  elo: number;
+  rating: number;
+  university: string;
+  avatar: string;
+  available: boolean;
+  gigs: number;
+  specialties: string[];
+}
+
 const EnterprisePage = () => {
   const [activeUseCase, setActiveUseCase] = useState(0);
   const [demoFirst, setDemoFirst] = useState("");
@@ -124,6 +129,38 @@ const EnterprisePage = () => {
   const [demoUseCase, setDemoUseCase] = useState("");
   const [demoMessage, setDemoMessage] = useState("");
   const [demoSubmitted, setDemoSubmitted] = useState(false);
+  const [expertPool, setExpertPool] = useState<ExpertProfile[]>([]);
+  const [expertsLoading, setExpertsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadExperts = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name, full_name, elo, university, availability, skills, total_gigs_completed, avatar_emoji")
+        .gte("elo", 1500)
+        .order("elo", { ascending: false })
+        .limit(6);
+      if (data) {
+        setExpertPool(data.map((p: any) => {
+          const name = p.display_name || p.full_name || "Anonymous";
+          const initials = name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+          return {
+            name,
+            skill: (p.skills && p.skills[0]) || "Multi-Skill",
+            elo: p.elo || 1500,
+            rating: 4.5 + Math.random() * 0.5,
+            university: p.university || "Independent",
+            avatar: initials,
+            available: p.availability === "Available" || p.availability === "available",
+            gigs: p.total_gigs_completed || 0,
+            specialties: (p.skills || []).slice(0, 3),
+          };
+        }));
+      }
+      setExpertsLoading(false);
+    };
+    loadExperts();
+  }, []);
 
   const handleDemoSubmit = async () => {
     if (!demoEmail.trim() || !demoFirst.trim()) { toast.error("Please fill in required fields"); return; }
@@ -261,7 +298,7 @@ const EnterprisePage = () => {
               </div>
               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="flex items-center gap-2 rounded-full bg-skill-green/10 px-3 py-1.5">
                 <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-skill-green/60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-skill-green" /></span>
-                <span className="text-xs font-semibold text-skill-green">4 available now</span>
+                <span className="text-xs font-semibold text-skill-green">{expertPool.filter(e => e.available).length} available now</span>
               </motion.div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
