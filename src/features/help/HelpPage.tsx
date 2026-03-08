@@ -754,7 +754,7 @@ const HelpPage = () => {
                         </div>
                         <div>
                           <span className="text-xs font-medium text-foreground block">{inc.title}</span>
-                          <span className="text-[10px] text-muted-foreground">{inc.date} · Duration: {inc.duration}</span>
+                          <span className="text-[10px] text-muted-foreground">{inc.date || new Date(inc.started_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} · Duration: {inc.duration}</span>
                         </div>
                       </div>
                       <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-semibold ${
