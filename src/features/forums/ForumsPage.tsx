@@ -187,6 +187,9 @@ const topContributors = [
   { name: "Aisha R.", avatar: "AR", flair: "Top Contributor", posts: 234, karma: 2890, streak: 21, rank: 3, badge: "⭐" },
   { name: "Lena S.", avatar: "LS", flair: "Diamond Creator", posts: 198, karma: 6780, streak: 35, rank: 4, badge: "💎" },
   { name: "Dev_Riku", avatar: "DR", flair: "Beta Tester", posts: 176, karma: 1890, streak: 7, rank: 5, badge: "🔧" },
+  { name: "Wei L.", avatar: "WL", flair: "Diamond Creator", posts: 165, karma: 7800, streak: 42, rank: 6, badge: "💎" },
+  { name: "Priya M.", avatar: "PM", flair: "Top Contributor", posts: 148, karma: 3400, streak: 18, rank: 7, badge: "⭐" },
+  { name: "Sophie B.", avatar: "SB", flair: "Verified Expert", posts: 132, karma: 2100, streak: 12, rank: 8, badge: "✅" },
 ];
 
 const forumRules = [
