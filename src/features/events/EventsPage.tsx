@@ -258,8 +258,8 @@ const EventsPage = () => {
                 title="Events 3D Scene"
                 loading="lazy"
               />
-              {/* Fallback gradient overlay in case Spline doesn't load */}
-              <div className="pointer-events-none absolute inset-0 rounded-2xl border border-border bg-gradient-to-br from-skill-green/5 via-transparent to-court-blue/5" />
+              {/* Fallback overlay in case Spline doesn't load */}
+              <div className="pointer-events-none absolute inset-0 rounded-2xl border border-border" />
             </motion.div>
           </div>
         </section>
@@ -295,12 +295,12 @@ const EventsPage = () => {
               <p className="text-sm text-muted-foreground mt-3 max-w-2xl">{nextBigEvent.description}</p>
               <div className="flex flex-wrap gap-2 mt-4">
                 {nextBigEvent.tags.map(t => (
-                  <span key={t} className="rounded-full border border-skill-green/30 bg-skill-green/10 px-3 py-1 text-xs text-skill-green">{t}</span>
+                  <span key={t} className="rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-muted-foreground">{t}</span>
                 ))}
               </div>
               <div className="mt-5 w-full bg-surface-2 rounded-full h-2 overflow-hidden">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-skill-green to-court-blue"
+                  className="h-full rounded-full bg-foreground"
                   initial={{ width: 0 }}
                   whileInView={{ width: `${(nextBigEvent.spotsFilled / nextBigEvent.spots) * 100}%` }}
                   viewport={{ once: true }}
@@ -340,7 +340,7 @@ const EventsPage = () => {
         <section className="py-16 px-6 bg-surface-1">
           <div className="max-w-6xl mx-auto">
             <motion.div className="text-center mb-12" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <span className="mb-3 inline-block rounded-full border border-skill-green/30 bg-skill-green/10 px-4 py-1.5 font-mono text-xs text-skill-green">
+              <span className="mb-3 inline-block rounded-full border border-border bg-surface-2 px-4 py-1.5 font-mono text-xs text-muted-foreground">
                 <Gift size={12} className="inline mr-1.5 -mt-0.5" /> Rewards
               </span>
               <h2 className="font-heading text-3xl sm:text-4xl font-bold text-foreground">Why Participate?</h2>

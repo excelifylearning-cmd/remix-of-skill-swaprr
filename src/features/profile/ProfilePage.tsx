@@ -67,6 +67,15 @@ const demoProfile = {
     { title: "AI Analytics Dashboard", description: "Real-time analytics dashboard with ML predictions for enterprise clients.", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop", tags: ["Python", "TensorFlow", "D3.js"], views: 890, likes: 67 },
     { title: "Mobile App Backend", description: "Scalable API backend supporting 1M+ daily requests.", image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&h=400&fit=crop", tags: ["Node.js", "Redis", "Docker"], views: 567, likes: 45 },
   ],
+  offeredListings: [
+    { id: "1", title: "React & TypeScript Mentoring", category: "Development", price: "150 SP/hr", status: "Active", views: 340, inquiries: 12 },
+    { id: "2", title: "Full-Stack App Architecture Review", category: "Development", price: "200 SP", status: "Active", views: 180, inquiries: 7 },
+    { id: "3", title: "Cloud Infrastructure Setup (AWS)", category: "DevOps", price: "300 SP", status: "Paused", views: 95, inquiries: 3 },
+  ],
+  disputes: [
+    { id: "d1", title: "Deliverable scope disagreement", opponent: "Jordan K.", status: "Resolved", outcome: "Favor", date: "Feb 2026", sp: 200 },
+    { id: "d2", title: "Timeline extension dispute", opponent: "Mika R.", status: "In Review", outcome: null, date: "Mar 2026", sp: 150 },
+  ],
   recommendations: [
     { name: "Sarah Chen", role: "Product Manager @ Google", text: "Alex is an exceptional developer with a rare combination of technical excellence and communication skills.", date: "2 weeks ago" },
     { name: "Marcus Johnson", role: "CTO @ StartupXYZ", text: "Working with Alex was a pleasure. He took ownership of critical systems and improved them significantly.", date: "1 month ago" },
@@ -221,7 +230,7 @@ const ProfilePage = () => {
               <div className="sticky top-24 space-y-8 pr-10">
                 {/* Section nav */}
                 <nav className="space-y-1">
-                  {["About", "Skills", "Experience", "Education", "Portfolio", "Projects", "Activity"].map(s => (
+                  {["About", "Skills", "Experience", "Education", "Portfolio", "Listings", "Disputes", "Projects", "Activity"].map(s => (
                     <a key={s} href={`#${s.toLowerCase()}`} className="block py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
                       {s}
                     </a>
@@ -359,6 +368,57 @@ const ProfilePage = () => {
                     </motion.div>
                   ))}
                 </div>
+              </section>
+
+              {/* OFFERED LISTINGS */}
+              <section id="listings">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider">Offered Listings</h2>
+                  {isOwner && <button className="text-[10px] text-muted-foreground hover:text-foreground">+ New Listing</button>}
+                </div>
+                <div className="space-y-3">
+                  {profileData.offeredListings.map((listing) => (
+                    <div key={listing.id} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-sm font-medium text-foreground">{listing.title}</h3>
+                          <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                            listing.status === "Active" ? "border-skill-green/20 text-skill-green" : "border-border text-muted-foreground"
+                          }`}>{listing.status}</span>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">{listing.category} · {listing.views} views · {listing.inquiries} inquiries</p>
+                      </div>
+                      <span className="font-mono text-sm text-foreground shrink-0">{listing.price}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* DISPUTES */}
+              <section id="disputes">
+                <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-6">Disputes</h2>
+                {profileData.disputes.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No disputes on record.</p>
+                ) : (
+                  <div className="grid gap-px bg-border rounded-xl overflow-hidden">
+                    {profileData.disputes.map((d) => (
+                      <div key={d.id} className="flex items-center justify-between p-4 bg-card">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground">{d.title}</p>
+                          <p className="text-[10px] text-muted-foreground">vs {d.opponent} · {d.date}</p>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="font-mono text-xs text-muted-foreground">{d.sp} SP</span>
+                          <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                            d.status === "Resolved" 
+                              ? d.outcome === "Favor" ? "border-skill-green/20 text-skill-green" : "border-destructive/20 text-destructive"
+                              : "border-border text-muted-foreground"
+                          }`}>{d.status === "Resolved" ? `${d.outcome}` : d.status}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </section>
 
               {/* RECOMMENDATIONS */}

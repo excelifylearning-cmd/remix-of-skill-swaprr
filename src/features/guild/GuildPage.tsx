@@ -62,24 +62,32 @@ const mockGuild = {
     { id: 2, title: "Mobile App UI Kit", status: "Planning", members: 3, deadline: "2026-04-01", sp: 1800, lead: "Carlos M." },
     { id: 3, title: "SaaS Dashboard Redesign", status: "Review", members: 5, deadline: "2026-03-12", sp: 3200, lead: "Lena S." },
   ],
-  treasury: {
-    balance: 145000,
-    monthlyIncome: 12400,
-    monthlyExpense: 3200,
-    recentTransactions: [
-      { desc: "Guild War prize (vs Code Ninjas)", amount: 5000, date: "Mar 5" },
-      { desc: "Member payout — Maya K.", amount: -1200, date: "Mar 3" },
-      { desc: "Project completion bonus", amount: 3400, date: "Feb 28" },
-      { desc: "Member payout — Carlos M.", amount: -800, date: "Feb 25" },
-    ],
+  achievements: [
+    { name: "Top 5 Guild", date: "Mar 2026", icon: "🏆" },
+    { name: "100+ Gigs", date: "Feb 2026", icon: "💼" },
+    { name: "War Streak x3", date: "Feb 2026", icon: "🔥" },
+    { name: "Founding Guild", date: "Jun 2024", icon: "⭐" },
+  ],
+  spotlight: {
+    member: "Suki T.",
+    avatar: "ST",
+    reason: "Most gigs completed this month — 14 gigs, 4.9 avg rating",
+    elo: 1540,
   },
-  pendingApplications: [
-    { name: "Jordan P.", elo: 1420, skills: ["UI Design", "Figma"], appliedAt: "2 days ago" },
-    { name: "Nina K.", elo: 1380, skills: ["Illustration", "Branding"], appliedAt: "4 days ago" },
+  openRoles: [
+    { title: "UI/UX Designer", level: "Mid", description: "Looking for a Figma expert to join our product team.", applicants: 4 },
+    { title: "Motion Designer", level: "Senior", description: "After Effects / Lottie animations for client projects.", applicants: 1 },
+  ],
+  skillDistribution: [
+    { skill: "UI Design", members: 42 },
+    { skill: "UX Research", members: 28 },
+    { skill: "Illustration", members: 18 },
+    { skill: "Motion Design", members: 15 },
+    { skill: "Branding", members: 25 },
   ],
 };
 
-const tabs = ["Overview", "Members", "Projects", "Wars", "Management"] as const;
+const tabs = ["Overview", "Members", "Projects", "Wars"] as const;
 type Tab = typeof tabs[number];
 
 const GuildPage = () => {
@@ -87,7 +95,6 @@ const GuildPage = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("Overview");
   const guild = mockGuild;
-  const isLeader = true; // template: leader check
 
   return (
     <PageTransition>
@@ -143,7 +150,7 @@ const GuildPage = () => {
         <section className="px-6 mt-8">
           <div className="max-w-5xl mx-auto border-b border-border">
             <div className="flex gap-1 overflow-x-auto -mb-px">
-              {tabs.filter(t => t !== "Management" || isLeader).map(tab => (
+              {tabs.map(tab => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -302,7 +309,6 @@ const GuildPage = () => {
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider">Guild Projects</h2>
-                  {isLeader && <button className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground transition-colors"><Plus size={12} /> New Project</button>}
                 </div>
                 <div className="space-y-3">
                   {guild.projects.map(p => (
@@ -357,106 +363,81 @@ const GuildPage = () => {
               </div>
             )}
 
-            {/* MANAGEMENT (Leader only) */}
-            {activeTab === "Management" && isLeader && (
-              <div className="space-y-12">
-                {/* Treasury */}
-                <div>
-                  <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-6">Treasury</h2>
-                  <div className="grid sm:grid-cols-3 gap-4 mb-6">
-                    <div className="rounded-xl border border-border bg-card p-4">
-                      <p className="font-mono text-2xl font-bold text-foreground">{guild.treasury.balance.toLocaleString()}</p>
-                      <p className="text-[10px] text-muted-foreground">SP Balance</p>
-                    </div>
-                    <div className="rounded-xl border border-border bg-card p-4">
-                      <p className="font-mono text-2xl font-bold text-skill-green">+{guild.treasury.monthlyIncome.toLocaleString()}</p>
-                      <p className="text-[10px] text-muted-foreground">Monthly Income</p>
-                    </div>
-                    <div className="rounded-xl border border-border bg-card p-4">
-                      <p className="font-mono text-2xl font-bold text-muted-foreground">-{guild.treasury.monthlyExpense.toLocaleString()}</p>
-                      <p className="text-[10px] text-muted-foreground">Monthly Expense</p>
-                    </div>
-                  </div>
-                  <div className="grid gap-px bg-border rounded-xl overflow-hidden">
-                    {guild.treasury.recentTransactions.map((t, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 bg-card text-xs">
-                        <span className="text-muted-foreground">{t.desc}</span>
-                        <div className="flex items-center gap-4">
-                          <span className={`font-mono ${t.amount > 0 ? "text-skill-green" : "text-muted-foreground"}`}>
-                            {t.amount > 0 ? "+" : ""}{t.amount.toLocaleString()} SP
-                          </span>
-                          <span className="text-muted-foreground">{t.date}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+          </div>
+        </section>
 
-                {/* Pending Applications */}
-                <div>
-                  <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-6">
-                    Pending Applications ({guild.pendingApplications.length})
-                  </h2>
-                  <div className="space-y-3">
-                    {guild.pendingApplications.map((app, i) => (
-                      <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-2 font-mono text-xs font-bold text-foreground">
-                          {app.name.split(" ").map(n => n[0]).join("")}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground">{app.name}</p>
-                          <p className="text-[10px] text-muted-foreground">{app.elo} ELO · {app.skills.join(", ")} · Applied {app.appliedAt}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <button className="rounded-lg bg-foreground px-3 py-1.5 text-[10px] font-semibold text-background">Accept</button>
-                          <button className="rounded-lg border border-border px-3 py-1.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors">Decline</button>
-                        </div>
-                      </div>
-                    ))}
+        {/* ─── EXTRA SECTIONS (always visible) ─── */}
+        <section className="px-6 pb-16">
+          <div className="max-w-5xl mx-auto space-y-12">
+            
+            {/* Achievements */}
+            <div>
+              <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-4">Achievements</h2>
+              <div className="flex flex-wrap gap-3">
+                {guild.achievements.map((a, i) => (
+                  <div key={i} className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-3">
+                    <span className="text-lg">{a.icon}</span>
+                    <div>
+                      <p className="text-xs font-medium text-foreground">{a.name}</p>
+                      <p className="text-[10px] text-muted-foreground">{a.date}</p>
+                    </div>
                   </div>
-                </div>
-
-                {/* Member Management */}
-                <div>
-                  <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-6">Member Management</h2>
-                  <div className="grid gap-px bg-border rounded-xl overflow-hidden">
-                    {[...guild.leaders, ...guild.members].map(member => (
-                      <div key={member.id} className="flex items-center gap-4 p-3 bg-card">
-                        <div className="flex h-8 w-8 items-center justify-center rounded bg-surface-2 font-mono text-[10px] font-bold text-foreground">
-                          {member.avatar}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-foreground">{member.name}</p>
-                        </div>
-                        <span className="text-[10px] text-muted-foreground">{member.role}</span>
-                        <span className="font-mono text-[10px] text-muted-foreground">{member.elo}</span>
-                        <button className="text-muted-foreground hover:text-foreground transition-colors">
-                          <MoreHorizontal size={14} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Guild Settings */}
-                <div>
-                  <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-4">Settings</h2>
-                  <div className="space-y-3">
-                    {[
-                      { label: "Guild Name", value: guild.name },
-                      { label: "Category", value: guild.category },
-                      { label: "Visibility", value: guild.isPublic ? "Public" : "Private" },
-                      { label: "Min ELO Requirement", value: "1300" },
-                    ].map((setting, i) => (
-                      <div key={i} className="flex items-center justify-between py-3 border-b border-border last:border-0">
-                        <span className="text-xs text-muted-foreground">{setting.label}</span>
-                        <span className="text-xs font-medium text-foreground">{setting.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
-            )}
+            </div>
+
+            {/* Member Spotlight */}
+            <div>
+              <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-4">Member Spotlight</h2>
+              <div className="flex items-center gap-4 p-5 rounded-xl border border-border bg-card">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-2 font-mono text-sm font-bold text-foreground">
+                  {guild.spotlight.avatar}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground">{guild.spotlight.member}</p>
+                  <p className="text-xs text-muted-foreground">{guild.spotlight.reason}</p>
+                </div>
+                <span className="font-mono text-xs text-muted-foreground shrink-0">{guild.spotlight.elo} ELO</span>
+              </div>
+            </div>
+
+            {/* Skill Distribution */}
+            <div>
+              <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-4">Skill Distribution</h2>
+              <div className="space-y-3">
+                {guild.skillDistribution.map((s, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <span className="text-xs text-muted-foreground w-28 shrink-0">{s.skill}</span>
+                    <div className="flex-1 h-1.5 rounded-full bg-surface-2 overflow-hidden">
+                      <div className="h-full rounded-full bg-foreground" style={{ width: `${(s.members / guild.totalMembers) * 100}%` }} />
+                    </div>
+                    <span className="font-mono text-[10px] text-muted-foreground w-12 text-right">{s.members}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Open Roles / Recruiting */}
+            <div>
+              <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-4">Open Roles</h2>
+              <div className="space-y-3">
+                {guild.openRoles.map((role, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-sm font-medium text-foreground">{role.title}</h3>
+                        <span className="rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground">{role.level}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{role.description}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="font-mono text-xs text-muted-foreground">{role.applicants} applicants</p>
+                      <button className="mt-1 text-[10px] text-foreground hover:underline">Apply</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 

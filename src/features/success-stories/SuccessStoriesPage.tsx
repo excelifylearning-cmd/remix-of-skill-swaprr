@@ -242,7 +242,7 @@ const SuccessStoriesPage = () => {
               >
                 <div className="aspect-video relative">
                   <img src={featuredStories[activeStory].coverImage} alt="" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-card/60" />
                   <div className="absolute bottom-4 left-4 right-4">
                     <div className="flex flex-wrap gap-2">
                       {featuredStories[activeStory].tags.map(tag => (
@@ -314,9 +314,9 @@ const SuccessStoriesPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className="rounded-2xl border border-border bg-card p-6 hover:border-skill-green/30 transition-colors"
+                  className="rounded-2xl border border-border bg-card p-6 hover:border-foreground/20 transition-colors"
                 >
-                  <stat.icon size={24} className="mb-3 text-skill-green" />
+                  <stat.icon size={24} className="mb-3 text-muted-foreground" />
                   <p className="font-heading text-4xl font-black text-foreground">{stat.value}</p>
                   <p className="text-sm font-semibold text-foreground mt-1">{stat.label}</p>
                   <p className="text-xs text-muted-foreground">{stat.description}</p>
@@ -355,13 +355,13 @@ const SuccessStoriesPage = () => {
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-foreground">{story.name}</h3>
-                      <p className="text-[10px] text-skill-green font-medium">{story.role}</p>
+                      <p className="text-[10px] text-foreground font-medium">{story.role}</p>
                     </div>
                   </div>
                   <p className="mb-3 text-[10px] text-muted-foreground">From: {story.from}</p>
                   <p className="mb-4 text-xs text-muted-foreground italic">"{story.quote}"</p>
                   <div className="flex items-center justify-between text-[10px]">
-                    <span className="rounded-full bg-skill-green/10 px-2 py-0.5 font-semibold text-skill-green">+{story.increase}</span>
+                    <span className="rounded-full bg-surface-2 px-2 py-0.5 font-semibold text-foreground">+{story.increase}</span>
                     <span className="text-muted-foreground">{story.swaps} swaps</span>
                   </div>
                 </motion.div>
@@ -428,8 +428,8 @@ const SuccessStoriesPage = () => {
                 >
                   <div className="mb-4 flex items-center gap-3">
                     <span className="rounded-xl bg-surface-2 px-4 py-2 text-xs font-semibold text-muted-foreground">{journey.from}</span>
-                    <ArrowRight size={16} className="text-skill-green" />
-                    <span className="rounded-xl bg-skill-green/10 px-4 py-2 text-xs font-semibold text-skill-green">{journey.to}</span>
+                    <ArrowRight size={16} className="text-muted-foreground" />
+                    <span className="rounded-xl bg-surface-2 px-4 py-2 text-xs font-semibold text-foreground">{journey.to}</span>
                   </div>
                   <div className="mb-3 flex items-center gap-4 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><Users size={12} /> {journey.swappers.toLocaleString()} swappers</span>
@@ -528,7 +528,7 @@ const SuccessStoriesPage = () => {
         <section className="py-20 border-t border-border bg-surface-1">
           <div className="mx-auto max-w-7xl px-6">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-10 text-center">
-              <span className="mb-3 inline-block rounded-full border border-skill-green/20 bg-skill-green/5 px-4 py-1.5 font-mono text-xs text-skill-green">
+              <span className="mb-3 inline-block rounded-full border border-border bg-surface-2 px-4 py-1.5 font-mono text-xs text-muted-foreground">
                 <GraduationCap size={12} className="inline mr-1.5 -mt-0.5" /> Academic Excellence
               </span>
               <h2 className="font-heading text-3xl font-bold text-foreground">University Success Stories</h2>
@@ -542,10 +542,10 @@ const SuccessStoriesPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className="rounded-2xl border border-border bg-card p-5 hover:border-skill-green/30 transition-colors"
+                  className="rounded-2xl border border-border bg-card p-5 hover:border-foreground/20 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-skill-green/10 font-heading text-xl font-black text-skill-green">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-surface-2 font-heading text-xl font-black text-foreground">
                       {uni.logo}
                     </div>
                     <div className="flex-1">
