@@ -314,9 +314,9 @@ const SuccessStoriesPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className="rounded-2xl border border-border bg-card p-6 hover:border-badge-gold/30 transition-colors"
+                  className="rounded-2xl border border-border bg-card p-6 hover:border-skill-green/30 transition-colors"
                 >
-                  <stat.icon size={24} className="mb-3 text-badge-gold" />
+                  <stat.icon size={24} className="mb-3 text-skill-green" />
                   <p className="font-heading text-4xl font-black text-foreground">{stat.value}</p>
                   <p className="text-sm font-semibold text-foreground mt-1">{stat.label}</p>
                   <p className="text-xs text-muted-foreground">{stat.description}</p>
