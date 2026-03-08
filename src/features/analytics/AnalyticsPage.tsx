@@ -13,22 +13,30 @@ import {
 import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
 
-const useCountUp = (end: number, duration = 2000) => {
+const CountUpCard = ({ ci, i }: { ci: any; i: number }) => {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true });
   useEffect(() => {
     if (!inView) return;
+    const end = ci.value || 0;
     let start = 0;
-    const step = end / (duration / 16);
+    const step = end / (2500 / 16);
     const timer = setInterval(() => {
       start += step;
       if (start >= end) { setCount(end); clearInterval(timer); }
       else setCount(Math.floor(start));
     }, 16);
     return () => clearInterval(timer);
-  }, [inView, end, duration]);
-  return { count, ref };
+  }, [inView, ci.value]);
+  return (
+    <motion.div ref={ref} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="rounded-2xl border border-border bg-card p-6 text-center">
+      <ci.icon size={22} className="mx-auto mb-3 text-muted-foreground" />
+      <p className="font-heading text-3xl font-black text-foreground">{count.toLocaleString()}{ci.suffix}</p>
+      <p className="text-xs font-semibold text-foreground mt-1">{ci.metric}</p>
+      <p className="text-[10px] text-muted-foreground mt-1">{ci.desc}</p>
+    </motion.div>
+  );
 };
 
 const AnalyticsPage = () => {
