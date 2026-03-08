@@ -96,9 +96,16 @@ const ContactPage = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep(2)) return;
+
+    // Save to database
+    await supabase.from("contact_submissions").insert({
+      user_id: user?.id || null,
+      name, email, phone: phone || null, topic, subject: subject || null, priority, message,
+    });
+
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
