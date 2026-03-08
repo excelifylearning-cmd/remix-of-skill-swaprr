@@ -115,6 +115,30 @@ const results = [
 
 const EnterprisePage = () => {
   const [activeUseCase, setActiveUseCase] = useState(0);
+  const [demoFirst, setDemoFirst] = useState("");
+  const [demoLast, setDemoLast] = useState("");
+  const [demoEmail, setDemoEmail] = useState("");
+  const [demoCompany, setDemoCompany] = useState("");
+  const [demoTeamSize, setDemoTeamSize] = useState("");
+  const [demoUseCase, setDemoUseCase] = useState("");
+  const [demoMessage, setDemoMessage] = useState("");
+  const [demoSubmitted, setDemoSubmitted] = useState(false);
+
+  const handleDemoSubmit = async () => {
+    if (!demoEmail.trim() || !demoFirst.trim()) { toast.error("Please fill in required fields"); return; }
+    const { error } = await supabase.from("demo_bookings").insert({
+      first_name: demoFirst.trim(),
+      last_name: demoLast.trim(),
+      email: demoEmail.trim(),
+      company_name: demoCompany.trim(),
+      team_size: demoTeamSize || "Not specified",
+      use_case: demoUseCase || "Not specified",
+      message: demoMessage.trim(),
+    });
+    if (error) { toast.error("Failed to submit. Please try again."); return; }
+    setDemoSubmitted(true);
+    toast.success("Demo request submitted! We'll contact you shortly.");
+  };
 
   return (
     <PageTransition>
