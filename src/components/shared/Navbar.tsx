@@ -169,12 +169,25 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="flex gap-3 mt-2">
-                <Link to="/login" className="flex-1 rounded-full border border-border px-5 py-2.5 text-center text-sm text-muted-foreground">
-                  Log In
-                </Link>
-                <Link to="/signup" className="flex-1 rounded-full bg-foreground px-5 py-2.5 text-center text-sm font-medium text-background">
-                  Sign Up
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <Link to="/dashboard" className="flex-1 rounded-full border border-border px-5 py-2.5 text-center text-sm text-muted-foreground">
+                      Dashboard
+                    </Link>
+                    <button onClick={() => { logout(); navigate("/"); }} className="flex-1 rounded-full border border-destructive/30 px-5 py-2.5 text-center text-sm text-destructive">
+                      Log Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" className="flex-1 rounded-full border border-border px-5 py-2.5 text-center text-sm text-muted-foreground">
+                      Log In
+                    </Link>
+                    <Link to="/signup" className="flex-1 rounded-full bg-foreground px-5 py-2.5 text-center text-sm font-medium text-background">
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
