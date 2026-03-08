@@ -12,7 +12,7 @@ import TeamSection from "./sections/TeamSection";
 import CommunityStatsSection from "./sections/CommunityStatsSection";
 import ValuesCultureSection from "./sections/ValuesCultureSection";
 import AboutCTASection from "./sections/AboutCTASection";
-import CTAFooterSection from "@/features/home/sections/CTAFooterSection";
+import Footer from "@/components/shared/Footer";
 
 const AboutPage = () => (
   <PageTransition>

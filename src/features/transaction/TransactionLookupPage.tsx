@@ -19,7 +19,7 @@ import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
-import CTAFooterSection from "@/features/home/sections/CTAFooterSection";
+import Footer from "@/components/shared/Footer";
 
 const formatTemplates: Record<string, { icon: any; label: string; color: string }> = {
   "Direct Swap": { icon: ArrowLeftRight, label: "Direct Swap", color: "text-court-blue" },
