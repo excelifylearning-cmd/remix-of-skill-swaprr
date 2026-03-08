@@ -465,7 +465,7 @@ const ForumsPage = () => {
   // Submit comment
   const handleSubmitComment = async () => {
     if (!user) {
-      toast.error("Please log in to comment");
+      setShowLoginPrompt(true);
       return;
     }
     if (!replyText.trim() || !selectedThread) return;
