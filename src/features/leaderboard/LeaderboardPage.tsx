@@ -6,11 +6,8 @@ import {
   ChevronRight, Sparkles, Eye, History, ArrowRight, ExternalLink,
   Clock, Hash, Bookmark
 } from "lucide-react";
-import Navbar from "@/components/shared/Navbar";
-import CustomCursor from "@/components/shared/CustomCursor";
-import CursorGlow from "@/components/shared/CursorGlow";
+import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
-import Footer from "@/components/shared/Footer";
 
 const tabs = ["Global", "By Skill", "Guilds", "Judges", "Rising Stars", "Universities", "Hall of Fame"];
 
@@ -167,9 +164,7 @@ const LeaderboardPage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <CustomCursor />
-        <CursorGlow />
-        <Navbar />
+        <AppNav backLabel="Leaderboard" />
 
         {/* Hero */}
         <section className="relative pt-32 pb-20 overflow-hidden">
@@ -682,7 +677,7 @@ const LeaderboardPage = () => {
           </div>
         </section>
 
-        <Footer />
+        
       </div>
     </PageTransition>
   );

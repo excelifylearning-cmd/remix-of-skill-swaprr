@@ -7,8 +7,7 @@ import {
   Github, Linkedin, Twitter, Camera, X, Save,
   Scale
 } from "lucide-react";
-import Navbar from "@/components/shared/Navbar";
-import Footer from "@/components/shared/Footer";
+import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
@@ -120,7 +119,7 @@ const ProfilePage = () => {
     return (
       <PageTransition>
         <div className="min-h-screen bg-background">
-          <Navbar />
+          <AppNav />
           <div className="flex items-center justify-center pt-40">
             <p className="text-sm text-muted-foreground">Loading profile...</p>
           </div>
@@ -133,7 +132,7 @@ const ProfilePage = () => {
     return (
       <PageTransition>
         <div className="min-h-screen bg-background">
-          <Navbar />
+          <AppNav />
           <div className="flex flex-col items-center justify-center pt-40 gap-4">
             <p className="text-sm text-muted-foreground">Profile not found.</p>
             <Link to="/" className="text-xs text-foreground hover:underline">Go Home</Link>
@@ -153,7 +152,7 @@ const ProfilePage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <Navbar />
+        <AppNav />
 
         {/* ─── HEADER ─── */}
         <section className="pt-24 pb-0 px-6">
@@ -544,7 +543,7 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        <Footer />
+        
       </div>
     </PageTransition>
   );

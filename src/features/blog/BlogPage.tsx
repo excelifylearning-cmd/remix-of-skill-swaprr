@@ -10,11 +10,8 @@ import {
   ArrowUp, Layers, Globe, PenTool, Lightbulb, Shield, Users, Target,
   BarChart3, Hash, Mic, Coffee, Loader2, Lock
 } from "lucide-react";
-import Navbar from "@/components/shared/Navbar";
-import CustomCursor from "@/components/shared/CustomCursor";
-import CursorGlow from "@/components/shared/CursorGlow";
+import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
-import Footer from "@/components/shared/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
@@ -447,9 +444,7 @@ const BlogPage = () => {
     return (
       <PageTransition>
         <div className="min-h-screen bg-background">
-          <CustomCursor />
-          <CursorGlow />
-          <Navbar />
+          <AppNav backLabel="Blog" />
 
           <div className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-border">
             <motion.div className="h-full bg-foreground" initial={{ width: "0%" }} animate={{ width: "30%" }} />
@@ -681,7 +676,7 @@ const BlogPage = () => {
     return (
       <PageTransition>
         <div className="min-h-screen bg-background flex flex-col">
-          <Navbar />
+          <AppNav />
           <div className="flex-1 flex items-center justify-center px-6">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md">
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-surface-2 border border-border">
@@ -697,7 +692,6 @@ const BlogPage = () => {
               </p>
             </motion.div>
           </div>
-          <Footer />
         </div>
       </PageTransition>
     );
@@ -707,9 +701,7 @@ const BlogPage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <CustomCursor />
-        <CursorGlow />
-        <Navbar />
+        <AppNav backLabel="Blog" />
 
         {/* ===== SECTION 1: HERO ===== */}
         <section className="relative pt-28 pb-20 overflow-hidden">
@@ -1148,7 +1140,7 @@ const BlogPage = () => {
             </motion.div>
           </div>
         </section>
-        <Footer />
+        
       </div>
     </PageTransition>
   );

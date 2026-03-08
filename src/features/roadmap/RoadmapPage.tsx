@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 import {
   CheckCircle2, Clock, Circle, Zap, Target, Users, Shield, Trophy,
   Globe, Building2, Smartphone, Bot, ArrowRight, Rocket, Eye, Heart,
@@ -14,6 +15,8 @@ import Footer from "@/components/shared/Footer";
 
 import ChangelogSection from "@/features/roadmap/sections/ChangelogSection";
 import FeatureVotingSection from "@/features/roadmap/sections/FeatureVotingSection";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 
 const NEXT_UPDATE = new Date("2026-04-15T00:00:00");
 
@@ -83,9 +86,11 @@ const statusIcon = (s: string) => {
 };
 
 const RoadmapPage = () => {
+  const { user } = useAuth();
   const [featureName, setFeatureName] = useState("");
   const [featureIdea, setFeatureIdea] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -105,12 +110,25 @@ const RoadmapPage = () => {
     return () => clearInterval(id);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setFeatureName("");
-    setFeatureIdea("");
-    setTimeout(() => setSubmitted(false), 3000);
+    if (!featureIdea.trim()) return;
+    setSubmitting(true);
+    const { error } = await supabase.from("feature_requests").insert({
+      title: featureName.trim() || "Community Suggestion",
+      description: featureIdea.trim(),
+      category: "community",
+      status: "open",
+    });
+    if (error) {
+      toast.error("Failed to submit suggestion");
+    } else {
+      setSubmitted(true);
+      setFeatureName("");
+      setFeatureIdea("");
+      setTimeout(() => setSubmitted(false), 3000);
+    }
+    setSubmitting(false);
   };
 
   return (
@@ -347,7 +365,7 @@ const RoadmapPage = () => {
               />
               <motion.button
                 type="submit"
-                disabled={!featureIdea.trim()}
+                disabled={!featureIdea.trim() || submitting}
                 className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all ${
                   featureIdea.trim() ? "bg-foreground text-background" : "bg-muted text-muted-foreground cursor-not-allowed"
                 }`}

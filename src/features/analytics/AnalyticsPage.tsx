@@ -9,11 +9,8 @@ import {
   Server, DollarSign, Palette, Code,
   ThumbsUp, FileText, TrendingDown
 } from "lucide-react";
-import Navbar from "@/components/shared/Navbar";
-import CustomCursor from "@/components/shared/CustomCursor";
-import CursorGlow from "@/components/shared/CursorGlow";
+import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
-import Footer from "@/components/shared/Footer";
 
 const useCountUp = (end: number, duration = 2000) => {
   const [count, setCount] = useState(0);
@@ -213,9 +210,7 @@ const AnalyticsPage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <CustomCursor />
-        <CursorGlow />
-        <Navbar />
+        <AppNav backLabel="Analytics" />
 
         {/* 1. HERO */}
         <section className="pt-32 pb-16">
@@ -588,7 +583,7 @@ const AnalyticsPage = () => {
             </div>
           </div>
         </section>
-        <Footer />
+        
       </div>
     </PageTransition>
   );

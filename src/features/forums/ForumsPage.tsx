@@ -11,11 +11,8 @@ import {
   Calendar, Target, Swords, GraduationCap, BookOpen, Lightbulb, Megaphone,
   ThumbsDown, Mic, Video, PenTool, ArrowUp, ExternalLink, Medal, Wifi, Loader2
 } from "lucide-react";
-import Navbar from "@/components/shared/Navbar";
-import CustomCursor from "@/components/shared/CustomCursor";
-import CursorGlow from "@/components/shared/CursorGlow";
+import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
-import Footer from "@/components/shared/Footer";
 import LoginPrompt from "@/components/shared/LoginPrompt";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
@@ -598,9 +595,7 @@ const ForumsPage = () => {
     return (
       <PageTransition>
         <div className="min-h-screen bg-background">
-          <CustomCursor />
-          <CursorGlow />
-          <Navbar />
+          <AppNav backLabel="Forums" />
 
           <section className="pt-28 pb-20">
             <div className="mx-auto max-w-7xl px-6">
@@ -976,7 +971,7 @@ const ForumsPage = () => {
     return (
       <PageTransition>
         <div className="min-h-screen bg-background flex flex-col">
-          <Navbar />
+          <AppNav />
           <div className="flex-1 flex items-center justify-center px-6">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md">
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-surface-2 border border-border">
@@ -992,7 +987,6 @@ const ForumsPage = () => {
               </p>
             </motion.div>
           </div>
-          <Footer />
         </div>
       </PageTransition>
     );
@@ -1002,9 +996,7 @@ const ForumsPage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <CustomCursor />
-        <CursorGlow />
-        <Navbar />
+        <AppNav backLabel="Forums" />
 
         {/* HERO SECTION */}
         <section className="relative pt-28 pb-16 overflow-hidden">
@@ -1724,7 +1716,7 @@ const ForumsPage = () => {
             </div>
           </div>
         </section>
-        <Footer />
+        
         <LoginPrompt open={showLoginPrompt} onOpenChange={setShowLoginPrompt} message="Sign in to vote, comment, and participate in forum discussions." />
       </div>
     </PageTransition>

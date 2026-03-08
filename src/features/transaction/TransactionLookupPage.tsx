@@ -15,11 +15,8 @@ import {
   TrendingDown, RotateCcw, Package, Truck, CreditCard, Receipt,
   ClipboardCheck, ClipboardList, Sparkles, Wand2, Bot, Brain
 } from "lucide-react";
-import Navbar from "@/components/shared/Navbar";
-import CustomCursor from "@/components/shared/CustomCursor";
-import CursorGlow from "@/components/shared/CursorGlow";
+import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
-import Footer from "@/components/shared/Footer";
 
 const formatTemplates: Record<string, { icon: any; label: string; color: string }> = {
   "Direct Swap": { icon: ArrowLeftRight, label: "Direct Swap", color: "text-court-blue" },
@@ -269,9 +266,7 @@ const TransactionLookupPage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <CustomCursor />
-        <CursorGlow />
-        <Navbar />
+        <AppNav backLabel="Transaction" />
 
         {/* Hero */}
         <section className="relative pt-32 pb-16">
@@ -990,7 +985,7 @@ const TransactionLookupPage = () => {
           )}
         </AnimatePresence>
 
-        <Footer />
+        
       </div>
     </PageTransition>
   );
