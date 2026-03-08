@@ -158,6 +158,17 @@ const rankIcon = (r: number) => {
   return <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-2 font-mono text-xs font-bold text-muted-foreground">#{r}</span>;
 };
 
+const getTimeAgo = (dateStr: string) => {
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diff = Math.floor((now.getTime() - d.getTime()) / 86400000);
+  if (diff === 0) return "today";
+  if (diff === 1) return "1 day ago";
+  if (diff < 7) return `${diff} days ago`;
+  if (diff < 14) return "1 week ago";
+  return `${Math.floor(diff / 7)} weeks ago`;
+};
+
 const LeaderboardPage = () => {
   const [activeTab, setActiveTab] = useState("Global");
   const [timeframe, setTimeframe] = useState<"all" | "month" | "week">("all");
@@ -251,7 +262,7 @@ const LeaderboardPage = () => {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="flex flex-wrap gap-6">
                   {[
                     { value: "12,450", label: "Active Users" },
-                    { value: "1,850", label: "Top ELO" },
+                    { value: displayProfiles[0]?.elo?.toLocaleString() || "1,850", label: "Top ELO" },
                     { value: "50+", label: "Guilds" },
                     { value: "8", label: "Universities" },
                   ].map((s) => (
@@ -269,10 +280,10 @@ const LeaderboardPage = () => {
                   {/* #2 */}
                   <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="rounded-2xl border border-border bg-card p-4 text-center">
                     <Medal size={20} className="mx-auto mb-2 text-muted-foreground" />
-                    <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-surface-2 font-mono text-sm font-bold text-foreground">AK</div>
-                    <p className="text-xs font-bold text-foreground">Aisha K.</p>
-                    <p className="text-[10px] text-muted-foreground">Stanford</p>
-                    <p className="mt-1 font-mono text-sm font-black text-foreground">1,790</p>
+                    <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-surface-2 font-mono text-sm font-bold text-foreground">{displayProfiles[1]?.avatar || "AK"}</div>
+                    <p className="text-xs font-bold text-foreground">{displayProfiles[1]?.name || "Aisha K."}</p>
+                    <p className="text-[10px] text-muted-foreground">{displayProfiles[1]?.university || "Stanford"}</p>
+                    <p className="mt-1 font-mono text-sm font-black text-foreground">{displayProfiles[1]?.elo?.toLocaleString() || "1,790"}</p>
                     <div className="mt-1 flex items-center justify-center gap-0.5 text-skill-green">
                       <ArrowUp size={10} />
                       <span className="font-mono text-[10px] font-bold">+18</span>
@@ -282,11 +293,11 @@ const LeaderboardPage = () => {
                   {/* #1 */}
                   <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="rounded-2xl border border-border bg-card p-5 text-center -mt-6">
                     <Crown size={24} className="mx-auto mb-2 text-foreground" />
-                    <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-surface-2 ring-2 ring-border font-mono text-base font-bold text-foreground">CL</div>
-                    <p className="text-sm font-bold text-foreground">Chen L.</p>
-                    <p className="text-[10px] text-muted-foreground">MIT</p>
-                    <span className="mt-1 inline-block rounded-full bg-court-blue/10 px-2 py-0.5 text-[9px] font-semibold text-court-blue">Diamond</span>
-                    <p className="mt-1 font-mono text-lg font-black text-foreground">1,850</p>
+                    <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-surface-2 ring-2 ring-border font-mono text-base font-bold text-foreground">{displayProfiles[0]?.avatar || "CL"}</div>
+                    <p className="text-sm font-bold text-foreground">{displayProfiles[0]?.name || "Chen L."}</p>
+                    <p className="text-[10px] text-muted-foreground">{displayProfiles[0]?.university || "MIT"}</p>
+                    <span className="mt-1 inline-block rounded-full bg-court-blue/10 px-2 py-0.5 text-[9px] font-semibold text-court-blue">{displayProfiles[0]?.tier || "Diamond"}</span>
+                    <p className="mt-1 font-mono text-lg font-black text-foreground">{displayProfiles[0]?.elo?.toLocaleString() || "1,850"}</p>
                     <div className="mt-1 flex items-center justify-center gap-0.5 text-skill-green">
                       <ArrowUp size={10} />
                       <span className="font-mono text-[10px] font-bold">+23</span>
@@ -296,10 +307,10 @@ const LeaderboardPage = () => {
                   {/* #3 */}
                   <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="rounded-2xl border border-border bg-card p-4 text-center">
                     <Medal size={20} className="mx-auto mb-2 text-orange-400" />
-                    <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-surface-2 font-mono text-sm font-bold text-foreground">MR</div>
-                    <p className="text-xs font-bold text-foreground">Marco R.</p>
-                    <p className="text-[10px] text-muted-foreground">Oxford</p>
-                    <p className="mt-1 font-mono text-sm font-black text-foreground">1,750</p>
+                    <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-surface-2 font-mono text-sm font-bold text-foreground">{displayProfiles[2]?.avatar || "MR"}</div>
+                    <p className="text-xs font-bold text-foreground">{displayProfiles[2]?.name || "Marco R."}</p>
+                    <p className="text-[10px] text-muted-foreground">{displayProfiles[2]?.university || "Oxford"}</p>
+                    <p className="mt-1 font-mono text-sm font-black text-foreground">{displayProfiles[2]?.elo?.toLocaleString() || "1,750"}</p>
                     <div className="mt-1 flex items-center justify-center gap-0.5 text-skill-green">
                       <ArrowUp size={10} />
                       <span className="font-mono text-[10px] font-bold">+12</span>
@@ -319,7 +330,7 @@ const LeaderboardPage = () => {
               animate={{ x: [0, -1600] }}
               transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
             >
-              {[...recentAchievements, ...recentAchievements].map((a, i) => (
+              {[...displayAchievements, ...displayAchievements].map((a, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm">
                   <span>{a.badge}</span>
                   <span className="font-semibold text-foreground">{a.user}</span>
@@ -409,7 +420,7 @@ const LeaderboardPage = () => {
                 <motion.div key="global" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                   {/* Top 3 Podium */}
                   <div className="mb-12 grid gap-4 md:grid-cols-3">
-                    {globalLeaders.slice(0, 3).map((user, i) => (
+                    {displayProfiles.slice(0, 3).map((user, i) => (
                       <motion.div
                         key={user.rank}
                         initial={{ opacity: 0, y: 40 }}
@@ -441,7 +452,7 @@ const LeaderboardPage = () => {
 
                   {/* Rank List */}
                   <div className="space-y-2">
-                    {globalLeaders.slice(3).map((user, i) => (
+                    {displayProfiles.slice(3).map((user, i) => (
                       <motion.div
                         key={user.rank}
                         initial={{ opacity: 0, x: -15 }}
@@ -493,7 +504,7 @@ const LeaderboardPage = () => {
 
               {activeTab === "Guilds" && (
                 <motion.div key="guilds" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
-                  {guildLeaders.map((g, i) => (
+                  {displayGuilds.map((g, i) => (
                     <motion.div key={g.name} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} className="rounded-2xl border border-border bg-card p-6">
                       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                         <div className="flex items-center gap-4">
@@ -629,7 +640,7 @@ const LeaderboardPage = () => {
               <div className="absolute left-6 top-0 bottom-0 w-px bg-border" />
 
               <div className="space-y-8">
-                {rankingHistory.map((week, wi) => (
+                {displayRankingHistory.map((week, wi) => (
                   <motion.div
                     key={week.date}
                     initial={{ opacity: 0, x: -20 }}
@@ -650,10 +661,10 @@ const LeaderboardPage = () => {
                         <span className="text-[10px] text-muted-foreground">· {week.changes.length} changes</span>
                       </div>
                       <div className="space-y-2">
-                        {week.changes.map((c) => (
+                        {week.changes.map((c: any) => (
                           <div key={c.name} className="flex items-center gap-3 text-sm">
                             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 font-mono text-[10px] font-bold text-muted-foreground">
-                              {c.name.split(" ").map(n => n[0]).join("")}
+                              {c.name.split(" ").map((n: string) => n[0]).join("")}
                             </div>
                             <span className="font-medium text-foreground">{c.name}</span>
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -738,18 +749,8 @@ const LeaderboardPage = () => {
             </div>
           </div>
         </section>
-const getTimeAgo = (dateStr: string) => {
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diff = Math.floor((now.getTime() - d.getTime()) / 86400000);
-  if (diff === 0) return "today";
-  if (diff === 1) return "1 day ago";
-  if (diff < 7) return `${diff} days ago`;
-  if (diff < 14) return "1 week ago";
-  return `${Math.floor(diff / 7)} weeks ago`;
-};
 
-
+        
       </div>
     </PageTransition>
   );
