@@ -449,32 +449,40 @@ const EnterprisePage = () => {
                 See how SkillSwappr Enterprise can transform your talent pipeline. 30-minute personalized demo.
               </motion.p>
             </div>
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <input type="text" placeholder="First name" className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
-                <input type="text" placeholder="Last name" className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
-              </div>
-              <input type="email" placeholder="Work email" className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
-              <input type="text" placeholder="Company name" className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
-              <select className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-muted-foreground focus:border-ring focus:outline-none">
-                <option>Team size</option>
-                <option>1-10</option>
-                <option>11-50</option>
-                <option>51-200</option>
-                <option>200+</option>
-              </select>
-              <select className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-muted-foreground focus:border-ring focus:outline-none">
-                <option>Primary use case</option>
-                <option>Consultation</option>
-                <option>Project-Based</option>
-                <option>Team Augmentation</option>
-                <option>Full-Time Hiring</option>
-              </select>
-              <textarea placeholder="Tell us about your needs..." className="h-24 w-full rounded-xl border border-border bg-card p-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none resize-none" />
-              <motion.button className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                Request Demo <ArrowRight size={16} />
-              </motion.button>
-            </motion.div>
+            {demoSubmitted ? (
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-4 rounded-2xl border border-skill-green/20 bg-skill-green/5 px-10 py-12 text-center">
+                <CheckCircle2 size={40} className="text-skill-green" />
+                <p className="font-heading text-xl font-bold text-foreground">Demo Request Received!</p>
+                <p className="text-sm text-muted-foreground">Our enterprise team will contact you within 4 hours to schedule your personalized demo.</p>
+              </motion.div>
+            ) : (
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <input type="text" placeholder="First name" value={demoFirst} onChange={(e) => setDemoFirst(e.target.value)} className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                  <input type="text" placeholder="Last name" value={demoLast} onChange={(e) => setDemoLast(e.target.value)} className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                </div>
+                <input type="email" placeholder="Work email" value={demoEmail} onChange={(e) => setDemoEmail(e.target.value)} className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                <input type="text" placeholder="Company name" value={demoCompany} onChange={(e) => setDemoCompany(e.target.value)} className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                <select value={demoTeamSize} onChange={(e) => setDemoTeamSize(e.target.value)} className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-muted-foreground focus:border-ring focus:outline-none">
+                  <option value="">Team size</option>
+                  <option value="1-10">1-10</option>
+                  <option value="11-50">11-50</option>
+                  <option value="51-200">51-200</option>
+                  <option value="200+">200+</option>
+                </select>
+                <select value={demoUseCase} onChange={(e) => setDemoUseCase(e.target.value)} className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-muted-foreground focus:border-ring focus:outline-none">
+                  <option value="">Primary use case</option>
+                  <option value="Consultation">Consultation</option>
+                  <option value="Project-Based">Project-Based</option>
+                  <option value="Team Augmentation">Team Augmentation</option>
+                  <option value="Full-Time Hiring">Full-Time Hiring</option>
+                </select>
+                <textarea placeholder="Tell us about your needs..." value={demoMessage} onChange={(e) => setDemoMessage(e.target.value)} className="h-24 w-full rounded-xl border border-border bg-card p-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none resize-none" />
+                <motion.button onClick={handleDemoSubmit} className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                  Request Demo <ArrowRight size={16} />
+                </motion.button>
+              </motion.div>
+            )}
             <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
               <span className="flex items-center gap-1.5"><Phone size={12} /> +1 (800) SKILL</span>
               <span className="flex items-center gap-1.5"><Mail size={12} /> enterprise@skillswappr.com</span>

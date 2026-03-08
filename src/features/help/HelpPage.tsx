@@ -1034,18 +1034,25 @@ const HelpPage = () => {
             <Lightbulb size={32} className="mx-auto mb-4 text-badge-gold" />
             <h2 className="mb-3 font-heading text-2xl font-bold text-foreground">Help Us Improve</h2>
             <p className="mb-8 text-sm text-muted-foreground">Was this help center useful? Share your feedback so we can make it even better.</p>
-            <div className="flex items-center justify-center gap-4">
-              {[
-                { icon: ThumbsUp, label: "Very Helpful", color: "skill-green" },
-                { icon: Star, label: "Somewhat Helpful", color: "badge-gold" },
-                { icon: ThumbsDown, label: "Needs Work", color: "alert-red" },
-              ].map((fb) => (
-                <motion.button key={fb.label} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className={`flex flex-col items-center gap-2 rounded-2xl border border-border bg-card px-6 py-4 hover:border-${fb.color}/30 transition-all`}>
-                  <fb.icon size={20} className={`text-${fb.color}`} />
-                  <span className="text-[10px] text-muted-foreground">{fb.label}</span>
-                </motion.button>
-              ))}
-            </div>
+            {feedbackSent ? (
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="inline-flex items-center gap-2 rounded-2xl border border-skill-green/20 bg-skill-green/5 px-8 py-4">
+                <CheckCircle2 size={20} className="text-skill-green" />
+                <span className="text-sm font-medium text-skill-green">Thanks for your feedback!</span>
+              </motion.div>
+            ) : (
+              <div className="flex items-center justify-center gap-4">
+                {[
+                  { icon: ThumbsUp, label: "Very Helpful", color: "skill-green", value: "very_helpful" },
+                  { icon: Star, label: "Somewhat Helpful", color: "badge-gold", value: "somewhat_helpful" },
+                  { icon: ThumbsDown, label: "Needs Work", color: "alert-red", value: "needs_work" },
+                ].map((fb) => (
+                  <motion.button key={fb.label} onClick={() => handleFeedback(fb.value)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className={`flex flex-col items-center gap-2 rounded-2xl border border-border bg-card px-6 py-4 hover:border-${fb.color}/30 transition-all`}>
+                    <fb.icon size={20} className={`text-${fb.color}`} />
+                    <span className="text-[10px] text-muted-foreground">{fb.label}</span>
+                  </motion.button>
+                ))}
+              </div>
+            )}
           </div>
         </section>
         <Footer />

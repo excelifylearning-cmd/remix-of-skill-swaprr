@@ -657,20 +657,28 @@ const PricingPage = () => {
             <Building2 size={32} className="mx-auto mb-4 text-muted-foreground" />
             <h2 className="mb-4 font-heading text-3xl font-bold text-foreground">Need Enterprise?</h2>
             <p className="mb-8 text-sm text-muted-foreground">Custom pricing for teams and organizations. Dedicated support, API access, and compliance tools included.</p>
-            <div className="space-y-3 text-left">
-              <input type="text" placeholder="Company name" className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
-              <input type="email" placeholder="Work email" className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
-              <select className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-muted-foreground focus:border-ring focus:outline-none">
-                <option>Team size</option>
-                <option>1-10</option>
-                <option>11-50</option>
-                <option>51-200</option>
-                <option>200+</option>
-              </select>
-              <motion.button className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                Get Custom Quote <ArrowRight size={16} />
-              </motion.button>
-            </div>
+            {entSubmitted ? (
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="inline-flex flex-col items-center gap-3 rounded-2xl border border-skill-green/20 bg-skill-green/5 px-10 py-8">
+                <CheckCircle2 size={32} className="text-skill-green" />
+                <p className="font-heading text-lg font-bold text-foreground">Request Received!</p>
+                <p className="text-sm text-muted-foreground">Our enterprise team will reach out within 24 hours.</p>
+              </motion.div>
+            ) : (
+              <div className="space-y-3 text-left">
+                <input type="text" placeholder="Company name" value={entCompany} onChange={(e) => setEntCompany(e.target.value)} className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                <input type="email" placeholder="Work email" value={entEmail} onChange={(e) => setEntEmail(e.target.value)} className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                <select value={entTeamSize} onChange={(e) => setEntTeamSize(e.target.value)} className="h-12 w-full rounded-xl border border-border bg-card px-4 text-sm text-muted-foreground focus:border-ring focus:outline-none">
+                  <option value="">Team size</option>
+                  <option value="1-10">1-10</option>
+                  <option value="11-50">11-50</option>
+                  <option value="51-200">51-200</option>
+                  <option value="200+">200+</option>
+                </select>
+                <motion.button onClick={handleEnterpriseQuote} className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                  Get Custom Quote <ArrowRight size={16} />
+                </motion.button>
+              </div>
+            )}
           </div>
         </section>
         <Footer />
