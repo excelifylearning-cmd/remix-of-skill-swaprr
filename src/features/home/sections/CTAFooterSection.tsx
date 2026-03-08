@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { validateEmail } from "@/lib/email-validation";
 import { motion } from "framer-motion";
 import { ArrowRight, Github, Twitter, Linkedin, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -42,6 +43,7 @@ const socials = [
 
 const CTAFooterSection = () => {
   const [email, setEmail] = useState("");
+  const [emailErr, setEmailErr] = useState("");
 
   return (
     <section className="relative overflow-hidden bg-surface-1">
@@ -88,10 +90,21 @@ const CTAFooterSection = () => {
               className="flex h-12 items-center justify-center gap-2 rounded-full bg-foreground px-6 text-sm font-semibold text-background"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                if (!email.trim()) { setEmailErr("Email is required."); return; }
+                const result = validateEmail(email);
+                if (result !== true) { setEmailErr(result); return; }
+                setEmailErr("");
+              }}
             >
               Get Started <ArrowRight size={16} />
             </motion.button>
           </motion.div>
+          {emailErr && (
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-xs text-destructive">
+              {emailErr}
+            </motion.p>
+          )}
 
           <motion.p
             initial={{ opacity: 0 }}

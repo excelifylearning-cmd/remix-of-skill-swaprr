@@ -11,6 +11,7 @@ import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import CTAFooterSection from "@/features/home/sections/CTAFooterSection";
+import { validateEmail } from "@/lib/email-validation";
 
 const contactMethods = [
   { icon: Mail, title: "Email Us", desc: "hello@skillswappr.com", detail: "Response within 24 hours", color: "text-court-blue", bg: "bg-court-blue/10" },
@@ -71,7 +72,10 @@ const ContactPage = () => {
     if (step === 1) {
       if (!name.trim()) newErrors.name = "Name is required";
       if (!email.trim()) newErrors.email = "Email is required";
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Invalid email address";
+      else {
+        const result = validateEmail(email);
+        if (result !== true) newErrors.email = result;
+      }
     }
     if (step === 2) {
       if (!message.trim()) newErrors.message = "Please enter a message";

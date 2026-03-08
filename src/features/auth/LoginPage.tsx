@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Github } from "lucide-react";
 import PageTransition from "@/components/shared/PageTransition";
+import { validateEmail } from "@/lib/email-validation";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
+  const emailError = useMemo(() => email.trim() ? (validateEmail(email) === true ? "" : validateEmail(email) as string) : "", [email]);
 
   return (
     <PageTransition>
@@ -27,8 +29,9 @@ const LoginPage = () => {
             <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
               <div className="relative">
                 <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+                <input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} className={`h-12 w-full rounded-xl border ${emailError ? "border-destructive" : "border-border"} bg-surface-1 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none`} />
               </div>
+              {emailError && <p className="text-xs text-destructive -mt-2">{emailError}</p>}
               <div className="relative">
                 <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input type={showPass ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 w-full rounded-xl border border-border bg-surface-1 pl-11 pr-11 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
