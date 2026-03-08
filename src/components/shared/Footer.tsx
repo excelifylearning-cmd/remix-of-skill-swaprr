@@ -4,33 +4,21 @@ import { Link } from "react-router-dom";
 
 const footerLinks = {
   Platform: [
-    { label: "Marketplace", href: "/marketplace" },
     { label: "Features", href: "/features" },
     { label: "Pricing", href: "/pricing" },
     { label: "How It Works", href: "/how-it-works" },
     { label: "Roadmap", href: "/roadmap" },
-    { label: "Dashboard", href: "/dashboard" },
   ],
-  Community: [
-    { label: "Forums", href: "/forums" },
-    { label: "Blog", href: "/blog" },
+  Company: [
+    { label: "About", href: "/about" },
     { label: "Success Stories", href: "/success-stories" },
-    { label: "Leaderboard", href: "/leaderboard" },
-    { label: "Events", href: "/events" },
-    { label: "Guilds", href: "/guild/demo" },
+    { label: "Contact Us", href: "/contact" },
+    { label: "Enterprise", href: "/enterprise" },
   ],
   Resources: [
     { label: "Help Center", href: "/help" },
     { label: "FAQ", href: "/faq" },
-    { label: "Contact Us", href: "/contact" },
-    { label: "About", href: "/about" },
-    { label: "Analytics", href: "/analytics" },
-    { label: "Transaction Lookup", href: "/transaction" },
-  ],
-  Enterprise: [
-    { label: "Enterprise Solutions", href: "/enterprise" },
-    { label: "Enterprise Dashboard", href: "/enterprise-dashboard" },
-    { label: "Guild Management", href: "/guild-dashboard/demo" },
+    { label: "Events", href: "/events" },
   ],
   Legal: [
     { label: "Privacy Policy", href: "/legal" },
