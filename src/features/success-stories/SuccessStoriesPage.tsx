@@ -545,7 +545,7 @@ const SuccessStoriesPage = () => {
                   className="rounded-2xl border border-border bg-card p-5 hover:border-foreground/20 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-skill-green/10 font-heading text-xl font-black text-skill-green">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-surface-2 font-heading text-xl font-black text-foreground">
                       {uni.logo}
                     </div>
                     <div className="flex-1">
