@@ -843,19 +843,18 @@ const HelpPage = () => {
                 </motion.button>
               </div>
               <AnimatePresence>
-                {bountyResult === "found" && (
+                {bountyResult && bountyResult !== "not_found" && (
                   <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-4 rounded-xl border border-skill-green/20 bg-skill-green/5 p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle2 size={14} className="text-skill-green" />
                       <span className="text-xs font-semibold text-skill-green">Report Found</span>
                     </div>
                     <div className="grid grid-cols-2 gap-3 text-xs">
-                      <div><span className="text-muted-foreground">Code:</span> <span className="font-mono text-foreground">{bountyCode.toUpperCase()}</span></div>
-                      <div><span className="text-muted-foreground">Status:</span> <span className="font-semibold text-badge-gold">Under Review</span></div>
-                      <div><span className="text-muted-foreground">Severity:</span> <span className="text-foreground">High</span></div>
-                      <div><span className="text-muted-foreground">Submitted:</span> <span className="text-foreground">Feb 12, 2026</span></div>
-                      <div><span className="text-muted-foreground">Estimated Reward:</span> <span className="font-semibold text-badge-gold">200 SP + Gold Badge</span></div>
-                      <div><span className="text-muted-foreground">ETA:</span> <span className="text-foreground">~3 business days</span></div>
+                      <div><span className="text-muted-foreground">Code:</span> <span className="font-mono text-foreground">{bountyResult.code}</span></div>
+                      <div><span className="text-muted-foreground">Status:</span> <span className="font-semibold text-badge-gold capitalize">{bountyResult.status}</span></div>
+                      <div><span className="text-muted-foreground">Severity:</span> <span className="text-foreground capitalize">{bountyResult.severity}</span></div>
+                      <div><span className="text-muted-foreground">Title:</span> <span className="text-foreground">{bountyResult.title}</span></div>
+                      <div><span className="text-muted-foreground">Reward:</span> <span className="font-semibold text-badge-gold">{bountyResult.reward}</span></div>
                     </div>
                   </motion.div>
                 )}
