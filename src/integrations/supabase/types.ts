@@ -257,6 +257,48 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_submissions: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          priority: string
+          status: string
+          subject: string | null
+          topic: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          priority?: string
+          status?: string
+          subject?: string | null
+          topic?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          priority?: string
+          status?: string
+          subject?: string | null
+          topic?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       disputes: {
         Row: {
           created_at: string
@@ -308,6 +350,74 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      feature_requests: {
+        Row: {
+          category: string
+          comments: number
+          created_at: string
+          description: string
+          hot: boolean
+          icon: string
+          id: string
+          status: string
+          title: string
+          votes: number
+        }
+        Insert: {
+          category?: string
+          comments?: number
+          created_at?: string
+          description?: string
+          hot?: boolean
+          icon?: string
+          id?: string
+          status?: string
+          title: string
+          votes?: number
+        }
+        Update: {
+          category?: string
+          comments?: number
+          created_at?: string
+          description?: string
+          hot?: boolean
+          icon?: string
+          id?: string
+          status?: string
+          title?: string
+          votes?: number
+        }
+        Relationships: []
+      }
+      feature_votes: {
+        Row: {
+          created_at: string
+          feature_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feature_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_votes_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "feature_requests"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -676,6 +786,42 @@ export type Database = {
           total_sp?: number
           updated_at?: string
           win_rate?: number
+        }
+        Relationships: []
+      }
+      help_reports: {
+        Row: {
+          created_at: string
+          description: string
+          email: string | null
+          id: string
+          priority: string
+          reference_id: string | null
+          report_type: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          email?: string | null
+          id?: string
+          priority?: string
+          reference_id?: string | null
+          report_type: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          email?: string | null
+          id?: string
+          priority?: string
+          reference_id?: string | null
+          report_type?: string
+          status?: string
+          user_id?: string | null
         }
         Relationships: []
       }

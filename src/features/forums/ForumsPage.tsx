@@ -16,6 +16,7 @@ import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
+import LoginPrompt from "@/components/shared/LoginPrompt";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
@@ -339,6 +340,7 @@ const ForumsPage = () => {
   const [bookmarkedThreads, setBookmarkedThreads] = useState<Set<string>>(new Set());
   const [replyText, setReplyText] = useState("");
   const [showComposer, setShowComposer] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState("");
 
   // Database state
@@ -426,7 +428,7 @@ const ForumsPage = () => {
   // Submit new thread
   const handleSubmitThread = async () => {
     if (!user) {
-      toast.error("Please log in to post");
+      setShowLoginPrompt(true);
       return;
     }
     if (!newPostTitle.trim() || !newPostContent.trim()) {
@@ -463,7 +465,7 @@ const ForumsPage = () => {
   // Submit comment
   const handleSubmitComment = async () => {
     if (!user) {
-      toast.error("Please log in to comment");
+      setShowLoginPrompt(true);
       return;
     }
     if (!replyText.trim() || !selectedThread) return;
@@ -497,6 +499,7 @@ const ForumsPage = () => {
   const [collapsedReplies, setCollapsedReplies] = useState<Set<number>>(new Set());
 
   const handleVote = (threadId: string, direction: "up" | "down") => {
+    if (!user) { setShowLoginPrompt(true); return; }
     setVotedThreads((prev) => {
       if (prev[threadId] === direction) {
         const next = { ...prev };
@@ -515,6 +518,7 @@ const ForumsPage = () => {
   };
 
   const toggleBookmark = (id: string) => {
+    if (!user) { setShowLoginPrompt(true); return; }
     setBookmarkedThreads((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
@@ -1721,6 +1725,7 @@ const ForumsPage = () => {
           </div>
         </section>
         <Footer />
+        <LoginPrompt open={showLoginPrompt} onOpenChange={setShowLoginPrompt} message="Sign in to vote, comment, and participate in forum discussions." />
       </div>
     </PageTransition>
   );

@@ -17,6 +17,8 @@ import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 
 const kbCategories = [
   { icon: BookOpen, title: "Getting Started", desc: "Account setup, profile creation, and first gig", articles: 24, popular: ["Create your account", "Set up your profile", "Post your first gig", "Earn your first SP"] },
@@ -193,6 +195,7 @@ const priorityLevels = [
 ];
 
 const HelpPage = () => {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedKb, setExpandedKb] = useState<number | null>(null);
   const [expandedTroubleshootCat, setExpandedTroubleshootCat] = useState<number | null>(0);
@@ -222,8 +225,18 @@ const HelpPage = () => {
     setBountyResult(mockValid.includes(bountyCode.toUpperCase()) ? "found" : "not_found");
   };
 
-  const handleReportSubmit = () => {
+  const handleReportSubmit = async () => {
     if (!selectedReportType || !reportDescription.trim()) return;
+
+    await supabase.from("help_reports").insert({
+      user_id: user?.id || null,
+      report_type: selectedReportType,
+      priority: selectedPriority || "low",
+      description: reportDescription,
+      reference_id: reportRef || null,
+      email: reportEmail || null,
+    });
+
     setReportSubmitted(true);
     setTimeout(() => setReportSubmitted(false), 5000);
   };

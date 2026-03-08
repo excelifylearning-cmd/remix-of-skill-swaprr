@@ -11,7 +11,8 @@ import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
-
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 import { validateEmail } from "@/lib/email-validation";
 
 const contactMethods = [
@@ -52,6 +53,7 @@ const faqs = [
 ];
 
 const ContactPage = () => {
+  const { user } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -94,9 +96,16 @@ const ContactPage = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep(2)) return;
+
+    // Save to database
+    await supabase.from("contact_submissions").insert({
+      user_id: user?.id || null,
+      name, email, phone: phone || null, topic, subject: subject || null, priority, message,
+    });
+
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
