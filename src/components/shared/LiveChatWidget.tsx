@@ -128,7 +128,7 @@ const LiveChatWidget = () => {
         whileTap={{ scale: 0.95 }}
         className="flex h-14 w-14 items-center justify-center rounded-full bg-foreground text-background shadow-lg"
       >
-        {chatOpen ? <X size={20} /> : <MessageSquare size={20} />}
+        {chatOpen ? <X size={20} /> : <Headset size={20} />}
       </motion.button>
     </div>
   );
