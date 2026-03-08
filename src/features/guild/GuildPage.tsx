@@ -13,6 +13,7 @@ import LoginPrompt from "@/components/shared/LoginPrompt";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { logInteraction, logFormSubmission } from "@/lib/activity-logger";
 
 type GuildData = {
   id: string; name: string; description: string; slogan: string; category: string;
