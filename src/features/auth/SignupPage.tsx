@@ -516,9 +516,27 @@ const SignupPage = () => {
                     <p className="text-[10px] text-muted-foreground">Welcome bonus credited to your account</p>
                   </div>
 
+                  {signupError && (
+                    <div className="mb-3 rounded-lg border border-destructive/20 bg-destructive/5 p-3">
+                      <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle size={12} /> {signupError}</p>
+                    </div>
+                  )}
+
                   <div className="flex gap-3">
                     <button onClick={back} className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Back</button>
-                    <motion.button className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-background" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                    <motion.button
+                      onClick={() => {
+                        const result = signup(name, email, password);
+                        if (result.success) {
+                          navigate("/dashboard");
+                        } else {
+                          setSignupError(result.error || "Signup failed.");
+                        }
+                      }}
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-background"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
                       Start Swapping <ArrowRight size={15} />
                     </motion.button>
                   </div>
