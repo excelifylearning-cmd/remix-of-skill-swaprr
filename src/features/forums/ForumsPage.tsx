@@ -29,6 +29,10 @@ const forumCategories = [
   { icon: Hash, name: "Feature Requests", desc: "Suggest and vote on new features", threads: 430, posts: 2900, color: "skill-green", online: 23 },
   { icon: BarChart3, name: "Marketplace Meta", desc: "Pricing strategies, gig optimization, and market trends", threads: 310, posts: 1800, color: "badge-gold", online: 19 },
   { icon: Globe, name: "Off-Topic Lounge", desc: "Anything goes — memes, random chats, and vibes", threads: 950, posts: 6100, color: "muted-foreground", online: 76 },
+  { icon: Lightbulb, name: "Freelancer Hub", desc: "Client management, invoicing, and freelance strategies", threads: 470, posts: 3100, color: "badge-gold", online: 31 },
+  { icon: Video, name: "Streams & Content", desc: "Live streams, video tutorials, and content creation", threads: 280, posts: 1540, color: "court-blue", online: 18 },
+  { icon: GraduationCap, name: "University Corner", desc: "Student collabs, campus events, and academic projects", threads: 390, posts: 2200, color: "skill-green", online: 22 },
+  { icon: Bot, name: "AI & Automation", desc: "AI tools, prompt engineering, and workflow automation", threads: 520, posts: 3600, color: "foreground", online: 48 },
 ];
 
 const announcements = [
