@@ -48,21 +48,7 @@ const sidebarItems = [
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   MOCK DATA
-═══════════════════════════════════════════════════════════════════════════ */
-
-const myGigs = [
-  { id: 1, title: "Logo Design", status: "active", partner: "James T.", stage: 2, totalStages: 4, sp: 30, format: "Direct Swap", deadline: "2026-03-15" },
-  { id: 2, title: "React Dashboard", status: "pending", partner: null, stage: 0, totalStages: 3, sp: 50, format: "Auction", deadline: null },
-  { id: 3, title: "Video Editing", status: "completed", partner: "Aisha R.", stage: 3, totalStages: 3, sp: 25, format: "Direct Swap", deadline: "2026-03-10" },
-  { id: 4, title: "Brand Identity Package", status: "in-dispute", partner: "Carlos M.", stage: 2, totalStages: 5, sp: 75, format: "Co-Creation", deadline: "2026-03-20" },
-];
-
-const courtCases = [
-  { id: 101, type: "jury-duty", title: "Logo ownership dispute", parties: ["Maya K.", "Tom W."], deadline: "2026-03-12", reward: 15, status: "pending" },
-  { id: 102, type: "my-case", title: "Brand Identity Package", opponent: "Carlos M.", status: "awaiting-verdict", filed: "2026-03-08" },
-];
+/* Mock data removed — all tabs now use Supabase queries */
 
 const categories = [
   { label: "Design", icon: Palette },
