@@ -355,7 +355,7 @@ const TransactionLookupPage = () => {
                     className="h-14 w-full rounded-2xl border border-border bg-card pl-12 pr-4 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
                   />
                 </div>
-                <motion.button onClick={handleSearch} className="flex h-14 items-center gap-2 rounded-2xl bg-foreground px-6 text-sm font-semibold text-background" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <motion.button data-search-btn onClick={handleSearch} className="flex h-14 items-center gap-2 rounded-2xl bg-foreground px-6 text-sm font-semibold text-background" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   Verify
                 </motion.button>
               </div>
