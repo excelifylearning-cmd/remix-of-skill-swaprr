@@ -37,7 +37,7 @@ const quickLinks = [
 ];
 
 const DashboardPage = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, profile, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
