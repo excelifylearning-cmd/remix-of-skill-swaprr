@@ -39,7 +39,7 @@ const priorityLevels = [
 const slaCards = [
   { channel: "Email", time: "< 24 hours", icon: Mail, color: "text-court-blue", bg: "bg-court-blue/5" },
   { channel: "Live Chat", time: "< 5 minutes", icon: MessageSquare, color: "text-skill-green", bg: "bg-skill-green/5" },
-  { channel: "Enterprise", time: "< 1 hour", icon: Building2, color: "text-badge-gold", bg: "bg-badge-gold/5" },
+  { channel: "Enterprise", time: "< 1 hour", icon: Building2, color: "text-muted-foreground", bg: "bg-surface-2" },
 ];
 
 const faqs = [
