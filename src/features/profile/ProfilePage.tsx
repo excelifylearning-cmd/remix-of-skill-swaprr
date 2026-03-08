@@ -543,7 +543,7 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        <Footer />
+        
       </div>
     </PageTransition>
   );
