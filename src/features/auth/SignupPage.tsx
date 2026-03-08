@@ -119,7 +119,7 @@ const SignupPage = () => {
   const [step, setStep] = useState(1);
   const [signupError, setSignupError] = useState("");
   const navigate = useNavigate();
-  const { signup } = useAuth();
+  const { signup, updateProfile } = useAuth();
 
   // Step 1: Account
   const [name, setName] = useState("");
