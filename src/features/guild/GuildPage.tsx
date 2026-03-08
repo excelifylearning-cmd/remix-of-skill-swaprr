@@ -62,20 +62,28 @@ const mockGuild = {
     { id: 2, title: "Mobile App UI Kit", status: "Planning", members: 3, deadline: "2026-04-01", sp: 1800, lead: "Carlos M." },
     { id: 3, title: "SaaS Dashboard Redesign", status: "Review", members: 5, deadline: "2026-03-12", sp: 3200, lead: "Lena S." },
   ],
-  treasury: {
-    balance: 145000,
-    monthlyIncome: 12400,
-    monthlyExpense: 3200,
-    recentTransactions: [
-      { desc: "Guild War prize (vs Code Ninjas)", amount: 5000, date: "Mar 5" },
-      { desc: "Member payout — Maya K.", amount: -1200, date: "Mar 3" },
-      { desc: "Project completion bonus", amount: 3400, date: "Feb 28" },
-      { desc: "Member payout — Carlos M.", amount: -800, date: "Feb 25" },
-    ],
+  achievements: [
+    { name: "Top 5 Guild", date: "Mar 2026", icon: "🏆" },
+    { name: "100+ Gigs", date: "Feb 2026", icon: "💼" },
+    { name: "War Streak x3", date: "Feb 2026", icon: "🔥" },
+    { name: "Founding Guild", date: "Jun 2024", icon: "⭐" },
+  ],
+  spotlight: {
+    member: "Suki T.",
+    avatar: "ST",
+    reason: "Most gigs completed this month — 14 gigs, 4.9 avg rating",
+    elo: 1540,
   },
-  pendingApplications: [
-    { name: "Jordan P.", elo: 1420, skills: ["UI Design", "Figma"], appliedAt: "2 days ago" },
-    { name: "Nina K.", elo: 1380, skills: ["Illustration", "Branding"], appliedAt: "4 days ago" },
+  openRoles: [
+    { title: "UI/UX Designer", level: "Mid", description: "Looking for a Figma expert to join our product team.", applicants: 4 },
+    { title: "Motion Designer", level: "Senior", description: "After Effects / Lottie animations for client projects.", applicants: 1 },
+  ],
+  skillDistribution: [
+    { skill: "UI Design", members: 42 },
+    { skill: "UX Research", members: 28 },
+    { skill: "Illustration", members: 18 },
+    { skill: "Motion Design", members: 15 },
+    { skill: "Branding", members: 25 },
   ],
 };
 

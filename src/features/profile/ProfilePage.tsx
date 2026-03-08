@@ -370,6 +370,56 @@ const ProfilePage = () => {
                 </div>
               </section>
 
+              {/* OFFERED LISTINGS */}
+              <section id="listings">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider">Offered Listings</h2>
+                  {isOwner && <button className="text-[10px] text-muted-foreground hover:text-foreground">+ New Listing</button>}
+                </div>
+                <div className="space-y-3">
+                  {profileData.offeredListings.map((listing) => (
+                    <div key={listing.id} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-sm font-medium text-foreground">{listing.title}</h3>
+                          <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                            listing.status === "Active" ? "border-skill-green/20 text-skill-green" : "border-border text-muted-foreground"
+                          }`}>{listing.status}</span>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">{listing.category} · {listing.views} views · {listing.inquiries} inquiries</p>
+                      </div>
+                      <span className="font-mono text-sm text-foreground shrink-0">{listing.price}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* DISPUTES */}
+              <section id="disputes">
+                <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider mb-6">Disputes</h2>
+                {profileData.disputes.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No disputes on record.</p>
+                ) : (
+                  <div className="grid gap-px bg-border rounded-xl overflow-hidden">
+                    {profileData.disputes.map((d) => (
+                      <div key={d.id} className="flex items-center justify-between p-4 bg-card">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground">{d.title}</p>
+                          <p className="text-[10px] text-muted-foreground">vs {d.opponent} · {d.date}</p>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="font-mono text-xs text-muted-foreground">{d.sp} SP</span>
+                          <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                            d.status === "Resolved" 
+                              ? d.outcome === "Favor" ? "border-skill-green/20 text-skill-green" : "border-destructive/20 text-destructive"
+                              : "border-border text-muted-foreground"
+                          }`}>{d.status === "Resolved" ? `${d.outcome}` : d.status}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
               {/* RECOMMENDATIONS */}
               <section>
                 <div className="flex items-center justify-between mb-6">
