@@ -356,6 +356,17 @@ const TransactionLookupPage = () => {
           )}
         </AnimatePresence>
 
+        {/* Not Found */}
+        <AnimatePresence>
+          {notFound && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="py-16 text-center">
+              <AlertTriangle size={40} className="mx-auto mb-4 text-muted-foreground" />
+              <p className="text-lg font-semibold text-foreground">Transaction Not Found</p>
+              <p className="text-sm text-muted-foreground mt-1">No transaction found with code "{code}". Try "TXN-2026-0305-AK7B".</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Results */}
         <AnimatePresence>
           {found && (
