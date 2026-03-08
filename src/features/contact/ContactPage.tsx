@@ -11,6 +11,7 @@ import CustomCursor from "@/components/shared/CustomCursor";
 import CursorGlow from "@/components/shared/CursorGlow";
 import PageTransition from "@/components/shared/PageTransition";
 import CTAFooterSection from "@/features/home/sections/CTAFooterSection";
+import { validateEmail } from "@/lib/email-validation";
 
 const contactMethods = [
   { icon: Mail, title: "Email Us", desc: "hello@skillswappr.com", detail: "Response within 24 hours", color: "text-court-blue", bg: "bg-court-blue/10" },
