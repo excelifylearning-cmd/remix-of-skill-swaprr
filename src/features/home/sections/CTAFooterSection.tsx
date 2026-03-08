@@ -1,53 +1,16 @@
 import { useState } from "react";
 import { validateEmail } from "@/lib/email-validation";
 import { motion } from "framer-motion";
-import { ArrowRight, Github, Twitter, Linkedin, Mail } from "lucide-react";
-import { Link } from "react-router-dom";
-
-const footerLinks = {
-  Platform: [
-    { label: "Marketplace", href: "/marketplace" },
-    { label: "Features", href: "/features" },
-    { label: "Pricing", href: "/pricing" },
-    { label: "How It Works", href: "/how-it-works" },
-    { label: "Roadmap", href: "/roadmap" },
-  ],
-  Community: [
-    { label: "Forums", href: "/forums" },
-    { label: "Blog", href: "/blog" },
-    { label: "Leaderboard", href: "/leaderboard" },
-    { label: "Enterprise", href: "/enterprise" },
-  ],
-  Resources: [
-    { label: "Help Center", href: "/help" },
-    { label: "Contact Us", href: "/contact" },
-    { label: "About", href: "/about" },
-    { label: "Analytics", href: "/analytics" },
-    { label: "Transaction Lookup", href: "/transaction" },
-  ],
-  Legal: [
-    { label: "Privacy Policy", href: "/legal" },
-    { label: "Terms of Service", href: "/legal" },
-    { label: "GDPR", href: "/legal" },
-    { label: "Community Guidelines", href: "/legal" },
-    { label: "Cookie Policy", href: "/legal" },
-  ],
-};
-
-const socials = [
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Github, href: "#", label: "GitHub" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Mail, href: "#", label: "Email" },
-];
+import { ArrowRight } from "lucide-react";
+import Footer from "@/components/shared/Footer";
 
 const CTAFooterSection = () => {
   const [email, setEmail] = useState("");
   const [emailErr, setEmailErr] = useState("");
 
   return (
-    <section className="relative overflow-hidden bg-surface-1">
-      <div className="relative border-b border-border py-24 lg:py-32">
+    <section className="relative overflow-hidden">
+      <div className="relative border-b border-border bg-surface-1 py-24 lg:py-32">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--silver)/0.05),transparent_70%)]" />
 
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
@@ -157,56 +120,7 @@ const CTAFooterSection = () => {
         </div>
       </div>
 
-      <footer className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-1">
-            <Link to="/" className="font-heading text-xl font-bold text-foreground">
-              Skill<span className="text-muted-foreground">Swappr</span>
-            </Link>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              The skill exchange platform for students. Trade what you know for what you need.
-            </p>
-            <div className="mt-5 flex gap-3">
-              {socials.map((s) => (
-                <motion.a
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-2 text-muted-foreground transition-colors hover:text-foreground"
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <s.icon size={16} />
-                </motion.a>
-              ))}
-            </div>
-          </div>
-
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h4 className="mb-4 font-heading text-sm font-semibold text-foreground">{category}</h4>
-              <ul className="space-y-2.5">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <Link to={link.href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
-          <p className="text-xs text-muted-foreground/60">
-            © 2026 SkillSwappr. All rights reserved.
-          </p>
-          <p className="text-xs text-muted-foreground/60">
-            Built by students, for students.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </section>
   );
 };

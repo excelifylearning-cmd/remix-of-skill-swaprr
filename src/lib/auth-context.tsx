@@ -21,19 +21,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const TEST_EMAIL = "AdminTester123";
-const TEST_PASSWORD = "AdminTester123";
-
-const TEST_USER: User = {
-  name: "Admin Tester",
-  email: "AdminTester123",
-  role: "admin",
-  sp: 12500,
-  elo: 1850,
-  tier: "Diamond",
-  joinedAt: "2026-01-15",
-};
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
@@ -51,19 +38,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = (email: string, password: string) => {
-    if (email === TEST_EMAIL && password === TEST_PASSWORD) {
-      persist(TEST_USER);
+    // Check localStorage for registered users
+    const registeredUsers = JSON.parse(localStorage.getItem("ss_registered_users") || "[]");
+    const found = registeredUsers.find((u: any) => u.email === email && u.password === password);
+    if (found) {
+      const userData: User = {
+        name: found.name,
+        email: found.email,
+        role: "user",
+        sp: 100,
+        elo: 1000,
+        tier: "Bronze",
+        joinedAt: found.joinedAt || new Date().toISOString().split("T")[0],
+      };
+      persist(userData);
       return { success: true };
     }
-    return { success: false, error: "Invalid email or password. Use test credentials to log in." };
+    return { success: false, error: "Invalid email or password." };
   };
 
   const signup = (name: string, email: string, password: string) => {
-    if (email === TEST_EMAIL && password === TEST_PASSWORD) {
-      persist({ ...TEST_USER, name: name || TEST_USER.name });
-      return { success: true };
+    const registeredUsers = JSON.parse(localStorage.getItem("ss_registered_users") || "[]");
+    const exists = registeredUsers.find((u: any) => u.email === email);
+    if (exists) {
+      return { success: false, error: "An account with this email already exists." };
     }
-    return { success: false, error: "Signup is in demo mode. Use 'AdminTester123' as email & password." };
+    const newUser = { name, email, password, joinedAt: new Date().toISOString().split("T")[0] };
+    registeredUsers.push(newUser);
+    localStorage.setItem("ss_registered_users", JSON.stringify(registeredUsers));
+    
+    const userData: User = {
+      name,
+      email,
+      role: "user",
+      sp: 100,
+      elo: 1000,
+      tier: "Bronze",
+      joinedAt: newUser.joinedAt,
+    };
+    persist(userData);
+    return { success: true };
   };
 
   const logout = () => persist(null);

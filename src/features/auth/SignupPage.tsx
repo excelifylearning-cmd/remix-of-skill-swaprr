@@ -191,11 +191,9 @@ const SignupPage = () => {
   const strengthColor = passedCount <= 1 ? "bg-destructive" : passedCount <= 3 ? "bg-badge-gold" : "bg-skill-green";
   const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
   const passwordsMismatch = confirmPassword.length > 0 && password !== confirmPassword;
-  const isTestCreds = email === "AdminTester123";
   const emailError = useMemo(() => {
-    if (isTestCreds) return "";
     return email.trim() ? (validateEmail(email) === true ? "" : validateEmail(email) as string) : "";
-  }, [email, isTestCreds]);
+  }, [email]);
   const canContinueStep1 = name.trim() && email.trim() && !emailError && passedCount >= 4 && passwordsMatch;
 
   const toggleSkill = (s: string) => setSkills((prev) => prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]);
@@ -312,10 +310,6 @@ const SignupPage = () => {
                 <motion.div key="s1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
                   <h1 className="mb-1 font-heading text-2xl font-bold text-foreground">Create your account</h1>
                   <p className="mb-4 text-sm text-muted-foreground">Start your skill exchange journey.</p>
-                  <div className="mb-4 rounded-lg border border-court-blue/20 bg-court-blue/5 p-3">
-                    <p className="text-xs text-court-blue font-medium">🔑 Demo Mode</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">Use <span className="font-mono font-bold text-foreground">AdminTester123</span> as email & password to test.</p>
-                  </div>
                   <div className="space-y-3">
                     <div className="relative">
                       <User size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
