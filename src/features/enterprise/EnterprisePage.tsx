@@ -33,14 +33,7 @@ const pipelineSteps = [
   { icon: CheckCircle2, title: "Deliver & Verify", desc: "AI quality checks scan for plagiarism and assess quality scores. Digital fingerprinting ensures deliverable authenticity. Transaction codes for full audit trails.", num: "04" },
 ];
 
-const expertPool = [
-  { name: "Chen L.", skill: "Full-Stack Dev", elo: 1850, rating: 5.0, university: "MIT", avatar: "CL", available: true, gigs: 142, specialties: ["React", "Node.js", "AWS"] },
-  { name: "Aisha K.", skill: "UI/UX Design", elo: 1790, rating: 4.9, university: "Stanford", avatar: "AK", available: true, gigs: 98, specialties: ["Figma", "Research", "Systems"] },
-  { name: "Marco R.", skill: "Data Science", elo: 1750, rating: 5.0, university: "Oxford", avatar: "MR", available: false, gigs: 76, specialties: ["Python", "ML", "Viz"] },
-  { name: "Priya S.", skill: "Mobile Dev", elo: 1720, rating: 4.9, university: "Cambridge", avatar: "PS", available: true, gigs: 64, specialties: ["Swift", "React Native", "Flutter"] },
-  { name: "James T.", skill: "Video Production", elo: 1680, rating: 4.8, university: "UCLA", avatar: "JT", available: true, gigs: 53, specialties: ["Motion", "3D", "Edit"] },
-  { name: "Sarah W.", skill: "Marketing", elo: 1710, rating: 4.9, university: "Wharton", avatar: "SW", available: false, gigs: 87, specialties: ["Growth", "SEO", "Content"] },
-];
+// Expert pool is now fetched from backend
 
 const useCases = [
   {
