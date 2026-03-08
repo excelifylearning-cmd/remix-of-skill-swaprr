@@ -677,7 +677,7 @@ const LeaderboardPage = () => {
           </div>
         </section>
 
-        <Footer />
+        
       </div>
     </PageTransition>
   );

@@ -583,7 +583,7 @@ const AnalyticsPage = () => {
             </div>
           </div>
         </section>
-        <Footer />
+        
       </div>
     </PageTransition>
   );
