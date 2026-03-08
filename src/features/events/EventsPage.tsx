@@ -482,7 +482,7 @@ const EventsPage = () => {
                   <div className="rounded-lg bg-surface-2 p-3 text-center">
                     {selectedEvent.prize ? (
                       <>
-                        <Trophy size={14} className="mx-auto mb-1 text-badge-gold" />
+                        <Trophy size={14} className="mx-auto mb-1 text-skill-green" />
                         <p className="text-xs text-foreground font-medium">{selectedEvent.prize}</p>
                         <p className="text-[10px] text-muted-foreground">Prize Pool</p>
                       </>
