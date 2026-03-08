@@ -1,7 +1,10 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, User, GraduationCap, CheckCircle2, Github, Circle, AlertCircle } from "lucide-react";
+import {
+  Mail, Lock, Eye, EyeOff, ArrowRight, User, GraduationCap, CheckCircle2, Github, Circle, AlertCircle,
+  Palette, Code, Sparkles, Users, Star, Zap
+} from "lucide-react";
 import PageTransition from "@/components/shared/PageTransition";
 
 const passwordCriteria = [
@@ -10,6 +13,83 @@ const passwordCriteria = [
   { label: "Lowercase letter", test: (p: string) => /[a-z]/.test(p) },
   { label: "Number", test: (p: string) => /[0-9]/.test(p) },
   { label: "Special character (!@#$...)", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+];
+
+const journeySteps = [
+  {
+    step: 1, title: "Create Your Profile", desc: "Set up your identity on the platform",
+    visual: (name: string) => (
+      <div className="mx-auto w-64 rounded-2xl border border-border bg-card p-5">
+        <div className="mb-3 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 font-heading text-sm font-bold text-foreground">
+            {name ? name.charAt(0).toUpperCase() : "?"}
+          </div>
+          <div>
+            <p className="text-sm font-medium text-foreground">{name || "Your Name"}</p>
+            <p className="text-[10px] text-muted-foreground">New Member</p>
+          </div>
+        </div>
+        <div className="flex gap-1">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Star key={i} size={10} className="text-border" />
+          ))}
+        </div>
+        <div className="mt-3 flex gap-2">
+          <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[9px] text-muted-foreground">+100 SP</span>
+          <span className="rounded-full bg-skill-green/10 px-2 py-0.5 text-[9px] text-skill-green">Newcomer</span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    step: 2, title: "Join Your Campus", desc: "Connect with your university community",
+    visual: (uni: string) => (
+      <div className="mx-auto w-64">
+        <div className="rounded-2xl border border-border bg-card p-5 text-center">
+          <GraduationCap size={28} className="mx-auto mb-3 text-court-blue" />
+          <p className="text-sm font-medium text-foreground">{uni || "Your University"}</p>
+          <p className="mt-1 text-[10px] text-muted-foreground">Campus community</p>
+        </div>
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {["234 peers", "12 guilds", "89 gigs"].map((s) => (
+            <div key={s} className="rounded-lg bg-surface-2 p-2 text-center">
+              <p className="text-[10px] font-medium text-muted-foreground">{s}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  },
+  {
+    step: 3, title: "Pick Your Skills", desc: "Showcase what you can offer",
+    visual: () => (
+      <div className="mx-auto w-64">
+        <div className="relative flex flex-wrap justify-center gap-2">
+          {[
+            { label: "UI/UX", icon: Palette, color: "text-court-blue" },
+            { label: "React", icon: Code, color: "text-skill-green" },
+            { label: "AI/ML", icon: Sparkles, color: "text-badge-gold" },
+            { label: "Marketing", icon: Users, color: "text-muted-foreground" },
+          ].map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: i * 0.15, type: "spring" }}
+              className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2"
+            >
+              <s.icon size={12} className={s.color} />
+              <span className="text-xs text-foreground">{s.label}</span>
+            </motion.div>
+          ))}
+        </div>
+        <div className="mt-4 flex items-center justify-center gap-2">
+          <Zap size={14} className="text-badge-gold" />
+          <span className="text-xs text-muted-foreground">AI will match you with skill seekers</span>
+        </div>
+      </div>
+    ),
+  },
 ];
 
 const SignupPage = () => {
@@ -33,8 +113,9 @@ const SignupPage = () => {
   const strengthColor = passedCount <= 1 ? "bg-destructive" : passedCount <= 3 ? "bg-badge-gold" : "bg-skill-green";
   const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
   const passwordsMismatch = confirmPassword.length > 0 && password !== confirmPassword;
-
   const canContinueStep1 = name.trim() && email.trim() && passedCount >= 4 && passwordsMatch;
+
+  const currentJourney = journeySteps[step - 1];
 
   return (
     <PageTransition>
@@ -72,16 +153,12 @@ const SignupPage = () => {
                       <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">{showPass ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                     </div>
 
-                    {/* Password Strength */}
                     {password.length > 0 && (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="space-y-3">
-                        {/* Strength bar */}
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
                             <span className="text-[10px] font-medium text-muted-foreground">Password strength</span>
-                            <span className={`text-[10px] font-semibold ${passedCount <= 1 ? "text-destructive" : passedCount <= 3 ? "text-badge-gold" : "text-skill-green"}`}>
-                              {strengthLabel}
-                            </span>
+                            <span className={`text-[10px] font-semibold ${passedCount <= 1 ? "text-destructive" : passedCount <= 3 ? "text-badge-gold" : "text-skill-green"}`}>{strengthLabel}</span>
                           </div>
                           <div className="flex gap-1">
                             {[0, 1, 2, 3, 4].map((i) => (
@@ -89,32 +166,17 @@ const SignupPage = () => {
                             ))}
                           </div>
                         </div>
-
-                        {/* Criteria checklist */}
                         <div className="space-y-1.5">
                           {passwordCriteria.map((c, i) => (
-                            <motion.div
-                              key={c.label}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: i * 0.05 }}
-                              className="flex items-center gap-2"
-                            >
-                              {criteriaMet[i] ? (
-                                <CheckCircle2 size={13} className="text-skill-green flex-shrink-0" />
-                              ) : (
-                                <Circle size={13} className="text-muted-foreground/40 flex-shrink-0" />
-                              )}
-                              <span className={`text-[11px] transition-colors ${criteriaMet[i] ? "text-skill-green" : "text-muted-foreground/60"}`}>
-                                {c.label}
-                              </span>
+                            <motion.div key={c.label} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="flex items-center gap-2">
+                              {criteriaMet[i] ? <CheckCircle2 size={13} className="text-skill-green flex-shrink-0" /> : <Circle size={13} className="text-muted-foreground/40 flex-shrink-0" />}
+                              <span className={`text-[11px] transition-colors ${criteriaMet[i] ? "text-skill-green" : "text-muted-foreground/60"}`}>{c.label}</span>
                             </motion.div>
                           ))}
                         </div>
                       </motion.div>
                     )}
 
-                    {/* Confirm Password */}
                     <div className="relative">
                       <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
                       <input
@@ -129,14 +191,10 @@ const SignupPage = () => {
                       <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">{showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                     </div>
                     {passwordsMismatch && (
-                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-1.5 text-[11px] text-destructive">
-                        <AlertCircle size={12} /> Passwords don't match
-                      </motion.p>
+                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-1.5 text-[11px] text-destructive"><AlertCircle size={12} /> Passwords don't match</motion.p>
                     )}
                     {passwordsMatch && (
-                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-1.5 text-[11px] text-skill-green">
-                        <CheckCircle2 size={12} /> Passwords match
-                      </motion.p>
+                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-1.5 text-[11px] text-skill-green"><CheckCircle2 size={12} /> Passwords match</motion.p>
                     )}
 
                     <div className="relative mb-6">
@@ -155,11 +213,7 @@ const SignupPage = () => {
 
                     <motion.button
                       onClick={() => canContinueStep1 && setStep(2)}
-                      className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all ${
-                        canContinueStep1
-                          ? "bg-foreground text-background"
-                          : "bg-muted text-muted-foreground cursor-not-allowed"
-                      }`}
+                      className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all ${canContinueStep1 ? "bg-foreground text-background" : "bg-muted text-muted-foreground cursor-not-allowed"}`}
                       whileHover={canContinueStep1 ? { scale: 1.01 } : {}}
                       whileTap={canContinueStep1 ? { scale: 0.99 } : {}}
                     >
@@ -195,13 +249,7 @@ const SignupPage = () => {
                   <p className="mb-8 text-sm text-muted-foreground">Select skills you can offer. You can change these later.</p>
                   <div className="mb-6 flex flex-wrap gap-2">
                     {allSkills.map((s) => (
-                      <button
-                        key={s}
-                        onClick={() => toggleSkill(s)}
-                        className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm transition-all ${
-                          skills.includes(s) ? "bg-foreground text-background" : "border border-border text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
+                      <button key={s} onClick={() => toggleSkill(s)} className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm transition-all ${skills.includes(s) ? "bg-foreground text-background" : "border border-border text-muted-foreground hover:text-foreground"}`}>
                         {skills.includes(s) && <CheckCircle2 size={14} />}
                         {s}
                       </button>
@@ -224,28 +272,40 @@ const SignupPage = () => {
           </div>
         </div>
 
-        {/* Right: Visual */}
-        <div className="hidden flex-1 items-center justify-center bg-surface-1 lg:flex">
-          <div className="max-w-md px-12 text-center">
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, duration: 0.8 }}>
-              <div className="mx-auto mb-8 flex flex-col items-center gap-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-skill-green/10">
-                  <span className="font-heading text-3xl font-black text-skill-green">+100</span>
+        {/* Right: Dynamic Journey Preview */}
+        <div className="hidden flex-1 flex-col items-center justify-center bg-surface-1 lg:flex">
+          <div className="max-w-md px-12">
+            <AnimatePresence mode="wait">
+              <motion.div key={step} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }} className="text-center">
+                {/* Step indicator */}
+                <div className="mb-8 flex justify-center gap-3">
+                  {journeySteps.map((js) => (
+                    <div key={js.step} className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all ${js.step === step ? "bg-foreground text-background" : js.step < step ? "bg-skill-green text-background" : "bg-surface-2 text-muted-foreground"}`}>
+                      {js.step < step ? <CheckCircle2 size={14} /> : js.step}
+                    </div>
+                  ))}
                 </div>
-                <p className="text-sm text-muted-foreground">Earn 100 Skill Points on signup</p>
-              </div>
-              <h2 className="mb-4 font-heading text-2xl font-bold text-foreground">Your Journey Starts Here</h2>
-              <p className="text-sm text-muted-foreground">Create your profile, showcase your skills, and start swapping with students worldwide.</p>
 
-              <div className="mt-10 space-y-3 text-left">
-                {["No credit card required", "Free forever tier", "100 SP signup bonus", "Join 10,000+ students"].map((item, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + i * 0.1 }} className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <CheckCircle2 size={16} className="text-skill-green flex-shrink-0" />
-                    {item}
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
+                <h2 className="mb-2 font-heading text-2xl font-bold text-foreground">{currentJourney.title}</h2>
+                <p className="mb-8 text-sm text-muted-foreground">{currentJourney.desc}</p>
+
+                {/* Dynamic visual */}
+                <div className="mb-8">
+                  {step === 1 && journeySteps[0].visual(name)}
+                  {step === 2 && journeySteps[1].visual(university)}
+                  {step === 3 && journeySteps[2].visual("")}
+                </div>
+
+                <div className="mt-8 space-y-2">
+                  {["No credit card required", "Free forever tier", "100 SP signup bonus"].map((item, i) => (
+                    <motion.div key={i} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.1 }} className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                      <CheckCircle2 size={12} className="text-skill-green" />
+                      {item}
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </div>
