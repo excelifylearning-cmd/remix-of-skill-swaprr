@@ -32,7 +32,7 @@ const ProposalModal = ({ listing, onClose }: ProposalModalProps) => {
     if (!message.trim()) { toast.error("Add a message"); return; }
 
     setSending(true);
-    const { error } = await supabase.from("proposals").insert({
+    const { error } = await (supabase as any).from("proposals").insert({
       listing_id: listing.id,
       proposer_id: user.id,
       seller_id: listing.user_id,

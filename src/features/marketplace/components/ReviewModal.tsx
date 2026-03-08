@@ -23,7 +23,7 @@ const ReviewModal = ({ listing, onClose }: ReviewModalProps) => {
 
   const handleSubmit = async () => {
     setSending(true);
-    const { error } = await supabase.from("reviews").insert({
+    const { error } = await (supabase as any).from("reviews").insert({
       listing_id: listing.id,
       reviewer_id: user.id,
       reviewee_id: listing.user_id,
