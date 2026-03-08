@@ -676,7 +676,7 @@ const BlogPage = () => {
     return (
       <PageTransition>
         <div className="min-h-screen bg-background flex flex-col">
-          <Navbar />
+          <AppNav />
           <div className="flex-1 flex items-center justify-center px-6">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md">
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-surface-2 border border-border">
