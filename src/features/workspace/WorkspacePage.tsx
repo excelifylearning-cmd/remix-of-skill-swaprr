@@ -943,7 +943,7 @@ const MembersPanel = ({ workspaceId, userId, userRole }: { workspaceId: string; 
     // Check if already member
     const existing = members.find(m => m.user_id === profile.user_id);
     if (existing) { toast.error("User already in workspace"); setInviting(false); return; }
-    await supabase.from("workspace_members").insert({ workspace_id: workspaceId, user_id: profile.user_id, role: inviteRole, invited_by: userId, status: "pending" });
+    await supabase.from("workspace_members").insert([{ workspace_id: workspaceId, user_id: profile.user_id, role: inviteRole as "editor" | "owner" | "viewer", invited_by: userId, status: "pending" }]);
     logActivity("workspace:member_invited", { entity_type: "workspace", entity_id: workspaceId, context: { invited_email: inviteEmail, role: inviteRole } });
     toast.success(`Invited ${inviteEmail} as ${inviteRole}`);
     setInviteEmail("");
