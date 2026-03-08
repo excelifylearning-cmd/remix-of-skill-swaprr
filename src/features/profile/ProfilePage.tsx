@@ -67,6 +67,15 @@ const demoProfile = {
     { title: "AI Analytics Dashboard", description: "Real-time analytics dashboard with ML predictions for enterprise clients.", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop", tags: ["Python", "TensorFlow", "D3.js"], views: 890, likes: 67 },
     { title: "Mobile App Backend", description: "Scalable API backend supporting 1M+ daily requests.", image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&h=400&fit=crop", tags: ["Node.js", "Redis", "Docker"], views: 567, likes: 45 },
   ],
+  offeredListings: [
+    { id: "1", title: "React & TypeScript Mentoring", category: "Development", price: "150 SP/hr", status: "Active", views: 340, inquiries: 12 },
+    { id: "2", title: "Full-Stack App Architecture Review", category: "Development", price: "200 SP", status: "Active", views: 180, inquiries: 7 },
+    { id: "3", title: "Cloud Infrastructure Setup (AWS)", category: "DevOps", price: "300 SP", status: "Paused", views: 95, inquiries: 3 },
+  ],
+  disputes: [
+    { id: "d1", title: "Deliverable scope disagreement", opponent: "Jordan K.", status: "Resolved", outcome: "Favor", date: "Feb 2026", sp: 200 },
+    { id: "d2", title: "Timeline extension dispute", opponent: "Mika R.", status: "In Review", outcome: null, date: "Mar 2026", sp: 150 },
+  ],
   recommendations: [
     { name: "Sarah Chen", role: "Product Manager @ Google", text: "Alex is an exceptional developer with a rare combination of technical excellence and communication skills.", date: "2 weeks ago" },
     { name: "Marcus Johnson", role: "CTO @ StartupXYZ", text: "Working with Alex was a pleasure. He took ownership of critical systems and improved them significantly.", date: "1 month ago" },
