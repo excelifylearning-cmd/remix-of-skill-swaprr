@@ -327,8 +327,46 @@ Deno.serve(async (req) => {
   await supabase.from("leaderboard_achievements").insert([
     { user_name: "The Admin", badge: "🏆 First Diamond", achieved_at: new Date(Date.now() - 2 * 86400000).toISOString() },
     { user_name: "Code Collective", badge: "⚔️ Guild War Victory", achieved_at: new Date(Date.now() - 3 * 86400000).toISOString() },
-    { user_name: "The Admin", badge: "🔥 42-Day Streak", achieved_at: new Date(Date.now() - 5 * 86400000).toISOString() },
-    { user_name: "The Admin", badge: "💎 Diamond Tier", achieved_at: new Date(Date.now() - 7 * 86400000).toISOString() },
+    { user_name: "Marco R.", badge: "📊 100 Data Gigs", achieved_at: new Date(Date.now() - 5 * 86400000).toISOString() },
+    { user_name: "Zara N.", badge: "🔥 21-Day Streak", achieved_at: new Date(Date.now() - 6 * 86400000).toISOString() },
+    { user_name: "Design Union", badge: "👥 30+ Members", achieved_at: new Date(Date.now() - 7 * 86400000).toISOString() },
+    { user_name: "The Admin", badge: "💎 Diamond Tier", achieved_at: new Date(Date.now() - 8 * 86400000).toISOString() },
+    { user_name: "Liam K.", badge: "⚡ 50 Quick Gigs", achieved_at: new Date(Date.now() - 9 * 86400000).toISOString() },
+    { user_name: "Priya S.", badge: "🎨 Design Master", achieved_at: new Date(Date.now() - 10 * 86400000).toISOString() },
+  ]);
+
+  // 10. Seed ranking_history
+  await supabase.from("ranking_history").insert([
+    {
+      category: "global",
+      snapshot_date: new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0],
+      rankings: [{ name: "The Admin", elo: 2450, rank: 1 }],
+      changes: [
+        { name: "The Admin", from: 2, to: 1, elo: 2450 },
+        { name: "Marco R.", from: 1, to: 2, elo: 2380 },
+        { name: "Zara N.", from: 5, to: 3, elo: 2210 },
+      ],
+    },
+    {
+      category: "global",
+      snapshot_date: new Date(Date.now() - 14 * 86400000).toISOString().split("T")[0],
+      rankings: [{ name: "Marco R.", elo: 2400, rank: 1 }],
+      changes: [
+        { name: "Marco R.", from: 3, to: 1, elo: 2400 },
+        { name: "Liam K.", from: 4, to: 2, elo: 2350 },
+        { name: "The Admin", from: 1, to: 3, elo: 2320 },
+        { name: "Priya S.", from: 6, to: 4, elo: 2180 },
+      ],
+    },
+    {
+      category: "global",
+      snapshot_date: new Date(Date.now() - 21 * 86400000).toISOString().split("T")[0],
+      rankings: [{ name: "The Admin", elo: 2320, rank: 1 }],
+      changes: [
+        { name: "Code Collective", from: 3, to: 1, elo: 2100 },
+        { name: "Design Union", from: 1, to: 2, elo: 2050 },
+      ],
+    },
   ]);
 
   // Build links
