@@ -820,10 +820,10 @@ const BlogPage = () => {
               {editorsPicks.map((post, i) => (
                 <motion.div key={post.id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
                   onClick={() => setSelectedPost(post.id)}
-                  className="group cursor-pointer overflow-hidden rounded-2xl border border-badge-gold/10 bg-card transition-all hover:border-badge-gold/30">
+                  className="group cursor-pointer overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-foreground/20">
                   <div className="relative aspect-video overflow-hidden">
                     <img src={post.image} alt={post.title} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-badge-gold/90 px-2.5 py-0.5 text-[9px] font-bold text-background">
+                    <div className="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-foreground/90 px-2.5 py-0.5 text-[9px] font-bold text-background">
                       <Star size={9} /> Pick
                     </div>
                   </div>
