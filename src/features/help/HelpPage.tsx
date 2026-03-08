@@ -735,7 +735,7 @@ const HelpPage = () => {
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-2xl border border-border bg-card overflow-hidden">
                 <div className="border-b border-border/50 bg-surface-1 px-6 py-3 flex items-center justify-between">
                   <span className="font-heading text-xs font-bold text-foreground">Incident History — Last 90 Days</span>
-                  <span className="text-[10px] text-muted-foreground">{recentIncidents.length} events</span>
+                  <span className="text-[10px] text-muted-foreground">{activeIncidents.length} events</span>
                 </div>
                 <div className="divide-y divide-border/30">
                   {recentIncidents.map((inc, i) => (
