@@ -151,7 +151,7 @@ const GuildPage = () => {
         <section className="px-6 mt-8">
           <div className="max-w-5xl mx-auto border-b border-border">
             <div className="flex gap-1 overflow-x-auto -mb-px">
-              {tabs.filter(t => t !== "Management" || isLeader).map(tab => (
+              {tabs.map(tab => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
