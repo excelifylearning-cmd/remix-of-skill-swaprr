@@ -996,9 +996,7 @@ const ForumsPage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <CustomCursor />
-        <CursorGlow />
-        <Navbar />
+        <AppNav backLabel="Forums" />
 
         {/* HERO SECTION */}
         <section className="relative pt-28 pb-16 overflow-hidden">
