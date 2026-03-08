@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Trophy, Crown, Medal, Star, TrendingUp, Users, Shield, GraduationCap,
   Flame, Zap, ArrowUp, Target, Award, Swords, BarChart3, Timer,
-  ChevronRight, Sparkles, Eye
+  ChevronRight, Sparkles, Eye, History, ArrowRight, ExternalLink,
+  Clock, Hash, Bookmark
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
@@ -104,6 +105,40 @@ const hallOfFame = [
   { name: "Code Collective", title: "Guild of the Year", desc: "12 Guild War victories. 890 gigs completed collectively. Set the benchmark for team excellence.", avatar: "CC", tier: "Diamond", achievement: "War Champion" },
 ];
 
+const rankingHistory = [
+  { date: "Mar 7", changes: [
+    { name: "Chen L.", from: 3, to: 1, elo: 1850 },
+    { name: "Aisha K.", from: 1, to: 2, elo: 1790 },
+    { name: "Marco R.", from: 2, to: 3, elo: 1750 },
+  ]},
+  { date: "Mar 1", changes: [
+    { name: "Aisha K.", from: 2, to: 1, elo: 1810 },
+    { name: "Marco R.", from: 1, to: 2, elo: 1760 },
+    { name: "Priya S.", from: 5, to: 4, elo: 1700 },
+  ]},
+  { date: "Feb 22", changes: [
+    { name: "Marco R.", from: 3, to: 1, elo: 1780 },
+    { name: "Chen L.", from: 4, to: 3, elo: 1720 },
+    { name: "James L.", from: 8, to: 5, elo: 1660 },
+  ]},
+  { date: "Feb 15", changes: [
+    { name: "Dev K.", from: 10, to: 7, elo: 1610 },
+    { name: "Lena S.", from: 9, to: 6, elo: 1640 },
+    { name: "Omar H.", from: 12, to: 9, elo: 1570 },
+  ]},
+];
+
+const recentAchievements = [
+  { user: "Chen L.", badge: "🏆 First Diamond", when: "2 days ago" },
+  { user: "Code Collective", badge: "⚔️ 10-War Win Streak", when: "3 days ago" },
+  { user: "Aisha K.", badge: "🎨 Design Master", when: "5 days ago" },
+  { user: "Alex F.", badge: "🚀 Fastest Climber", when: "1 week ago" },
+  { user: "Marco R.", badge: "📊 100 Data Gigs", when: "1 week ago" },
+  { user: "Zara N.", badge: "🔥 21-Day Streak", when: "1 week ago" },
+  { user: "Design Union", badge: "👥 30+ Members", when: "2 weeks ago" },
+  { user: "Priya S.", badge: "📱 Mobile Master", when: "2 weeks ago" },
+];
+
 const tierColor = (t: string) => {
   if (t === "Diamond") return "text-court-blue";
   if (t === "Platinum") return "text-foreground";
@@ -136,11 +171,13 @@ const LeaderboardPage = () => {
         <CursorGlow />
         <Navbar />
 
-        {/* Spline 3D Hero */}
-        <section className="relative pt-24 pb-16 overflow-hidden">
+        {/* Hero */}
+        <section className="relative pt-32 pb-20 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--badge-gold)/0.06),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--court-blue)/0.04),transparent_40%)]" />
+
           <div className="relative z-10 mx-auto max-w-7xl px-6">
-            <div className="grid items-center gap-8 lg:grid-cols-2">
+            <div className="grid items-center gap-12 lg:grid-cols-2">
               {/* Left: Text */}
               <div>
                 <motion.span initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-4 inline-block rounded-full border border-badge-gold/20 bg-badge-gold/5 px-4 py-1.5 font-mono text-xs text-badge-gold">
@@ -169,32 +206,112 @@ const LeaderboardPage = () => {
                 </motion.div>
               </div>
 
-              {/* Right: Spline 3D Embed */}
-              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 0.6 }} className="relative aspect-square max-h-[500px] w-full">
-                <iframe
-                  src="https://my.spline.design/trophyanimation-fbcf7bc893da12b81cee58e3bbee9de6/"
-                  className="h-full w-full rounded-2xl border border-border"
-                  style={{ background: "transparent" }}
-                  title="3D Trophy"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-background/80 via-transparent to-transparent pointer-events-none" />
-                <div className="absolute bottom-4 left-4 right-4 rounded-xl bg-card/80 backdrop-blur-sm border border-border p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Crown size={20} className="text-badge-gold" />
-                      <div>
-                        <p className="text-sm font-bold text-foreground">#1 Chen L.</p>
-                        <p className="text-[10px] text-muted-foreground">ELO 1850 · Diamond</p>
-                      </div>
+              {/* Right: Top 3 Mini Podium */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }} className="relative">
+                <div className="grid grid-cols-3 items-end gap-3">
+                  {/* #2 */}
+                  <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="rounded-2xl border border-border bg-card p-4 text-center">
+                    <Medal size={20} className="mx-auto mb-2 text-muted-foreground" />
+                    <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-surface-2 font-mono text-sm font-bold text-foreground">AK</div>
+                    <p className="text-xs font-bold text-foreground">Aisha K.</p>
+                    <p className="text-[10px] text-muted-foreground">Stanford</p>
+                    <p className="mt-1 font-mono text-sm font-black text-foreground">1,790</p>
+                    <div className="mt-1 flex items-center justify-center gap-0.5 text-skill-green">
+                      <ArrowUp size={10} />
+                      <span className="font-mono text-[10px] font-bold">+18</span>
                     </div>
-                    <div className="flex items-center gap-1 text-skill-green">
-                      <ArrowUp size={14} />
-                      <span className="font-mono text-sm font-bold">+23</span>
+                  </motion.div>
+
+                  {/* #1 */}
+                  <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="rounded-2xl border border-badge-gold/30 bg-badge-gold/5 p-5 text-center -mt-6">
+                    <Crown size={24} className="mx-auto mb-2 text-badge-gold" />
+                    <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-badge-gold/10 ring-2 ring-badge-gold/30 font-mono text-base font-bold text-foreground">CL</div>
+                    <p className="text-sm font-bold text-foreground">Chen L.</p>
+                    <p className="text-[10px] text-muted-foreground">MIT</p>
+                    <span className="mt-1 inline-block rounded-full bg-court-blue/10 px-2 py-0.5 text-[9px] font-semibold text-court-blue">Diamond</span>
+                    <p className="mt-1 font-mono text-lg font-black text-foreground">1,850</p>
+                    <div className="mt-1 flex items-center justify-center gap-0.5 text-skill-green">
+                      <ArrowUp size={10} />
+                      <span className="font-mono text-[10px] font-bold">+23</span>
                     </div>
-                  </div>
+                  </motion.div>
+
+                  {/* #3 */}
+                  <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="rounded-2xl border border-border bg-card p-4 text-center">
+                    <Medal size={20} className="mx-auto mb-2 text-orange-400" />
+                    <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-surface-2 font-mono text-sm font-bold text-foreground">MR</div>
+                    <p className="text-xs font-bold text-foreground">Marco R.</p>
+                    <p className="text-[10px] text-muted-foreground">Oxford</p>
+                    <p className="mt-1 font-mono text-sm font-black text-foreground">1,750</p>
+                    <div className="mt-1 flex items-center justify-center gap-0.5 text-skill-green">
+                      <ArrowUp size={10} />
+                      <span className="font-mono text-[10px] font-bold">+12</span>
+                    </div>
+                  </motion.div>
                 </div>
               </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Scrolling Achievements Ticker */}
+        <section className="border-y border-border bg-surface-1 py-3 overflow-hidden">
+          <div className="relative">
+            <motion.div
+              className="flex gap-8 whitespace-nowrap"
+              animate={{ x: [0, -1600] }}
+              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+            >
+              {[...recentAchievements, ...recentAchievements].map((a, i) => (
+                <div key={i} className="flex items-center gap-2 text-sm">
+                  <span>{a.badge}</span>
+                  <span className="font-semibold text-foreground">{a.user}</span>
+                  <span className="text-muted-foreground">·</span>
+                  <span className="text-xs text-muted-foreground">{a.when}</span>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Top People by Skill Category - Quick Links */}
+        <section className="py-12 border-b border-border">
+          <div className="mx-auto max-w-7xl px-6">
+            <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-6 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bookmark size={16} className="text-badge-gold" />
+                <h2 className="font-heading text-lg font-bold text-foreground">Top Talent by Skill</h2>
+              </div>
+              <button onClick={() => setActiveTab("By Skill")} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                View all <ArrowRight size={12} />
+              </button>
+            </motion.div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {skillLeaders.map((s, i) => (
+                <motion.button
+                  key={s.skill}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  onClick={() => setActiveTab("By Skill")}
+                  className="group flex items-center gap-4 rounded-xl border border-border bg-card p-4 text-left transition-all hover:border-foreground/20 hover:bg-card/80"
+                >
+                  <span className="text-2xl">{s.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground">{s.skill}</p>
+                    <p className="text-[10px] text-muted-foreground">Led by {s.leaders[0].name} · ELO {s.leaders[0].elo}</p>
+                  </div>
+                  <div className="flex -space-x-2">
+                    {s.leaders.slice(0, 3).map((l, j) => (
+                      <div key={j} className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-surface-2 font-mono text-[8px] font-bold text-muted-foreground">
+                        {l.name.split(" ").map(n => n[0]).join("")}
+                      </div>
+                    ))}
+                  </div>
+                  <ChevronRight size={14} className="text-muted-foreground group-hover:text-foreground transition-colors" />
+                </motion.button>
+              ))}
             </div>
           </div>
         </section>
@@ -439,6 +556,129 @@ const LeaderboardPage = () => {
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
+        </section>
+
+        {/* Ranking History Section */}
+        <section className="border-t border-border bg-surface-1 py-16">
+          <div className="mx-auto max-w-6xl px-6">
+            <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-8 flex items-center gap-3">
+              <History size={20} className="text-muted-foreground" />
+              <h2 className="font-heading text-2xl font-bold text-foreground">Ranking History</h2>
+            </motion.div>
+
+            <div className="relative">
+              {/* Timeline line */}
+              <div className="absolute left-6 top-0 bottom-0 w-px bg-border" />
+
+              <div className="space-y-8">
+                {rankingHistory.map((week, wi) => (
+                  <motion.div
+                    key={week.date}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: wi * 0.1 }}
+                    className="relative pl-14"
+                  >
+                    {/* Timeline dot */}
+                    <div className="absolute left-4 top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-border bg-background">
+                      <div className="h-2 w-2 rounded-full bg-muted-foreground" />
+                    </div>
+
+                    <div className="rounded-xl border border-border bg-card p-5">
+                      <div className="mb-3 flex items-center gap-2">
+                        <Clock size={12} className="text-muted-foreground" />
+                        <span className="font-mono text-xs font-semibold text-foreground">{week.date}, 2026</span>
+                        <span className="text-[10px] text-muted-foreground">· {week.changes.length} changes</span>
+                      </div>
+                      <div className="space-y-2">
+                        {week.changes.map((c) => (
+                          <div key={c.name} className="flex items-center gap-3 text-sm">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 font-mono text-[10px] font-bold text-muted-foreground">
+                              {c.name.split(" ").map(n => n[0]).join("")}
+                            </div>
+                            <span className="font-medium text-foreground">{c.name}</span>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Hash size={10} />{c.from}
+                              <ArrowRight size={10} />
+                              <span className={c.to < c.from ? "text-skill-green font-semibold" : "text-alert-red font-semibold"}>
+                                #{c.to}
+                              </span>
+                            </div>
+                            <span className="ml-auto font-mono text-xs text-muted-foreground">ELO {c.elo}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Platform Stats Banner */}
+        <section className="border-t border-border py-16">
+          <div className="mx-auto max-w-6xl px-6">
+            <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-8 text-center">
+              <h2 className="font-heading text-2xl font-bold text-foreground">Platform at a Glance</h2>
+              <p className="mt-2 text-sm text-muted-foreground">Real-time community metrics</p>
+            </motion.div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                { icon: Users, label: "Total Users", value: "12,450", change: "+340 this week", color: "text-foreground" },
+                { icon: Target, label: "Gigs Completed", value: "48,200", change: "+1,250 this week", color: "text-skill-green" },
+                { icon: Swords, label: "Guild Wars", value: "156", change: "12 active now", color: "text-court-blue" },
+                { icon: Shield, label: "Cases Resolved", value: "2,340", change: "96% satisfaction", color: "text-badge-gold" },
+              ].map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="rounded-2xl border border-border bg-card p-6 text-center"
+                >
+                  <stat.icon size={24} className={`mx-auto mb-3 ${stat.color}`} />
+                  <p className={`font-heading text-3xl font-black ${stat.color}`}>{stat.value}</p>
+                  <p className="mt-1 text-sm font-medium text-foreground">{stat.label}</p>
+                  <p className="mt-1 text-[10px] text-muted-foreground">{stat.change}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ELO Tier Explainer */}
+        <section className="border-t border-border bg-surface-1 py-16">
+          <div className="mx-auto max-w-6xl px-6">
+            <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-8 text-center">
+              <h2 className="font-heading text-2xl font-bold text-foreground">Tier System</h2>
+              <p className="mt-2 text-sm text-muted-foreground">Climb through the ranks and unlock exclusive benefits</p>
+            </motion.div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              {[
+                { name: "Bronze", elo: "0–999", color: "text-orange-400", bg: "bg-orange-400/10 border-orange-400/20", perks: "Basic access, marketplace browsing" },
+                { name: "Silver", elo: "1,000–1,299", color: "text-muted-foreground", bg: "bg-surface-2 border-border", perks: "Co-Creation unlocked, guild joining" },
+                { name: "Gold", elo: "1,300–1,599", color: "text-badge-gold", bg: "bg-badge-gold/10 border-badge-gold/20", perks: "Featured listings, court eligibility" },
+                { name: "Platinum", elo: "1,600–1,799", color: "text-foreground", bg: "bg-foreground/5 border-foreground/20", perks: "Projects format, reduced 3% tax" },
+                { name: "Diamond", elo: "1,800+", color: "text-court-blue", bg: "bg-court-blue/10 border-court-blue/20", perks: "All formats, 2% tax, verified badge" },
+              ].map((tier, i) => (
+                <motion.div
+                  key={tier.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className={`rounded-2xl border p-5 text-center ${tier.bg}`}
+                >
+                  <p className={`font-heading text-lg font-bold ${tier.color}`}>{tier.name}</p>
+                  <p className="mt-1 font-mono text-xs text-muted-foreground">{tier.elo} ELO</p>
+                  <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">{tier.perks}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </section>
 
