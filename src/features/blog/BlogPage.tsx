@@ -953,6 +953,7 @@ const BlogPage = () => {
             </motion.div>
           </div>
         </section>
+        <Footer />
       </div>
     </PageTransition>
   );
