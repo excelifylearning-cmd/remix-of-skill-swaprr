@@ -309,7 +309,6 @@ const GuildPage = () => {
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="font-heading text-sm font-bold text-foreground uppercase tracking-wider">Guild Projects</h2>
-                  {isLeader && <button className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground transition-colors"><Plus size={12} /> New Project</button>}
                 </div>
                 <div className="space-y-3">
                   {guild.projects.map(p => (
