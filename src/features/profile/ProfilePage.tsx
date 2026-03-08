@@ -377,7 +377,8 @@ const ProfilePage = () => {
                   {skills.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {skills.map(skill => {
-                        const level = skillLevels[skill]?.toLowerCase() || "";
+                        const rawLevel = skillLevels[skill];
+                        const level = (typeof rawLevel === "string" ? rawLevel : String(rawLevel || "")).toLowerCase();
                         const levelInfo = SKILL_LEVEL_MAP[level];
                         return (
                           <div key={skill} className="group relative">
