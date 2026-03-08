@@ -726,7 +726,7 @@ const HelpPage = () => {
                       <span className="font-mono text-[9px] text-muted-foreground">{s.uptime}%</span>
                     </div>
                   </motion.div>
-                ))}
+                ); })}
               </motion.div>
             )}
 
