@@ -161,6 +161,67 @@ const rankIcon = (r: number) => {
 const LeaderboardPage = () => {
   const [activeTab, setActiveTab] = useState("Global");
   const [timeframe, setTimeframe] = useState<"all" | "month" | "week">("all");
+  const [dbProfiles, setDbProfiles] = useState<any[]>([]);
+  const [dbGuilds, setDbGuilds] = useState<any[]>([]);
+  const [dbRankingHistory, setDbRankingHistory] = useState<any[]>([]);
+  const [dbAchievements, setDbAchievements] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const [profilesRes, guildsRes, rankingRes, achievementsRes] = await Promise.all([
+        supabase.from("profiles").select("*").order("elo", { ascending: false }).limit(20),
+        supabase.from("guilds").select("*").order("avg_elo", { ascending: false }).limit(10),
+        supabase.from("ranking_history").select("*").order("snapshot_date", { ascending: false }).limit(10),
+        supabase.from("leaderboard_achievements").select("*").order("achieved_at", { ascending: false }).limit(10),
+      ]);
+      if (profilesRes.data?.length) setDbProfiles(profilesRes.data);
+      if (guildsRes.data?.length) setDbGuilds(guildsRes.data);
+      if (rankingRes.data?.length) setDbRankingHistory(rankingRes.data);
+      if (achievementsRes.data?.length) setDbAchievements(achievementsRes.data);
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
+
+  // Use DB data if available, otherwise fall back to hardcoded
+  const displayProfiles = dbProfiles.length > 0 ? dbProfiles.map((p, i) => ({
+    rank: i + 1,
+    name: p.display_name || p.full_name || "User",
+    elo: p.elo,
+    university: p.university || "",
+    skill: (p.skills && p.skills[0]) || "",
+    gigs: p.total_gigs_completed || 0,
+    rating: 5.0,
+    avatar: (p.display_name || p.full_name || "U").split(" ").map((n: string) => n[0]).join("").slice(0, 2),
+    tier: p.tier,
+    streak: p.streak_days || 0,
+    points: p.sp || 0,
+  })) : globalLeaders;
+
+  const displayGuilds = dbGuilds.length > 0 ? dbGuilds.map((g, i) => ({
+    rank: i + 1,
+    name: g.name,
+    elo: g.avg_elo,
+    members: 0,
+    wars: 0,
+    warWins: 0,
+    treasury: g.total_sp,
+    gigs: g.total_gigs,
+    avatar: g.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2),
+    specialty: g.category,
+  })) : guildLeaders;
+
+  const displayRankingHistory = dbRankingHistory.length > 0 ? dbRankingHistory.map((r) => ({
+    date: new Date(r.snapshot_date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    changes: (r.changes as any[]) || [],
+  })) : rankingHistory;
+
+  const displayAchievements = dbAchievements.length > 0 ? dbAchievements.map((a) => ({
+    user: a.user_name,
+    badge: a.badge,
+    when: getTimeAgo(a.achieved_at),
+  })) : recentAchievements;
 
   return (
     <PageTransition>
