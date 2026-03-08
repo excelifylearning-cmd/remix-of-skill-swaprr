@@ -202,7 +202,7 @@ const HelpPage = () => {
   const [expandedTroubleshootIssue, setExpandedTroubleshootIssue] = useState<string | null>(null);
   const [copiedEndpoint, setCopiedEndpoint] = useState<number | null>(null);
   const [bountyCode, setBountyCode] = useState("");
-  const [bountyResult, setBountyResult] = useState<null | "found" | "not_found">(null);
+  const [bountyResult, setBountyResult] = useState<null | { code: string; title: string; severity: string; status: string; reward: string } | "not_found">(null);
   const [selectedReportType, setSelectedReportType] = useState("");
   const [selectedPriority, setSelectedPriority] = useState("");
   const [reportDescription, setReportDescription] = useState("");
@@ -211,6 +211,7 @@ const HelpPage = () => {
   const [reportFiles, setReportFiles] = useState<string[]>([]);
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [statusTab, setStatusTab] = useState<"services" | "incidents" | "uptime">("services");
+  const [feedbackSent, setFeedbackSent] = useState(false);
 
   const handleCopy = (path: string, idx: number) => {
     navigator.clipboard.writeText(path);
@@ -218,11 +219,26 @@ const HelpPage = () => {
     setTimeout(() => setCopiedEndpoint(null), 2000);
   };
 
-  const handleBountyLookup = () => {
+  const handleBountyLookup = async () => {
     if (!bountyCode.trim()) return;
-    // Mock lookup — in production this would hit an API
-    const mockValid = ["BB-2026-001", "BB-2026-042", "BB-2025-187", "BB-2025-203"];
-    setBountyResult(mockValid.includes(bountyCode.toUpperCase()) ? "found" : "not_found");
+    const { data, error } = await supabase
+      .from("bug_bounty_submissions")
+      .select("code, title, severity, status, reward")
+      .eq("code", bountyCode.toUpperCase().trim())
+      .maybeSingle();
+    if (data) {
+      setBountyResult(data as any);
+    } else {
+      setBountyResult("not_found");
+    }
+  };
+
+  const handleFeedback = async (rating: string) => {
+    await supabase.from("help_feedback").insert({
+      rating,
+      user_id: user?.id || null,
+    });
+    setFeedbackSent(true);
   };
 
   const handleReportSubmit = async () => {
@@ -827,19 +843,18 @@ const HelpPage = () => {
                 </motion.button>
               </div>
               <AnimatePresence>
-                {bountyResult === "found" && (
+                {bountyResult && bountyResult !== "not_found" && (
                   <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-4 rounded-xl border border-skill-green/20 bg-skill-green/5 p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle2 size={14} className="text-skill-green" />
                       <span className="text-xs font-semibold text-skill-green">Report Found</span>
                     </div>
                     <div className="grid grid-cols-2 gap-3 text-xs">
-                      <div><span className="text-muted-foreground">Code:</span> <span className="font-mono text-foreground">{bountyCode.toUpperCase()}</span></div>
-                      <div><span className="text-muted-foreground">Status:</span> <span className="font-semibold text-badge-gold">Under Review</span></div>
-                      <div><span className="text-muted-foreground">Severity:</span> <span className="text-foreground">High</span></div>
-                      <div><span className="text-muted-foreground">Submitted:</span> <span className="text-foreground">Feb 12, 2026</span></div>
-                      <div><span className="text-muted-foreground">Estimated Reward:</span> <span className="font-semibold text-badge-gold">200 SP + Gold Badge</span></div>
-                      <div><span className="text-muted-foreground">ETA:</span> <span className="text-foreground">~3 business days</span></div>
+                      <div><span className="text-muted-foreground">Code:</span> <span className="font-mono text-foreground">{bountyResult.code}</span></div>
+                      <div><span className="text-muted-foreground">Status:</span> <span className="font-semibold text-badge-gold capitalize">{bountyResult.status}</span></div>
+                      <div><span className="text-muted-foreground">Severity:</span> <span className="text-foreground capitalize">{bountyResult.severity}</span></div>
+                      <div><span className="text-muted-foreground">Title:</span> <span className="text-foreground">{bountyResult.title}</span></div>
+                      <div><span className="text-muted-foreground">Reward:</span> <span className="font-semibold text-badge-gold">{bountyResult.reward}</span></div>
                     </div>
                   </motion.div>
                 )}
@@ -1018,18 +1033,25 @@ const HelpPage = () => {
             <Lightbulb size={32} className="mx-auto mb-4 text-badge-gold" />
             <h2 className="mb-3 font-heading text-2xl font-bold text-foreground">Help Us Improve</h2>
             <p className="mb-8 text-sm text-muted-foreground">Was this help center useful? Share your feedback so we can make it even better.</p>
-            <div className="flex items-center justify-center gap-4">
-              {[
-                { icon: ThumbsUp, label: "Very Helpful", color: "skill-green" },
-                { icon: Star, label: "Somewhat Helpful", color: "badge-gold" },
-                { icon: ThumbsDown, label: "Needs Work", color: "alert-red" },
-              ].map((fb) => (
-                <motion.button key={fb.label} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className={`flex flex-col items-center gap-2 rounded-2xl border border-border bg-card px-6 py-4 hover:border-${fb.color}/30 transition-all`}>
-                  <fb.icon size={20} className={`text-${fb.color}`} />
-                  <span className="text-[10px] text-muted-foreground">{fb.label}</span>
-                </motion.button>
-              ))}
-            </div>
+            {feedbackSent ? (
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="inline-flex items-center gap-2 rounded-2xl border border-skill-green/20 bg-skill-green/5 px-8 py-4">
+                <CheckCircle2 size={20} className="text-skill-green" />
+                <span className="text-sm font-medium text-skill-green">Thanks for your feedback!</span>
+              </motion.div>
+            ) : (
+              <div className="flex items-center justify-center gap-4">
+                {[
+                  { icon: ThumbsUp, label: "Very Helpful", color: "skill-green", value: "very_helpful" },
+                  { icon: Star, label: "Somewhat Helpful", color: "badge-gold", value: "somewhat_helpful" },
+                  { icon: ThumbsDown, label: "Needs Work", color: "alert-red", value: "needs_work" },
+                ].map((fb) => (
+                  <motion.button key={fb.label} onClick={() => handleFeedback(fb.value)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className={`flex flex-col items-center gap-2 rounded-2xl border border-border bg-card px-6 py-4 hover:border-${fb.color}/30 transition-all`}>
+                    <fb.icon size={20} className={`text-${fb.color}`} />
+                    <span className="text-[10px] text-muted-foreground">{fb.label}</span>
+                  </motion.button>
+                ))}
+              </div>
+            )}
           </div>
         </section>
         <Footer />
