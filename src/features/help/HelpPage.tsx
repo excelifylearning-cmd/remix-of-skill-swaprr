@@ -872,20 +872,8 @@ const HelpPage = () => {
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="mb-6 grid gap-3 grid-cols-2 sm:grid-cols-4">
-              {[
-                { label: "Total Paid", value: "12,400 SP" },
-                { label: "Reports Resolved", value: "87" },
-                { label: "Avg Resolution", value: "3.2 days" },
-                { label: "Active Hunters", value: "142" },
-              ].map((s) => (
-                <div key={s.label} className="rounded-xl border border-border bg-card p-4 text-center">
-                  <p className="font-mono text-lg font-bold text-foreground">{s.value}</p>
-                  <p className="text-[10px] text-muted-foreground">{s.label}</p>
-                </div>
-              ))}
-            </div>
+            {/* Stats - Live from DB */}
+            <BountyStats />
 
             {/* Tiers */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
