@@ -2,7 +2,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import type { ForecastPoint, ScenarioData } from "../hooks/useForecasting";
 
 interface ForecastChartProps {
-  data: ForecastPoint[];
+  data?: ForecastPoint[];
   scenarios?: ScenarioData[];
   height?: number;
   showConfidence?: boolean;
