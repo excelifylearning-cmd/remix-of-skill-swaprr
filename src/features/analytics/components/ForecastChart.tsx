@@ -61,7 +61,7 @@ const ForecastChart = ({ data, scenarios, height = 300, showConfidence = true, t
               <Area type="monotone" dataKey="lowerBound" stroke="none" fill="hsl(var(--background))" fillOpacity={1} />
             </>
           )}
-          {data.some(d => d.actual !== undefined) && (
+          {data && data.some(d => d.actual !== undefined) && (
             <Area type="monotone" dataKey="actual" stroke="hsl(var(--skill-green))" fill="hsl(var(--skill-green))" fillOpacity={0.1} strokeWidth={2.5} dot={{ r: 3, fill: "hsl(var(--skill-green))" }} />
           )}
           <Area type="monotone" dataKey="projected" stroke="hsl(var(--foreground))" fill="hsl(var(--foreground))" fillOpacity={0.05} strokeWidth={2} strokeDasharray="6 3" />
