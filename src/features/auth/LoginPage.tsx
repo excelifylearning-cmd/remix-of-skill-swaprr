@@ -47,9 +47,7 @@ const LoginPage = () => {
     setGoogleLoading(true);
     setError("");
     try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
+      const result = await portableAuth.signInWithGoogle(window.location.origin);
       if (result.error) {
         setError("Google sign-in failed. Please try again.");
         setGoogleLoading(false);
