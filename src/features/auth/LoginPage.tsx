@@ -48,7 +48,7 @@ const LoginPage = () => {
     setError("");
     try {
       const result = await portableAuth.signInWithGoogle(window.location.origin);
-      if (result.error) {
+      if (result && "error" in result && result.error) {
         setError("Google sign-in failed. Please try again.");
         setGoogleLoading(false);
       }
