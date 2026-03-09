@@ -6,7 +6,7 @@ import PageTransition from "@/components/shared/PageTransition";
 import { validateEmail } from "@/lib/email-validation";
 import { useAuth } from "@/lib/auth-context";
 import { logFormSubmission, logInteraction } from "@/lib/activity-logger";
-import { lovable } from "@/integrations/lovable/index";
+import { portableAuth } from "@/lib/oauth";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
