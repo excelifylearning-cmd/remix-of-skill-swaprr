@@ -26,7 +26,7 @@ import { logActivity, logInteraction, logPageView } from "@/lib/activity-logger"
    TYPES
 ═══════════════════════════════════════════════════════════════════════════ */
 
-type Panel = "chat" | "whiteboard" | "video" | "files" | "stages" | "escrow" | "submit" | "dispute" | "settings" | "members" | "ai";
+type Panel = "chat" | "whiteboard" | "video" | "files" | "stages" | "escrow" | "submit" | "dispute" | "settings" | "members" | "ai" | "bids" | "team" | "kanban" | "deadline";
 
 interface WsMessage { id: string; sender_id: string; content: string; message_type: string; created_at: string; translated_text?: Record<string, string> | null; }
 interface WsFile { id: string; file_name: string; file_url: string; file_size: string; file_type: string; version: number; uploaded_by: string; created_at: string; access_level?: string; tags?: string[]; description?: string; }
