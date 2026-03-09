@@ -71,6 +71,34 @@ The migrations in `supabase/migrations/` are **standard PostgreSQL SQL**. If you
 
 ---
 
+## AI Features (Self-Hosting)
+
+The AI chat and workspace AI assistant use edge functions that connect to an OpenAI-compatible API. On Lovable Cloud these use the managed gateway automatically. For self-hosting:
+
+| Env Variable | Purpose | Required? |
+|-------------|---------|-----------|
+| `AI_CHAT_API_KEY` or `OPENAI_API_KEY` | API key for your AI provider | Yes (if you want AI features) |
+| `AI_PROVIDER_URL` | Custom endpoint URL (defaults to `https://api.openai.com/v1/chat/completions`) | No |
+
+Set these as Supabase secrets:
+```bash
+supabase secrets set AI_CHAT_API_KEY=sk-your-openai-key
+# Optional: custom endpoint (e.g. Azure OpenAI, local LLM)
+supabase secrets set AI_PROVIDER_URL=https://your-provider.com/v1/chat/completions
+```
+
+---
+
+## Google OAuth (Self-Hosting)
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials
+2. Create an OAuth 2.0 Client ID (Web application)
+3. Add authorized redirect URL: `https://<your-supabase-ref>.supabase.co/auth/v1/callback`
+4. In your Supabase dashboard → Authentication → Providers → Google: enter your Client ID and Secret
+5. The `src/lib/oauth.ts` wrapper automatically falls back to standard Supabase OAuth when the Lovable module is unavailable
+
+---
+
 ## What's in the Backend
 
 ### Database Schema (all in `supabase/migrations/`)
