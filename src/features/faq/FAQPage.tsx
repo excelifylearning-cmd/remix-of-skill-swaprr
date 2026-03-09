@@ -214,8 +214,8 @@ const FaqCategoryNav = ({ sections, activeSection, onSelect }: { sections: typeo
             </button>
           </>
         )}
-        <div ref={scrollRef} className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-          <style>{`.flex.gap-2.overflow-x-auto::-webkit-scrollbar { display: none; }`}</style>
+        <div ref={scrollRef} className="faq-nav-scroll flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
+          <style>{`.faq-nav-scroll::-webkit-scrollbar { display: none !important; }`}</style>
           {sections.map((s) => (
             <button
               key={s.id}
