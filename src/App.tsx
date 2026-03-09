@@ -40,6 +40,7 @@ const WorkspacePage = lazy(() => import("./features/workspace/WorkspacePage"));
 const ProfilePage = lazy(() => import("./features/profile/ProfilePage"));
 const GuildPage = lazy(() => import("./features/guild/GuildPage"));
 const SuccessStoriesPage = lazy(() => import("./features/success-stories/SuccessStoriesPage"));
+const SavedPostsPage = lazy(() => import("./features/saved/SavedPostsPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const MaintenancePage = lazy(() => import("./pages/Maintenance"));
 const ComingSoonPage = lazy(() => import("./pages/ComingSoon"));
