@@ -175,7 +175,8 @@ const calcSkills = [
 
 const PricingPage = () => {
   const [annual, setAnnual] = useState(false);
-  const [animatedStats, setAnimatedStats] = useState(liveStats.map(() => 0));
+  const { liveStats, skillDemand, loading: statsLoading } = useLivePricingStats();
+  const [animatedStats, setAnimatedStats] = useState<number[]>([]);
   const [calcSkill, setCalcSkill] = useState(calcSkills[0].name);
   const [calcGigs, setCalcGigs] = useState(8);
   const [calcComplexity, setCalcComplexity] = useState(3);
