@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Headset, X, Send, Bot, User, RotateCcw, Languages, UserCheck, Sparkles, Globe } from "lucide-react";
+import { X, Send, Bot, User, RotateCcw, Languages, UserCheck, Sparkles, Globe, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 
@@ -30,12 +30,78 @@ const AI_SUGGESTIONS = [
 
 const timeNow = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
+/* ── Chat Message Bubble ── */
+const ChatBubble = ({ msg }: { msg: ChatMsg }) => {
+  if (msg.role === "system") {
+    return (
+      <div className="flex justify-center">
+        <div className="rounded-full bg-muted/50 border border-border px-4 py-1.5 text-[10px] text-muted-foreground text-center max-w-[85%]">
+          {msg.content}
+        </div>
+      </div>
+    );
+  }
+
+  const isUser = msg.role === "user";
+
+  return (
+    <div className={`flex gap-2.5 ${isUser ? "justify-end" : ""}`}>
+      {!isUser && (
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground/5 border border-border/50 mt-0.5">
+          <Bot size={12} className="text-foreground/70" />
+        </div>
+      )}
+      <div className="flex flex-col gap-0.5 max-w-[240px]">
+        <div
+          className={`rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed ${
+            isUser
+              ? "bg-foreground text-background rounded-br-md"
+              : msg.error
+                ? "bg-destructive/5 text-destructive border border-destructive/10 rounded-bl-md"
+                : "bg-muted/40 text-foreground border border-border/40 rounded-bl-md"
+          }`}
+        >
+          {msg.content}
+        </div>
+        {msg.translated && (
+          <div className="rounded-xl bg-muted/20 border border-border/30 px-3 py-1.5 text-[10px] text-muted-foreground">
+            <span className="font-mono text-[9px] text-muted-foreground/50 uppercase tracking-wider">Translated </span>
+            {msg.translated}
+          </div>
+        )}
+        <span className={`text-[9px] text-muted-foreground/40 font-mono ${isUser ? "text-right" : ""}`}>{msg.time}</span>
+      </div>
+      {isUser && (
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground text-background mt-0.5">
+          <User size={12} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ── Typing Indicator ── */
+const TypingIndicator = () => (
+  <div className="flex items-center gap-2.5">
+    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground/5 border border-border/50">
+      <Bot size={12} className="text-foreground/70" />
+    </div>
+    <div className="flex items-center gap-2 rounded-2xl bg-muted/40 border border-border/40 px-4 py-2.5 rounded-bl-md">
+      <div className="flex gap-1">
+        {[0, 0.15, 0.3].map((d, i) => (
+          <motion.span key={i} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ repeat: Infinity, duration: 1, delay: d }} className="h-1.5 w-1.5 rounded-full bg-muted-foreground/60" />
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 const LiveChatWidget = () => {
   const { user } = useAuth();
   const [chatOpen, setChatOpen] = useState(false);
   const [mode, setMode] = useState<"ai" | "human">("ai");
   const [messages, setMessages] = useState<ChatMsg[]>([
-    { role: "assistant", content: "Hi! 👋 I'm SkillBot. Ask me anything about SkillSwap, or pick a topic below.", time: timeNow() },
+    { role: "assistant", content: "Hi! I'm SkillBot — your AI assistant. Ask me anything about SkillSwap, or pick a topic below.", time: timeNow() },
   ]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -147,7 +213,6 @@ const LiveChatWidget = () => {
         }
       }
 
-      // Auto-translate last assistant message
       if (autoTranslate && assistantSoFar) {
         const translated = await translateText(assistantSoFar);
         if (translated) {
@@ -163,7 +228,6 @@ const LiveChatWidget = () => {
     const text = (overrideInput ?? input).trim();
     if (!text || !user) return;
 
-    // Create conversation if needed
     let cid = convId;
     if (!cid) {
       const { data } = await supabase.from("support_conversations").insert({ user_id: user.id, subject: "Live Chat" }).select("id").single();
@@ -191,20 +255,19 @@ const LiveChatWidget = () => {
     setMode("human");
     setMessages(prev => [...prev, {
       role: "system" as any,
-      content: "🔄 Connecting you with a human agent. You'll be notified when someone joins.",
+      content: "Connecting you with a human agent…",
       time: timeNow(),
     }]);
   };
 
   const resetChat = () => {
-    setMessages([{ role: "assistant", content: "Hi! 👋 I'm SkillBot. Ask me anything, or pick a topic below.", time: timeNow() }]);
+    setMessages([{ role: "assistant", content: "Hi! I'm SkillBot — your AI assistant. Ask me anything, or pick a topic below.", time: timeNow() }]);
     setMode("ai");
     setConvId(null);
   };
 
   const handleOpen = () => { setChatOpen(true); setUnread(0); setShowPulse(false); };
 
-  // AI recommendation
   const suggestion = AI_SUGGESTIONS[Math.floor(Math.random() * AI_SUGGESTIONS.length)];
 
   return (
@@ -212,57 +275,59 @@ const LiveChatWidget = () => {
       <AnimatePresence>
         {chatOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            initial={{ opacity: 0, y: 16, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="mb-3 flex h-[520px] w-[380px] max-w-[calc(100vw-2rem)] max-sm:w-[calc(100vw-2rem)] flex-col rounded-2xl border border-border bg-card shadow-2xl overflow-hidden"
+            exit={{ opacity: 0, y: 16, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="mb-3 flex h-[520px] w-[370px] max-w-[calc(100vw-2rem)] max-sm:w-[calc(100vw-2rem)] flex-col rounded-2xl border border-border/60 bg-background shadow-[0_24px_80px_-12px_hsl(var(--foreground)/0.12)] overflow-hidden"
           >
-            {/* Header — monotone */}
-            <div className="flex items-center justify-between bg-surface-1 px-4 py-3 border-b border-border">
+            {/* ── Header ── */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-2 border border-border">
-                  {mode === "ai" ? <Bot size={14} className="text-foreground" /> : <UserCheck size={14} className="text-foreground" />}
+                <div className="relative">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground text-background">
+                    {mode === "ai" ? <Bot size={16} /> : <UserCheck size={16} />}
+                  </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-skill-green border-2 border-background" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-foreground">{mode === "ai" ? "SkillBot" : "Live Support"}</p>
-                  <p className="text-[10px] text-muted-foreground font-mono">
-                    {mode === "ai" ? "AI Assistant" : "Human Agent"}
+                  <p className="text-sm font-semibold text-foreground tracking-tight">{mode === "ai" ? "SkillBot" : "Live Support"}</p>
+                  <p className="text-[10px] text-muted-foreground/60 font-mono tracking-wide">
+                    {mode === "ai" ? "Online • AI Assistant" : "Connecting…"}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-0.5">
-                {/* Auto-translate toggle */}
+              <div className="flex items-center gap-1">
                 <button
                   onClick={() => setAutoTranslate(!autoTranslate)}
-                  title={autoTranslate ? "Disable auto-translate" : "Enable auto-translate"}
-                  className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${autoTranslate ? "bg-foreground text-background" : "text-muted-foreground hover:bg-surface-2 hover:text-foreground"}`}
+                  title={autoTranslate ? "Disable translate" : "Auto-translate"}
+                  className={`flex h-8 w-8 items-center justify-center rounded-full transition-all ${autoTranslate ? "bg-foreground text-background" : "text-muted-foreground/50 hover:text-foreground hover:bg-muted/40"}`}
                 >
-                  <Globe size={12} />
+                  <Globe size={14} />
                 </button>
                 {mode === "ai" && (
-                  <button onClick={switchToHuman} title="Talk to a human" className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-2 hover:text-foreground transition-colors">
-                    <UserCheck size={12} />
+                  <button onClick={switchToHuman} title="Talk to human" className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground/50 hover:text-foreground hover:bg-muted/40 transition-all">
+                    <UserCheck size={14} />
                   </button>
                 )}
-                <button onClick={resetChat} title="New conversation" className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-2 hover:text-foreground transition-colors">
-                  <RotateCcw size={12} />
+                <button onClick={resetChat} title="Reset" className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground/50 hover:text-foreground hover:bg-muted/40 transition-all">
+                  <RotateCcw size={14} />
                 </button>
-                <button onClick={() => setChatOpen(false)} className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-2 hover:text-foreground transition-colors">
-                  <X size={13} />
+                <button onClick={() => setChatOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground/50 hover:text-foreground hover:bg-muted/40 transition-all">
+                  <X size={14} />
                 </button>
               </div>
             </div>
 
-            {/* Language selector (when auto-translate is on) */}
+            {/* ── Language bar ── */}
             {autoTranslate && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-surface-1 border-b border-border">
-                <Languages size={11} className="text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground">Translate to:</span>
+              <div className="flex items-center gap-2 px-5 py-2 bg-muted/20 border-b border-border/30">
+                <Languages size={11} className="text-muted-foreground/60" />
+                <span className="text-[10px] text-muted-foreground/60">Translate to:</span>
                 <select
                   value={targetLang}
                   onChange={e => setTargetLang(e.target.value)}
-                  className="h-6 rounded border border-border bg-card px-1.5 text-[10px] text-foreground focus:outline-none"
+                  className="h-6 rounded-md border border-border/40 bg-background px-2 text-[10px] text-foreground focus:outline-none"
                 >
                   <option value="es">Spanish</option>
                   <option value="fr">French</option>
@@ -276,127 +341,73 @@ const LiveChatWidget = () => {
               </div>
             )}
 
-            {/* Messages */}
-            <div className="flex-1 space-y-2.5 overflow-y-auto p-4">
+            {/* ── Messages ── */}
+            <div className="flex-1 space-y-3 overflow-y-auto p-4">
               {messages.map((msg, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`flex gap-2 ${msg.role === "user" ? "justify-end" : msg.role === "system" ? "justify-center" : ""}`}
-                >
-                  {msg.role === "system" ? (
-                    <div className="rounded-lg bg-surface-2 border border-border px-3 py-1.5 text-[10px] text-muted-foreground text-center max-w-[85%]">
-                      {msg.content}
-                    </div>
-                  ) : (
-                    <>
-                      {msg.role === "assistant" && (
-                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-2 border border-border mt-0.5">
-                          <Bot size={10} className="text-foreground" />
-                        </div>
-                      )}
-                      <div className="flex flex-col gap-0.5 max-w-[240px]">
-                        <div className={`rounded-xl px-3 py-2 text-xs leading-relaxed ${
-                          msg.role === "user"
-                            ? "bg-foreground text-background rounded-br-sm"
-                            : msg.error
-                              ? "bg-surface-2 text-alert-red border border-alert-red/20 rounded-bl-sm"
-                              : "bg-surface-2 text-foreground border border-border rounded-bl-sm"
-                        }`}>
-                          {msg.content}
-                        </div>
-                        {/* Translated text */}
-                        {msg.translated && (
-                          <div className="rounded-lg bg-surface-1 border border-border px-2.5 py-1.5 text-[10px] text-muted-foreground">
-                            <span className="font-mono text-[9px] text-muted-foreground/60 uppercase">Translated: </span>
-                            {msg.translated}
-                          </div>
-                        )}
-                        <span className={`text-[9px] text-muted-foreground/50 ${msg.role === "user" ? "text-right" : ""}`}>{msg.time}</span>
-                      </div>
-                      {msg.role === "user" && (
-                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-2 border border-border mt-0.5">
-                          <User size={10} className="text-foreground" />
-                        </div>
-                      )}
-                    </>
-                  )}
+                <motion.div key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
+                  <ChatBubble msg={msg} />
                 </motion.div>
               ))}
 
-              {/* Quick actions */}
+              {/* Quick actions on first message */}
               {messages.length === 1 && mode === "ai" && !streaming && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="space-y-2 pl-8">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="space-y-3 pl-9">
                   <div className="flex flex-wrap gap-1.5">
                     {QUICK_ACTIONS.map(q => (
-                      <button key={q.label} onClick={() => handleSend(q.label)} className="rounded-lg border border-border bg-surface-1 px-2.5 py-1.5 text-[10px] text-foreground hover:bg-surface-2 transition-colors">
+                      <button key={q.label} onClick={() => handleSend(q.label)} className="rounded-full border border-border/50 bg-background px-3 py-1.5 text-[10px] text-foreground hover:bg-muted/40 transition-all">
                         {q.icon} {q.label}
                       </button>
                     ))}
                   </div>
-                  {/* AI recommendation */}
-                  <div className="rounded-lg border border-border bg-surface-1 p-2.5 flex items-start gap-2">
-                    <Sparkles size={10} className="text-muted-foreground mt-0.5 shrink-0" />
-                    <p className="text-[10px] text-muted-foreground"><span className="font-medium text-foreground">Tip:</span> {suggestion}</p>
+                  <div className="rounded-xl border border-border/30 bg-muted/20 p-3 flex items-start gap-2.5">
+                    <Sparkles size={11} className="text-muted-foreground/50 mt-0.5 shrink-0" />
+                    <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+                      <span className="font-medium text-foreground/80">Tip:</span> {suggestion}
+                    </p>
                   </div>
                 </motion.div>
               )}
 
-              {/* Typing indicator */}
-              {streaming && messages[messages.length - 1]?.role !== "assistant" && (
-                <div className="flex items-center gap-2">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-2 border border-border">
-                    <Bot size={10} className="text-foreground" />
-                  </div>
-                  <div className="flex items-center gap-2 rounded-xl bg-surface-2 border border-border px-3 py-2">
-                    <div className="flex gap-0.5">
-                      {[0, 0.15, 0.3].map((d, i) => (
-                        <motion.span key={i} animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 0.9, delay: d }} className="h-1 w-1 rounded-full bg-muted-foreground" />
-                      ))}
-                    </div>
-                    <span className="text-[10px] text-muted-foreground">Thinking…</span>
-                  </div>
-                </div>
-              )}
+              {streaming && messages[messages.length - 1]?.role !== "assistant" && <TypingIndicator />}
               <div ref={chatEndRef} />
             </div>
 
-            {/* Input */}
-            <div className="border-t border-border bg-surface-1 p-3">
+            {/* ── Input ── */}
+            <div className="border-t border-border/40 bg-background p-3">
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder={mode === "ai" ? "Ask SkillBot…" : "Message support…"}
+                  placeholder={mode === "ai" ? "Ask SkillBot anything…" : "Message support…"}
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && !e.shiftKey && handleSend()}
-                  className="h-9 flex-1 rounded-lg border border-border bg-card px-3 text-xs text-foreground placeholder:text-muted-foreground/40 focus:border-foreground/30 focus:outline-none transition-colors"
+                  className="h-10 flex-1 rounded-xl border border-border/40 bg-muted/20 px-4 text-xs text-foreground placeholder:text-muted-foreground/30 focus:border-foreground/20 focus:outline-none focus:bg-background transition-all"
                 />
                 <button
                   onClick={() => handleSend()}
                   disabled={streaming || !input.trim()}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground text-background disabled:opacity-20 transition-opacity"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground text-background disabled:opacity-15 hover:opacity-90 transition-all"
                 >
-                  <Send size={12} />
+                  <Send size={14} />
                 </button>
               </div>
+              <p className="mt-2 text-center text-[9px] text-muted-foreground/30 font-mono tracking-wide">Powered by SkillBot AI</p>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Floating button */}
+      {/* ── Floating Button ── */}
       <div className="relative">
         {showPulse && !chatOpen && (
           <motion.div
-            className="absolute inset-0 rounded-full border-2 border-foreground/20"
-            animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
+            className="absolute inset-0 rounded-full bg-foreground/10"
+            animate={{ scale: [1, 1.6], opacity: [0.4, 0] }}
+            transition={{ repeat: Infinity, duration: 2.5 }}
           />
         )}
         {unread > 0 && !chatOpen && (
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-1 -right-1 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-[10px] font-bold text-background border-2 border-card">
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-1 -right-1 z-10 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-foreground text-[9px] font-bold text-background border-2 border-background">
             {unread}
           </motion.div>
         )}
@@ -404,17 +415,17 @@ const LiveChatWidget = () => {
           onClick={chatOpen ? () => setChatOpen(false) : handleOpen}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="relative flex h-14 w-14 items-center justify-center rounded-full bg-foreground text-background shadow-lg border border-foreground/10"
+          className="relative flex h-12 w-12 items-center justify-center rounded-full bg-foreground text-background shadow-[0_8px_30px_-4px_hsl(var(--foreground)/0.25)] transition-shadow hover:shadow-[0_12px_40px_-4px_hsl(var(--foreground)/0.35)]"
           title="Chat with SkillBot"
         >
           <AnimatePresence mode="wait">
             {chatOpen ? (
               <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
-                <X size={18} />
+                <X size={16} />
               </motion.div>
             ) : (
               <motion.div key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}>
-                <Headset size={18} />
+                <MessageCircle size={18} />
               </motion.div>
             )}
           </AnimatePresence>

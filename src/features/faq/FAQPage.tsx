@@ -266,7 +266,7 @@ const FAQPage = () => {
             {/* Category Nav */}
             <div className="sticky top-16 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
               <div className="mx-auto max-w-7xl px-6 py-3">
-                <div className="flex flex-wrap gap-2">
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {faqSections.map((s) => (
                     <button
                       key={s.id}
