@@ -514,6 +514,39 @@ export type Database = {
           },
         ]
       }
+      enterprise_accounts: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          max_seats: number
+          name: string
+          owner_id: string
+          plan: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          max_seats?: number
+          name: string
+          owner_id: string
+          plan?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          max_seats?: number
+          name?: string
+          owner_id?: string
+          plan?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       enterprise_candidates: {
         Row: {
           candidate_user_id: string
@@ -596,6 +629,41 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      enterprise_members: {
+        Row: {
+          account_id: string
+          created_at: string
+          id: string
+          invited_by: string | null
+          role: string
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          role?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enterprise_members_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "enterprise_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       enterprise_projects: {
         Row: {
@@ -2967,6 +3035,7 @@ export type Database = {
           status: string
           user_id: string
           workspace_id: string
+          workspace_type: string | null
         }
         Insert: {
           accepted_at?: string | null
@@ -2978,6 +3047,7 @@ export type Database = {
           status?: string
           user_id: string
           workspace_id: string
+          workspace_type?: string | null
         }
         Update: {
           accepted_at?: string | null
@@ -2989,6 +3059,7 @@ export type Database = {
           status?: string
           user_id?: string
           workspace_id?: string
+          workspace_type?: string | null
         }
         Relationships: []
       }
