@@ -172,7 +172,103 @@ export default function GigDetailPage() {
                   <Layers className="w-4 h-4 text-court-blue" />
                   <h3 className="text-sm font-heading font-bold text-foreground">Co-Creation Team</h3>
                 </div>
-                <p className="text-sm text-muted-foreground">Team slots and roles will appear here when the gig is matched.</p>
+                {listing.wants && (
+                  <div className="mb-3">
+                    <p className="text-[10px] font-mono uppercase text-muted-foreground mb-1.5">Open Roles</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {listing.wants.split(",").map((w: string, i: number) => (
+                        <span key={i} className="text-xs bg-court-blue/10 text-court-blue px-2.5 py-1 rounded-lg flex items-center gap-1"><Users className="w-3 h-3" />{w.trim()}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <p className="text-sm text-muted-foreground">Join this team to collaborate on a shared deliverable.</p>
+              </div>
+            )}
+
+            {/* Skill Fusion */}
+            {isFusion && (
+              <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <GitMerge className="w-4 h-4 text-purple-400" />
+                  <h3 className="text-sm font-heading font-bold text-foreground">Skill Fusion</h3>
+                </div>
+                {listing.wants && (
+                  <div className="mb-3">
+                    <p className="text-[10px] font-mono uppercase text-muted-foreground mb-1.5">Skills Needed</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {listing.wants.split(",").map((w: string, i: number) => (
+                        <span key={i} className="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg flex items-center gap-1"><Zap className="w-3 h-3" />{w.trim()}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <p className="text-sm text-muted-foreground">Combine multiple skills into one powerful collaboration.</p>
+              </div>
+            )}
+
+            {/* Flash Market */}
+            {isFlash && (
+              <div className="rounded-xl border-2 border-badge-gold/30 bg-gradient-to-r from-badge-gold/5 to-alert-red/5 p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Zap className="w-4 h-4 text-badge-gold" />
+                  <h3 className="text-sm font-heading font-bold text-foreground">Flash Deal — 2.5x SP Multiplier</h3>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-lg bg-badge-gold/10 p-3 text-center">
+                    <p className="text-xl font-mono font-black text-badge-gold">{Math.round((listing.points || 0) * 2.5)} SP</p>
+                    <p className="text-[10px] text-muted-foreground">Multiplied Value</p>
+                  </div>
+                  <div className="rounded-lg bg-surface-1 p-3 text-center">
+                    <p className="text-xl font-mono font-bold text-foreground">{listing.ends_at ? Math.max(0, Math.floor((new Date(listing.ends_at).getTime() - Date.now()) / 60000)) : "∞"}m</p>
+                    <p className="text-[10px] text-muted-foreground">Time Remaining</p>
+                  </div>
+                </div>
+                {listing.ends_at && new Date(listing.ends_at).getTime() - Date.now() < 3600000 && (
+                  <div className="mt-3 flex items-center gap-1.5 text-xs text-alert-red"><AlertTriangle className="w-3.5 h-3.5" /> Expires soon — act fast!</div>
+                )}
+              </div>
+            )}
+
+            {/* Project */}
+            {isProject && (
+              <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Briefcase className="w-4 h-4 text-orange-400" />
+                  <h3 className="text-sm font-heading font-bold text-foreground">Project Details</h3>
+                </div>
+                {listing.wants && (
+                  <div className="mb-3">
+                    <p className="text-[10px] font-mono uppercase text-muted-foreground mb-1.5">Required Roles</p>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {listing.wants.split(",").map((r: string, i: number) => (
+                        <div key={i} className="flex items-center gap-1.5 text-xs bg-surface-1 rounded-lg px-2.5 py-1.5"><Users className="w-3 h-3 text-orange-400" />{r.trim()}</div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {listing.delivery_days}d deadline</span>
+                  <span className="font-mono text-skill-green font-bold">{listing.points} SP budget</span>
+                </div>
+              </div>
+            )}
+
+            {/* Request */}
+            {isRequest && (
+              <div className="rounded-xl border border-skill-green/20 bg-skill-green/5 p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <HandHeart className="w-4 h-4 text-skill-green" />
+                  <h3 className="text-sm font-heading font-bold text-foreground">Help Request</h3>
+                </div>
+                <div className="flex items-center gap-2 text-sm mb-2">
+                  <span className="text-muted-foreground">Seeking:</span>
+                  <span className="text-foreground font-heading font-semibold">{listing.wants || "Open to offers"}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-muted-foreground">Budget:</span>
+                  <span className="font-mono text-skill-green font-bold">{listing.points} SP</span>
+                </div>
               </div>
             )}
 
