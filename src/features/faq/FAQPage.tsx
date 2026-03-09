@@ -264,24 +264,7 @@ const FAQPage = () => {
         {!searchQuery && (
           <>
             {/* Category Nav */}
-            <div className="sticky top-16 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
-              <div className="mx-auto max-w-7xl px-6 py-3">
-                <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                  {faqSections.map((s) => (
-                    <button
-                      key={s.id}
-                      onClick={() => setActiveSection(s.id)}
-                      className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium transition-all whitespace-nowrap ${
-                        activeSection === s.id ? "bg-foreground text-background" : "bg-surface-1 text-muted-foreground hover:text-foreground hover:bg-surface-2"
-                      }`}
-                    >
-                      <s.icon size={13} />
-                      {s.title}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <FaqCategoryNav sections={faqSections} activeSection={activeSection} onSelect={setActiveSection} />
 
             {/* Section Content */}
             <section className="py-16">
