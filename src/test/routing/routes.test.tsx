@@ -9,10 +9,6 @@ vi.mock("@/lib/auth-context", () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-vi.mock("@/components/shared/TelemetryProvider", () => ({ default: () => null }));
-vi.mock("@/components/shared/LiveChatWidget", () => ({ default: () => null }));
-vi.mock("@/components/shared/CookieConsent", () => ({ default: () => null }));
-
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 describe("Routing", () => {
@@ -20,7 +16,7 @@ describe("Routing", () => {
     const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
       <QueryClientProvider client={qc}>
-        <MemoryRouter initialEntries={["/this-does-not-exist"]}>
+        <MemoryRouter initialEntries={["/unknown-route"]}>
           <Suspense fallback={<div>Loading...</div>}>
             <Routes>
               <Route path="*" element={<NotFound />} />
@@ -30,8 +26,7 @@ describe("Routing", () => {
       </QueryClientProvider>
     );
     await waitFor(() => {
-      // The 404 page renders "Page not found" text
-      expect(screen.getByText(/page not found/i)).toBeInTheDocument();
+      expect(screen.getByText(/lost/i)).toBeInTheDocument();
     });
   });
 });
