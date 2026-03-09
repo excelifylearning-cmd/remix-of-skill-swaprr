@@ -22,16 +22,21 @@ const renderNav = () =>
   );
 
 describe("Navbar", () => {
-  it("renders logo and nav links", () => {
+  it("renders logo parts", () => {
     renderNav();
-    expect(screen.getByText("Skill Swappr")).toBeInTheDocument();
-    expect(screen.getByText("Features")).toBeInTheDocument();
-    expect(screen.getByText("Marketplace")).toBeInTheDocument();
-    expect(screen.getByText("Pricing")).toBeInTheDocument();
+    expect(screen.getByText("Skill")).toBeInTheDocument();
+    expect(screen.getByText("Swappr")).toBeInTheDocument();
   });
 
   it("shows login button when not authenticated", () => {
     renderNav();
     expect(screen.getByText("Log In")).toBeInTheDocument();
+  });
+
+  it("renders nav links", () => {
+    renderNav();
+    expect(screen.getByText("Features")).toBeInTheDocument();
+    expect(screen.getByText("Marketplace")).toBeInTheDocument();
+    expect(screen.getByText("Pricing")).toBeInTheDocument();
   });
 });

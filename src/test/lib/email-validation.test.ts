@@ -3,8 +3,8 @@ import { validateEmail } from "@/lib/email-validation";
 
 describe("Email Validation", () => {
   it("accepts valid emails", () => {
-    expect(validateEmail("user@example.com")).toBe(true);
-    expect(validateEmail("test.user@uni.edu")).toBe(true);
+    expect(validateEmail("alice@example.com")).toBe(true);
+    expect(validateEmail("john.doe@uni.edu")).toBe(true);
   });
 
   it("rejects empty/invalid emails", () => {
@@ -13,11 +13,11 @@ describe("Email Validation", () => {
   });
 
   it("rejects disposable email providers", () => {
-    expect(validateEmail("user@tempmail.com")).not.toBe(true);
-    expect(validateEmail("user@mailinator.com")).not.toBe(true);
+    expect(validateEmail("alice@tempmail.com")).not.toBe(true);
+    expect(validateEmail("alice@mailinator.com")).not.toBe(true);
   });
 
   it("accepts legitimate providers", () => {
-    expect(validateEmail("user@gmail.com")).toBe(true);
+    expect(validateEmail("alice@gmail.com")).toBe(true);
   });
 });

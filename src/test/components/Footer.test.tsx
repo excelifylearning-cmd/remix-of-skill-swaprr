@@ -10,9 +10,10 @@ vi.mock("@/lib/auth-context", () => ({
 import Footer from "@/components/shared/Footer";
 
 describe("Footer", () => {
-  it("renders brand name", () => {
+  it("renders brand name parts", () => {
     render(<BrowserRouter><Footer /></BrowserRouter>);
-    expect(screen.getByText(/Skill Swappr/i)).toBeInTheDocument();
+    expect(screen.getByText("Skill")).toBeInTheDocument();
+    expect(screen.getByText("Swappr")).toBeInTheDocument();
   });
 
   it("renders navigation sections", () => {
