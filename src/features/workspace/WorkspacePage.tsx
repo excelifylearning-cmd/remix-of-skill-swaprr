@@ -44,7 +44,7 @@ const AUTH_HEADER = { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUB
    SIDEBAR NAV CONFIG
 ═══════════════════════════════════════════════════════════════════════════ */
 
-const sidebarSections = [
+const baseSidebarSections = [
   {
     label: "Communication",
     items: [
@@ -72,6 +72,25 @@ const sidebarSections = [
     ],
   },
 ];
+
+const formatExtraPanels: Record<string, { label: string; items: { id: Panel; icon: any; label: string }[] }> = {
+  auction: { label: "Auction", items: [{ id: "bids", icon: Gavel, label: "Bid History" }] },
+  "co-creation": { label: "Team", items: [{ id: "team", icon: Users, label: "Team Mgmt" }] },
+  "skill_fusion": { label: "Fusion", items: [{ id: "team", icon: Users, label: "Participants" }] },
+  projects: { label: "Project", items: [{ id: "kanban", icon: ListChecks, label: "Kanban" }, { id: "deadline", icon: Clock, label: "Timeline" }] },
+  flash_market: { label: "Flash", items: [{ id: "deadline", icon: Clock, label: "Deadline" }] },
+};
+
+function getSidebarSections(workspaceType: string) {
+  const extra = formatExtraPanels[workspaceType];
+  if (!extra) return baseSidebarSections;
+  return [
+    baseSidebarSections[0],
+    { label: extra.label, items: extra.items },
+    baseSidebarSections[1],
+    baseSidebarSections[2],
+  ];
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    HELPERS
