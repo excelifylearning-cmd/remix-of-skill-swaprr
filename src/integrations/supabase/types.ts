@@ -3162,6 +3162,44 @@ export type Database = {
         }
         Relationships: []
       }
+      workspaces: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          listing_id: string | null
+          metadata: Json | null
+          title: string
+          workspace_type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id: string
+          listing_id?: string | null
+          metadata?: Json | null
+          title?: string
+          workspace_type?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          listing_id?: string | null
+          metadata?: Json | null
+          title?: string
+          workspace_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspaces_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       public_profiles: {

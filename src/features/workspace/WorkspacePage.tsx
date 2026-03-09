@@ -26,7 +26,7 @@ import { logActivity, logInteraction, logPageView } from "@/lib/activity-logger"
    TYPES
 ═══════════════════════════════════════════════════════════════════════════ */
 
-type Panel = "chat" | "whiteboard" | "video" | "files" | "stages" | "escrow" | "submit" | "dispute" | "settings" | "members" | "ai";
+type Panel = "chat" | "whiteboard" | "video" | "files" | "stages" | "escrow" | "submit" | "dispute" | "settings" | "members" | "ai" | "bids" | "team" | "kanban" | "deadline";
 
 interface WsMessage { id: string; sender_id: string; content: string; message_type: string; created_at: string; translated_text?: Record<string, string> | null; }
 interface WsFile { id: string; file_name: string; file_url: string; file_size: string; file_type: string; version: number; uploaded_by: string; created_at: string; access_level?: string; tags?: string[]; description?: string; }
@@ -44,7 +44,7 @@ const AUTH_HEADER = { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUB
    SIDEBAR NAV CONFIG
 ═══════════════════════════════════════════════════════════════════════════ */
 
-const sidebarSections = [
+const baseSidebarSections = [
   {
     label: "Communication",
     items: [
@@ -72,6 +72,25 @@ const sidebarSections = [
     ],
   },
 ];
+
+const formatExtraPanels: Record<string, { label: string; items: { id: Panel; icon: any; label: string }[] }> = {
+  auction: { label: "Auction", items: [{ id: "bids", icon: Gavel, label: "Bid History" }] },
+  "co-creation": { label: "Team", items: [{ id: "team", icon: Users, label: "Team Mgmt" }] },
+  "skill_fusion": { label: "Fusion", items: [{ id: "team", icon: Users, label: "Participants" }] },
+  projects: { label: "Project", items: [{ id: "kanban", icon: ListChecks, label: "Kanban" }, { id: "deadline", icon: Clock, label: "Timeline" }] },
+  flash_market: { label: "Flash", items: [{ id: "deadline", icon: Clock, label: "Deadline" }] },
+};
+
+function getSidebarSections(workspaceType: string) {
+  const extra = formatExtraPanels[workspaceType];
+  if (!extra) return baseSidebarSections;
+  return [
+    baseSidebarSections[0],
+    { label: extra.label, items: extra.items },
+    baseSidebarSections[1],
+    baseSidebarSections[2],
+  ];
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    HELPERS
@@ -1215,6 +1234,7 @@ const WorkspacePage = () => {
   const [transactionCode, setTransactionCode] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string>("owner");
   const [preferredLang, setPreferredLang] = useState("en");
+  const [workspaceType, setWorkspaceType] = useState("direct_swap");
   const workspaceId = id || "demo-workspace-001";
   const userId = user?.id || null;
 
@@ -1252,6 +1272,9 @@ const WorkspacePage = () => {
         const { data: profile } = await supabase.from("profiles").select("languages").eq("user_id", userId).maybeSingle();
         if (profile?.languages?.[0]) setPreferredLang(profile.languages[0]);
       }
+      // Fetch workspace type
+      const { data: ws } = await (supabase as any).from("workspaces").select("workspace_type").eq("id", workspaceId).maybeSingle();
+      if (ws?.workspace_type) setWorkspaceType(ws.workspace_type);
     })();
   }, [workspaceId, userId]);
 
@@ -1261,6 +1284,7 @@ const WorkspacePage = () => {
   };
 
   const partnerName = escrow ? (escrow.buyer_id === userId ? "Seller" : "Buyer") : "Partner";
+  const sidebarSections = getSidebarSections(workspaceType);
 
   return (
     <PageTransition>
@@ -1270,7 +1294,10 @@ const WorkspacePage = () => {
             <button onClick={() => navigate("/dashboard?tab=my-gigs")} className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-1 transition-colors"><ArrowLeft size={18} /></button>
             <div>
               <h1 className="font-heading text-lg font-bold text-foreground">Workspace</h1>
-              <p className="text-xs text-muted-foreground">ID: {workspaceId.slice(0, 16)}... · <span className="capitalize">{userRole}</span></p>
+              <p className="text-xs text-muted-foreground">
+                ID: {workspaceId.slice(0, 16)}... · <span className="capitalize">{userRole}</span>
+                {workspaceType !== "direct_swap" && <span className="ml-1.5 text-[10px] font-mono bg-surface-2 px-1.5 py-0.5 rounded capitalize">{workspaceType.replace(/_/g, " ")}</span>}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -1312,6 +1339,45 @@ const WorkspacePage = () => {
                 {activePanel === "members" && <MembersPanel workspaceId={workspaceId} userId={userId} userRole={userRole} />}
                 {activePanel === "ai" && <AiAssistantPanel workspaceId={workspaceId} />}
                 {activePanel === "settings" && <SettingsPanel workspaceId={workspaceId} escrow={escrow} partnerName={partnerName} transactionCode={transactionCode} preferredLang={preferredLang} onLangChange={setPreferredLang} />}
+                {activePanel === "bids" && (
+                  <div className="h-full flex flex-col p-6 overflow-y-auto">
+                    <h2 className="font-heading font-bold text-lg text-foreground mb-4 flex items-center gap-2"><Gavel size={18} /> Bid History</h2>
+                    <p className="text-sm text-muted-foreground">Auction bid history and winner announcement will appear here when bids are placed.</p>
+                    {escrow && <div className="mt-4 rounded-xl border border-alert-red/20 bg-alert-red/5 p-4"><p className="text-sm font-mono text-alert-red font-bold">Winning Bid: {escrow.total_sp} SP</p><p className="text-xs text-muted-foreground mt-1">Escrow created from winning bid amount</p></div>}
+                  </div>
+                )}
+                {activePanel === "team" && (
+                  <div className="h-full flex flex-col p-6 overflow-y-auto">
+                    <h2 className="font-heading font-bold text-lg text-foreground mb-4 flex items-center gap-2"><Users size={18} /> Team Management</h2>
+                    <p className="text-sm text-muted-foreground mb-4">Manage team roles, assign deliverables, and track per-member progress.</p>
+                    <MembersPanel workspaceId={workspaceId} userId={userId} userRole={userRole} />
+                  </div>
+                )}
+                {activePanel === "kanban" && (
+                  <div className="h-full flex flex-col p-6 overflow-y-auto">
+                    <h2 className="font-heading font-bold text-lg text-foreground mb-4 flex items-center gap-2"><ListChecks size={18} /> Project Kanban</h2>
+                    <div className="grid grid-cols-3 gap-4 flex-1">
+                      {["To Do", "In Progress", "Done"].map(col => (
+                        <div key={col} className="rounded-xl border border-border bg-surface-1 p-3">
+                          <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">{col}</h3>
+                          <p className="text-xs text-muted-foreground/60 text-center py-8">Drop tasks here</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {activePanel === "deadline" && (
+                  <div className="h-full flex flex-col p-6 overflow-y-auto">
+                    <h2 className="font-heading font-bold text-lg text-foreground mb-4 flex items-center gap-2"><Clock size={18} /> {workspaceType === "flash_market" ? "Flash Deadline" : "Project Timeline"}</h2>
+                    {workspaceType === "flash_market" && (
+                      <div className="rounded-xl border-2 border-badge-gold/30 bg-gradient-to-r from-badge-gold/5 to-alert-red/5 p-5 mb-4">
+                        <p className="text-sm font-heading font-bold text-foreground mb-1">⚡ Flash Market — Hard Deadline</p>
+                        <p className="text-xs text-muted-foreground">This workspace has a strict deadline. Auto-escalation triggers when time runs out. 2.5x SP multiplier applied.</p>
+                      </div>
+                    )}
+                    <p className="text-sm text-muted-foreground">Timeline tracking and milestone deadlines will appear here based on workspace stages.</p>
+                  </div>
+                )}
               </motion.div>
             </AnimatePresence>
           </main>
