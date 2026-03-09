@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   HelpCircle, ChevronDown, Search, Coins, ArrowLeftRight, Users, Shield,
   Trophy, Scale, Bot, Building2, Zap, MessageSquare, GraduationCap,
-  Star, Target, Flame, FolderKanban, Lock, FileText
+  Star, Target, Flame, FolderKanban, Lock, FileText, ChevronLeft, ChevronRight
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
@@ -171,6 +171,69 @@ const faqSections = [
   },
 ];
 
+const FaqCategoryNav = ({ sections, activeSection, onSelect }: { sections: typeof faqSections; activeSection: string; onSelect: (id: string) => void }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 2);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
+  };
+
+  useEffect(() => {
+    checkScroll();
+    const el = scrollRef.current;
+    el?.addEventListener("scroll", checkScroll, { passive: true });
+    window.addEventListener("resize", checkScroll);
+    return () => { el?.removeEventListener("scroll", checkScroll); window.removeEventListener("resize", checkScroll); };
+  }, []);
+
+  const scroll = (dir: number) => {
+    scrollRef.current?.scrollBy({ left: dir * 200, behavior: "smooth" });
+  };
+
+  return (
+    <div className="sticky top-16 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
+      <div className="mx-auto max-w-7xl px-6 py-3 relative">
+        {canScrollLeft && (
+          <>
+            <div className="pointer-events-none absolute left-6 top-0 bottom-0 w-12 bg-gradient-to-r from-background/80 to-transparent z-10" />
+            <button onClick={() => scroll(-1)} className="absolute left-7 top-1/2 -translate-y-1/2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-card border border-border shadow-sm hover:bg-surface-2 transition-colors">
+              <ChevronLeft size={14} className="text-foreground" />
+            </button>
+          </>
+        )}
+        {canScrollRight && (
+          <>
+            <div className="pointer-events-none absolute right-6 top-0 bottom-0 w-12 bg-gradient-to-l from-background/80 to-transparent z-10" />
+            <button onClick={() => scroll(1)} className="absolute right-7 top-1/2 -translate-y-1/2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-card border border-border shadow-sm hover:bg-surface-2 transition-colors">
+              <ChevronRight size={14} className="text-foreground" />
+            </button>
+          </>
+        )}
+        <div ref={scrollRef} className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <style>{`.flex.gap-2.overflow-x-auto::-webkit-scrollbar { display: none; }`}</style>
+          {sections.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => onSelect(s.id)}
+              className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium transition-all whitespace-nowrap ${
+                activeSection === s.id ? "bg-foreground text-background" : "bg-surface-1 text-muted-foreground hover:text-foreground hover:bg-surface-2"
+              }`}
+            >
+              <s.icon size={13} />
+              {s.title}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const FAQPage = () => {
   const [activeSection, setActiveSection] = useState("getting-started");
   const [searchQuery, setSearchQuery] = useState("");
@@ -264,24 +327,7 @@ const FAQPage = () => {
         {!searchQuery && (
           <>
             {/* Category Nav */}
-            <div className="sticky top-16 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
-              <div className="mx-auto max-w-7xl px-6 py-3">
-                <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                  {faqSections.map((s) => (
-                    <button
-                      key={s.id}
-                      onClick={() => setActiveSection(s.id)}
-                      className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium transition-all whitespace-nowrap ${
-                        activeSection === s.id ? "bg-foreground text-background" : "bg-surface-1 text-muted-foreground hover:text-foreground hover:bg-surface-2"
-                      }`}
-                    >
-                      <s.icon size={13} />
-                      {s.title}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <FaqCategoryNav sections={faqSections} activeSection={activeSection} onSelect={setActiveSection} />
 
             {/* Section Content */}
             <section className="py-16">

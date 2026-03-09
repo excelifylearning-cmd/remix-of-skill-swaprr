@@ -40,6 +40,8 @@ const WorkspacePage = lazy(() => import("./features/workspace/WorkspacePage"));
 const ProfilePage = lazy(() => import("./features/profile/ProfilePage"));
 const GuildPage = lazy(() => import("./features/guild/GuildPage"));
 const SuccessStoriesPage = lazy(() => import("./features/success-stories/SuccessStoriesPage"));
+const BrowseGuildsPage = lazy(() => import("./features/guild/BrowseGuildsPage"));
+const BrowseUsersPage = lazy(() => import("./features/users/BrowseUsersPage"));
 const SavedPostsPage = lazy(() => import("./features/saved/SavedPostsPage"));
 const AuctionsPage = lazy(() => import("./features/marketplace/pages/AuctionsPage"));
 const CoCreationPage = lazy(() => import("./features/marketplace/pages/CoCreationPage"));
@@ -101,6 +103,8 @@ const AnimatedRoutes = () => {
           <Route path="/enterprise-dashboard" element={<EnterpriseDashboardPage />} />
           <Route path="/success-stories" element={<SuccessStoriesPage />} />
           <Route path="/saved" element={<SavedPostsPage />} />
+          <Route path="/guilds" element={<BrowseGuildsPage />} />
+          <Route path="/users" element={<BrowseUsersPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/coming-soon" element={<ComingSoonPage />} />
           <Route path="/500" element={<ServerErrorPage />} />
