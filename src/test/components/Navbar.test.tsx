@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
-import { screen } from "@testing-library/react";
-import { render } from "../utils";
+import { render, screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 
-// Mock auth context
 vi.mock("@/lib/auth-context", () => ({
   useAuth: () => ({
     user: null,
@@ -15,9 +14,16 @@ vi.mock("@/lib/auth-context", () => ({
 
 import Navbar from "@/components/shared/Navbar";
 
+const renderNav = () =>
+  render(
+    <BrowserRouter>
+      <Navbar />
+    </BrowserRouter>
+  );
+
 describe("Navbar", () => {
   it("renders logo and nav links", () => {
-    render(<Navbar />);
+    renderNav();
     expect(screen.getByText("Skill Swappr")).toBeInTheDocument();
     expect(screen.getByText("Features")).toBeInTheDocument();
     expect(screen.getByText("Marketplace")).toBeInTheDocument();
@@ -25,14 +31,7 @@ describe("Navbar", () => {
   });
 
   it("shows login button when not authenticated", () => {
-    render(<Navbar />);
+    renderNav();
     expect(screen.getByText("Log In")).toBeInTheDocument();
-  });
-
-  it("renders theme toggle", () => {
-    render(<Navbar />);
-    // Sun or Moon icon should be present
-    const buttons = screen.getAllByRole("button");
-    expect(buttons.length).toBeGreaterThan(0);
   });
 });

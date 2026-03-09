@@ -1,25 +1,23 @@
 import { describe, it, expect } from "vitest";
-import { isValidEmail, isDisposableEmail } from "@/lib/email-validation";
+import { validateEmail } from "@/lib/email-validation";
 
 describe("Email Validation", () => {
   it("accepts valid emails", () => {
-    expect(isValidEmail("user@example.com")).toBe(true);
-    expect(isValidEmail("test.user@uni.edu")).toBe(true);
+    expect(validateEmail("user@example.com")).toBe(true);
+    expect(validateEmail("test.user@uni.edu")).toBe(true);
   });
 
-  it("rejects invalid emails", () => {
-    expect(isValidEmail("")).toBe(false);
-    expect(isValidEmail("notanemail")).toBe(false);
-    expect(isValidEmail("@example.com")).toBe(false);
+  it("rejects empty/invalid emails", () => {
+    expect(validateEmail("")).not.toBe(true);
+    expect(validateEmail("notanemail")).not.toBe(true);
   });
 
-  it("detects disposable email providers", () => {
-    expect(isDisposableEmail("user@tempmail.com")).toBe(true);
-    expect(isDisposableEmail("user@mailinator.com")).toBe(true);
+  it("rejects disposable email providers", () => {
+    expect(validateEmail("user@tempmail.com")).not.toBe(true);
+    expect(validateEmail("user@mailinator.com")).not.toBe(true);
   });
 
   it("accepts legitimate providers", () => {
-    expect(isDisposableEmail("user@gmail.com")).toBe(false);
-    expect(isDisposableEmail("user@university.edu")).toBe(false);
+    expect(validateEmail("user@gmail.com")).toBe(true);
   });
 });

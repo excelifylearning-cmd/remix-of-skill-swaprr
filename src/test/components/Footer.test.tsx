@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { screen } from "@testing-library/react";
-import { render } from "../utils";
+import { render, screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 
 vi.mock("@/lib/auth-context", () => ({
   useAuth: () => ({ user: null, profile: null, isAuthenticated: false, logout: vi.fn() }),
@@ -10,13 +10,13 @@ vi.mock("@/lib/auth-context", () => ({
 import Footer from "@/components/shared/Footer";
 
 describe("Footer", () => {
-  it("renders copyright and brand", () => {
-    render(<Footer />);
+  it("renders brand name", () => {
+    render(<BrowserRouter><Footer /></BrowserRouter>);
     expect(screen.getByText(/Skill Swappr/i)).toBeInTheDocument();
   });
 
   it("renders navigation sections", () => {
-    render(<Footer />);
+    render(<BrowserRouter><Footer /></BrowserRouter>);
     expect(screen.getByText("Platform")).toBeInTheDocument();
     expect(screen.getByText("Resources")).toBeInTheDocument();
   });
