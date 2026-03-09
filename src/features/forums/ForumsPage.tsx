@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, Search, ThumbsUp, Eye, Clock, Send, Bookmark, X, Loader2 } from "lucide-react";
+import { MessageSquare, Search, ThumbsUp, Eye, Send, Bookmark, X, Loader2 } from "lucide-react";
 import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
 import LoginPrompt from "@/components/shared/LoginPrompt";
