@@ -98,6 +98,10 @@ export default function GigDetailPage() {
   const isAuction = listing.format === "Auction";
   const isSPOnly = listing.format === "SP Only";
   const isCoCreation = listing.format === "Co-Creation";
+  const isFlash = listing.format === "Flash Market";
+  const isFusion = listing.format === "Skill Fusion";
+  const isProject = listing.format === "Projects";
+  const isRequest = listing.format === "Request";
 
   return (
     <div className="min-h-screen bg-background">
