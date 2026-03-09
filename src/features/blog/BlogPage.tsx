@@ -331,12 +331,12 @@ const BlogPage = () => {
       <div className="min-h-screen bg-background">
         <AppNav />
         
-        {/* Header with dark theme */}
-        <section className="border-b border-border bg-black/95 py-8">
+        {/* Header with dark theme matching design reference */}
+        <section className="border-b border-border bg-foreground/5 py-8 mt-14">
           <div className="mx-auto max-w-7xl px-6">
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-white mb-2">Blog</h1>
-              <p className="text-zinc-400">Insights, updates, and stories from the SkillSwappr community</p>
+              <h1 className="text-4xl font-bold text-foreground mb-2">Blog</h1>
+              <p className="text-muted-foreground">Insights, updates, and stories from the SkillSwappr community</p>
             </div>
             
             {/* Category filters */}
@@ -347,8 +347,8 @@ const BlogPage = () => {
                   onClick={() => setActiveCategory(cat.name)}
                   className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition whitespace-nowrap ${
                     activeCategory === cat.name
-                      ? "bg-white text-black"
-                      : "border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600"
+                      ? "bg-foreground text-background"
+                      : "border border-border text-muted-foreground hover:text-foreground hover:border-foreground/40"
                   }`}
                 >
                   <cat.icon size={14} />
@@ -361,17 +361,17 @@ const BlogPage = () => {
             {/* Editor's Picks label */}
             {featuredPost && (
               <div className="flex items-center gap-2 mb-4">
-                <Crown size={14} className="text-zinc-500" />
-                <h2 className="text-sm font-medium text-zinc-400">Editor's Pick</h2>
+                <Crown size={14} className="text-muted-foreground" />
+                <h2 className="text-sm font-medium text-muted-foreground">Editor's Pick</h2>
               </div>
             )}
 
             {/* Content type filters */}
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-2.5 text-sm hover:border-zinc-600 transition">
-                <FileText size={14} className="text-zinc-400" />
-                <span className="text-zinc-300">Articles</span>
-                <span className="text-xs text-zinc-500">{posts.length}</span>
+              <button className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 text-sm hover:border-primary transition">
+                <FileText size={14} className="text-muted-foreground" />
+                <span className="text-foreground">Articles</span>
+                <span className="text-xs text-muted-foreground">{posts.length}</span>
               </button>
             </div>
           </div>
