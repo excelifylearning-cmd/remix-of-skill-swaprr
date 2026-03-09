@@ -14,6 +14,7 @@ import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { logFormSubmission, logPageView } from "@/lib/activity-logger";
+import { useLivePricingStats } from "./hooks/useLivePricingStats";
 
 
 /* ─── Data ─── */
