@@ -373,6 +373,22 @@ export default function GigDetailPage() {
                   <button onClick={handlePropose} className="w-full h-12 rounded-xl bg-badge-gold text-background font-heading font-bold text-sm hover:bg-badge-gold/90 transition-colors flex items-center justify-center gap-2">
                     <Coins className="w-4 h-4" /> Purchase with SP
                   </button>
+                ) : isFlash ? (
+                  <button onClick={handlePropose} className="w-full h-12 rounded-xl bg-gradient-to-r from-badge-gold to-alert-red text-background font-heading font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                    <Zap className="w-4 h-4" /> Grab Flash Deal
+                  </button>
+                ) : isCoCreation || isFusion ? (
+                  <button onClick={handlePropose} className="w-full h-12 rounded-xl bg-court-blue text-white font-heading font-bold text-sm hover:bg-court-blue/90 transition-colors flex items-center justify-center gap-2">
+                    <Users className="w-4 h-4" /> Request to Join
+                  </button>
+                ) : isProject ? (
+                  <button onClick={handlePropose} className="w-full h-12 rounded-xl bg-orange-500 text-white font-heading font-bold text-sm hover:bg-orange-500/90 transition-colors flex items-center justify-center gap-2">
+                    <Briefcase className="w-4 h-4" /> Apply for Role
+                  </button>
+                ) : isRequest ? (
+                  <button onClick={handlePropose} className="w-full h-12 rounded-xl bg-skill-green text-background font-heading font-bold text-sm hover:bg-skill-green/90 transition-colors flex items-center justify-center gap-2">
+                    <HandHeart className="w-4 h-4" /> Offer Help
+                  </button>
                 ) : (
                   <button onClick={handlePropose} className="w-full h-12 rounded-xl bg-foreground text-background font-heading font-bold text-sm hover:bg-foreground/90 transition-colors">
                     Propose Swap
