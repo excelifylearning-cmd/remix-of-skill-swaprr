@@ -388,10 +388,25 @@ const EnterpriseDashboardPage = () => {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "overview");
   const { projects, candidates, consultations, talentPool, loading } = useEnterpriseDash();
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!isAuthenticated) navigate("/login");
-  }, [isAuthenticated, navigate]);
+    if (!isAuthenticated) { navigate("/login"); return; }
+    // Check enterprise access: must have 'enterprise' or 'admin' role, or be in enterprise_members
+    const checkAccess = async () => {
+      if (!user) return;
+      const [{ data: roleData }, { data: memberData }] = await Promise.all([
+        supabase.from("user_roles").select("role").eq("user_id", user.id).in("role", ["enterprise", "admin"]),
+        supabase.from("enterprise_members").select("id").eq("user_id", user.id).limit(1),
+      ]);
+      setHasAccess((roleData && roleData.length > 0) || (memberData && memberData.length > 0));
+    };
+    checkAccess();
+  }, [isAuthenticated, user, navigate]);
+
+  useEffect(() => {
+    if (hasAccess === false) navigate("/403");
+  }, [hasAccess, navigate]);
 
   if (loading) {
     return (
