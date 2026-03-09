@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft, Star, Shield, Clock, Eye, ArrowRight, Heart, Share2, Bookmark,
   MessageSquare, Flag, GraduationCap, CheckCircle2, ChevronRight, Gavel, Coins, Layers,
+  GitMerge, Zap, Briefcase, HandHeart, Users, Calendar, AlertTriangle,
 } from "lucide-react";
 import AppNav from "@/components/shared/AppNav";
 import { supabase } from "@/integrations/supabase/client";
