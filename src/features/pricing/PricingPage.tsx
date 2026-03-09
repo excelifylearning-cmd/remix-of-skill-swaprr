@@ -108,16 +108,6 @@ const rarityColor = (r: string) => {
 
 /* liveStats and skillDemand are now fetched from the database — see useLivePricingStats hook below */
 
-const skillDemand = [
-  { skill: "UI/UX Design", demand: 94, avgValue: "35 SP", swapsToday: 47, trend: "+12%" },
-  { skill: "Full-Stack Dev", demand: 91, avgValue: "45 SP", swapsToday: 38, trend: "+8%" },
-  { skill: "Video Editing", demand: 82, avgValue: "30 SP", swapsToday: 29, trend: "+15%" },
-  { skill: "Copywriting", demand: 78, avgValue: "20 SP", swapsToday: 34, trend: "+5%" },
-  { skill: "Data Science", demand: 75, avgValue: "40 SP", swapsToday: 21, trend: "+22%" },
-  { skill: "Mobile Dev", demand: 88, avgValue: "42 SP", swapsToday: 32, trend: "+10%" },
-  { skill: "Marketing", demand: 70, avgValue: "25 SP", swapsToday: 26, trend: "+7%" },
-  { skill: "Illustration", demand: 73, avgValue: "28 SP", swapsToday: 19, trend: "+18%" },
-];
 
 const socialProof = [
   { name: "Aisha K.", tier: "Free → Pro", quote: "The reduced tax rate paid for Pro in the first week. My gigs get 3x more views.", stat: "+340% visibility" },
