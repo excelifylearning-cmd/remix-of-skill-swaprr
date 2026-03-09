@@ -1,55 +1,91 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Headset, X, Send, Bot, User, RotateCcw, Sparkles } from "lucide-react";
+import { Headset, X, Send, Bot, User, RotateCcw, Languages, UserCheck, Sparkles, Globe } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
 
-type ChatMsg = { role: "user" | "assistant"; content: string; time: string; error?: boolean };
+type ChatMsg = {
+  role: "user" | "assistant" | "system";
+  content: string;
+  time: string;
+  error?: boolean;
+  translated?: string;
+};
 
 const QUICK_ACTIONS = [
-  "How do SP work?",
-  "Report a bug",
-  "Find a gig",
-  "Pricing help",
+  { label: "How do SP work?", icon: "💰" },
+  { label: "Report a bug", icon: "🐛" },
+  { label: "Find a gig", icon: "🔍" },
+  { label: "Pricing help", icon: "💳" },
 ];
 
-/** Simple markdown-ish rendering: bold, inline code, line breaks */
-const renderMarkdown = (text: string) => {
-  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`|\n)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**"))
-      return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
-    if (part.startsWith("`") && part.endsWith("`"))
-      return <code key={i} className="rounded bg-surface-2 px-1 py-0.5 text-[10px] font-mono">{part.slice(1, -1)}</code>;
-    if (part === "\n") return <br key={i} />;
-    return <span key={i}>{part}</span>;
-  });
-};
+const AI_SUGGESTIONS = [
+  "Try searching for 'React development' in the marketplace",
+  "Check your SP wallet for recent earnings",
+  "Visit Guild Wars to earn bonus SP",
+  "Set up your profile skills to get matched",
+];
 
 const timeNow = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
 const LiveChatWidget = () => {
+  const { user } = useAuth();
   const [chatOpen, setChatOpen] = useState(false);
+  const [mode, setMode] = useState<"ai" | "human">("ai");
   const [messages, setMessages] = useState<ChatMsg[]>([
-    { role: "assistant", content: "Hi! 👋 I'm SkillBot — your AI assistant. Ask me anything about SkillSwap, or pick a quick topic below.", time: timeNow() },
+    { role: "assistant", content: "Hi! 👋 I'm SkillBot. Ask me anything about SkillSwap, or pick a topic below.", time: timeNow() },
   ]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [unread, setUnread] = useState(0);
   const [showPulse, setShowPulse] = useState(true);
+  const [autoTranslate, setAutoTranslate] = useState(false);
+  const [targetLang, setTargetLang] = useState("es");
+  const [convId, setConvId] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, streaming]);
 
-  // Stop pulse after 8s
   useEffect(() => {
     const t = setTimeout(() => setShowPulse(false), 8000);
     return () => clearTimeout(t);
   }, []);
 
-  const sendChat = useCallback(async (overrideInput?: string) => {
+  // Realtime subscription for human support messages
+  useEffect(() => {
+    if (!convId || mode !== "human") return;
+    const channel = supabase
+      .channel(`support-${convId}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "support_messages", filter: `conversation_id=eq.${convId}` }, (payload) => {
+        const msg = payload.new as any;
+        if (msg.sender_id !== user?.id) {
+          setMessages(prev => [...prev, {
+            role: "assistant",
+            content: msg.content,
+            time: new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          }]);
+          if (!chatOpen) setUnread(u => u + 1);
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [convId, mode, user, chatOpen]);
+
+  const translateText = async (text: string): Promise<string> => {
+    if (!autoTranslate) return "";
+    try {
+      const resp = await supabase.functions.invoke("workspace-ai", {
+        body: { action: "translate", content: text, targetLanguage: targetLang },
+      });
+      return resp.data?.result || "";
+    } catch { return ""; }
+  };
+
+  const sendAIChat = useCallback(async (overrideInput?: string) => {
     const text = (overrideInput ?? input).trim();
     if (!text || streaming) return;
     const userMsg: ChatMsg = { role: "user", content: text, time: timeNow() };
@@ -62,7 +98,7 @@ const LiveChatWidget = () => {
     const upsert = (chunk: string, isError = false) => {
       assistantSoFar += chunk;
       const t = timeNow();
-      setMessages((prev) => {
+      setMessages(prev => {
         const last = prev[prev.length - 1];
         if (last?.role === "assistant" && prev.length === newMessages.length + 1) {
           return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantSoFar, error: isError } : m));
@@ -82,10 +118,8 @@ const LiveChatWidget = () => {
       });
 
       if (!resp.ok || !resp.body) {
-        const errJson = resp.ok ? null : await resp.json().catch(() => null);
-        upsert(errJson?.error || "Sorry, I'm having trouble connecting. Please try again.", true);
+        upsert("Sorry, I'm having trouble connecting. Please try again.", true);
         setStreaming(false);
-        if (!chatOpen) setUnread((u) => u + 1);
         return;
       }
 
@@ -97,7 +131,6 @@ const LiveChatWidget = () => {
         const { done, value } = await reader.read();
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
-
         let idx: number;
         while ((idx = buffer.indexOf("\n")) !== -1) {
           let line = buffer.slice(0, idx);
@@ -110,30 +143,69 @@ const LiveChatWidget = () => {
             const parsed = JSON.parse(json);
             const content = parsed.choices?.[0]?.delta?.content;
             if (content) upsert(content);
-          } catch {
-            buffer = line + "\n" + buffer;
-            break;
-          }
+          } catch { buffer = line + "\n" + buffer; break; }
         }
       }
-    } catch {
-      upsert("Sorry, something went wrong. Please try again.", true);
-    }
+
+      // Auto-translate last assistant message
+      if (autoTranslate && assistantSoFar) {
+        const translated = await translateText(assistantSoFar);
+        if (translated) {
+          setMessages(prev => prev.map((m, i) => i === prev.length - 1 ? { ...m, translated } : m));
+        }
+      }
+    } catch { upsert("Sorry, something went wrong. Please try again.", true); }
     setStreaming(false);
-    if (!chatOpen) setUnread((u) => u + 1);
-  }, [input, messages, streaming, chatOpen]);
+    if (!chatOpen) setUnread(u => u + 1);
+  }, [input, messages, streaming, chatOpen, autoTranslate, targetLang]);
+
+  const sendHumanMessage = async (overrideInput?: string) => {
+    const text = (overrideInput ?? input).trim();
+    if (!text || !user) return;
+
+    // Create conversation if needed
+    let cid = convId;
+    if (!cid) {
+      const { data } = await supabase.from("support_conversations").insert({ user_id: user.id, subject: "Live Chat" }).select("id").single();
+      if (data) { cid = data.id; setConvId(data.id); }
+      else return;
+    }
+
+    const userMsg: ChatMsg = { role: "user", content: text, time: timeNow() };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+
+    await supabase.from("support_messages").insert({
+      conversation_id: cid,
+      sender_id: user.id,
+      content: text,
+    });
+  };
+
+  const handleSend = (override?: string) => {
+    if (mode === "ai") sendAIChat(override);
+    else sendHumanMessage(override);
+  };
+
+  const switchToHuman = () => {
+    setMode("human");
+    setMessages(prev => [...prev, {
+      role: "system" as any,
+      content: "🔄 Connecting you with a human agent. You'll be notified when someone joins.",
+      time: timeNow(),
+    }]);
+  };
 
   const resetChat = () => {
-    setMessages([
-      { role: "assistant", content: "Hi! 👋 I'm SkillBot — your AI assistant. Ask me anything about SkillSwap, or pick a quick topic below.", time: timeNow() },
-    ]);
+    setMessages([{ role: "assistant", content: "Hi! 👋 I'm SkillBot. Ask me anything, or pick a topic below.", time: timeNow() }]);
+    setMode("ai");
+    setConvId(null);
   };
 
-  const handleOpen = () => {
-    setChatOpen(true);
-    setUnread(0);
-    setShowPulse(false);
-  };
+  const handleOpen = () => { setChatOpen(true); setUnread(0); setShowPulse(false); };
+
+  // AI recommendation
+  const suggestion = AI_SUGGESTIONS[Math.floor(Math.random() * AI_SUGGESTIONS.length)];
 
   return (
     <div className="fixed bottom-6 right-6 z-[9994] max-sm:bottom-4 max-sm:right-4">
@@ -144,105 +216,146 @@ const LiveChatWidget = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="mb-3 flex h-[500px] w-[380px] max-w-[calc(100vw-2rem)] max-sm:w-[calc(100vw-2rem)] flex-col rounded-2xl border border-border bg-card shadow-2xl overflow-hidden"
+            className="mb-3 flex h-[520px] w-[380px] max-w-[calc(100vw-2rem)] max-sm:w-[calc(100vw-2rem)] flex-col rounded-2xl border border-border bg-card shadow-2xl overflow-hidden"
           >
-            {/* Accent bar */}
-            <div className="h-1 w-full bg-gradient-to-r from-skill-green via-court-blue to-skill-green" />
-
-            {/* Header */}
-            <div className="flex items-center justify-between bg-card/80 backdrop-blur-sm px-4 py-3 border-b border-border">
+            {/* Header — monotone */}
+            <div className="flex items-center justify-between bg-surface-1 px-4 py-3 border-b border-border">
               <div className="flex items-center gap-3">
-                <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-skill-green/10">
-                  <Bot size={16} className="text-skill-green" />
-                  <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-card bg-skill-green" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-2 border border-border">
+                  {mode === "ai" ? <Bot size={14} className="text-foreground" /> : <UserCheck size={14} className="text-foreground" />}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-foreground">SkillBot</p>
-                  <p className="flex items-center gap-1 text-[10px] text-skill-green font-medium">
-                    <Sparkles size={8} /> AI Powered
+                  <p className="text-sm font-bold text-foreground">{mode === "ai" ? "SkillBot" : "Live Support"}</p>
+                  <p className="text-[10px] text-muted-foreground font-mono">
+                    {mode === "ai" ? "AI Assistant" : "Human Agent"}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-0.5">
+                {/* Auto-translate toggle */}
+                <button
+                  onClick={() => setAutoTranslate(!autoTranslate)}
+                  title={autoTranslate ? "Disable auto-translate" : "Enable auto-translate"}
+                  className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${autoTranslate ? "bg-foreground text-background" : "text-muted-foreground hover:bg-surface-2 hover:text-foreground"}`}
+                >
+                  <Globe size={12} />
+                </button>
+                {mode === "ai" && (
+                  <button onClick={switchToHuman} title="Talk to a human" className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-2 hover:text-foreground transition-colors">
+                    <UserCheck size={12} />
+                  </button>
+                )}
                 <button onClick={resetChat} title="New conversation" className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-2 hover:text-foreground transition-colors">
-                  <RotateCcw size={13} />
+                  <RotateCcw size={12} />
                 </button>
                 <button onClick={() => setChatOpen(false)} className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-2 hover:text-foreground transition-colors">
-                  <X size={14} />
+                  <X size={13} />
                 </button>
               </div>
             </div>
 
+            {/* Language selector (when auto-translate is on) */}
+            {autoTranslate && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-surface-1 border-b border-border">
+                <Languages size={11} className="text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground">Translate to:</span>
+                <select
+                  value={targetLang}
+                  onChange={e => setTargetLang(e.target.value)}
+                  className="h-6 rounded border border-border bg-card px-1.5 text-[10px] text-foreground focus:outline-none"
+                >
+                  <option value="es">Spanish</option>
+                  <option value="fr">French</option>
+                  <option value="de">German</option>
+                  <option value="zh">Chinese</option>
+                  <option value="ar">Arabic</option>
+                  <option value="hi">Hindi</option>
+                  <option value="ja">Japanese</option>
+                  <option value="pt">Portuguese</option>
+                </select>
+              </div>
+            )}
+
             {/* Messages */}
-            <div className="flex-1 space-y-3 overflow-y-auto p-4 scrollbar-thin">
+            <div className="flex-1 space-y-2.5 overflow-y-auto p-4">
               {messages.map((msg, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 6 }}
+                  initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className={`flex gap-2 ${msg.role === "user" ? "justify-end" : ""}`}
+                  className={`flex gap-2 ${msg.role === "user" ? "justify-end" : msg.role === "system" ? "justify-center" : ""}`}
                 >
-                  {msg.role === "assistant" && (
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-skill-green/10 mt-1">
-                      <Bot size={11} className="text-skill-green" />
+                  {msg.role === "system" ? (
+                    <div className="rounded-lg bg-surface-2 border border-border px-3 py-1.5 text-[10px] text-muted-foreground text-center max-w-[85%]">
+                      {msg.content}
                     </div>
-                  )}
-                  <div className="flex flex-col gap-0.5">
-                    <div className={`max-w-[240px] rounded-2xl px-3 py-2 text-xs leading-relaxed ${
-                      msg.role === "user"
-                        ? "bg-foreground text-background rounded-br-md"
-                        : msg.error
-                          ? "bg-destructive/10 text-destructive border border-destructive/20 rounded-bl-md"
-                          : "bg-surface-2 text-foreground rounded-bl-md"
-                    }`}>
-                      {msg.role === "assistant" ? renderMarkdown(msg.content) : msg.content}
-                    </div>
-                    <span className={`text-[9px] text-muted-foreground/60 ${msg.role === "user" ? "text-right" : ""}`}>
-                      {msg.time}
-                    </span>
-                  </div>
-                  {msg.role === "user" && (
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2 mt-1">
-                      <User size={11} className="text-muted-foreground" />
-                    </div>
+                  ) : (
+                    <>
+                      {msg.role === "assistant" && (
+                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-2 border border-border mt-0.5">
+                          <Bot size={10} className="text-foreground" />
+                        </div>
+                      )}
+                      <div className="flex flex-col gap-0.5 max-w-[240px]">
+                        <div className={`rounded-xl px-3 py-2 text-xs leading-relaxed ${
+                          msg.role === "user"
+                            ? "bg-foreground text-background rounded-br-sm"
+                            : msg.error
+                              ? "bg-surface-2 text-alert-red border border-alert-red/20 rounded-bl-sm"
+                              : "bg-surface-2 text-foreground border border-border rounded-bl-sm"
+                        }`}>
+                          {msg.content}
+                        </div>
+                        {/* Translated text */}
+                        {msg.translated && (
+                          <div className="rounded-lg bg-surface-1 border border-border px-2.5 py-1.5 text-[10px] text-muted-foreground">
+                            <span className="font-mono text-[9px] text-muted-foreground/60 uppercase">Translated: </span>
+                            {msg.translated}
+                          </div>
+                        )}
+                        <span className={`text-[9px] text-muted-foreground/50 ${msg.role === "user" ? "text-right" : ""}`}>{msg.time}</span>
+                      </div>
+                      {msg.role === "user" && (
+                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-2 border border-border mt-0.5">
+                          <User size={10} className="text-foreground" />
+                        </div>
+                      )}
+                    </>
                   )}
                 </motion.div>
               ))}
 
-              {/* Quick actions — show only after initial greeting */}
-              {messages.length === 1 && !streaming && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="flex flex-wrap gap-1.5 pl-8"
-                >
-                  {QUICK_ACTIONS.map((q) => (
-                    <button
-                      key={q}
-                      onClick={() => sendChat(q)}
-                      className="rounded-full border border-border bg-surface-1 px-3 py-1.5 text-[10px] font-medium text-foreground hover:bg-surface-2 transition-colors"
-                    >
-                      {q}
-                    </button>
-                  ))}
+              {/* Quick actions */}
+              {messages.length === 1 && mode === "ai" && !streaming && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="space-y-2 pl-8">
+                  <div className="flex flex-wrap gap-1.5">
+                    {QUICK_ACTIONS.map(q => (
+                      <button key={q.label} onClick={() => handleSend(q.label)} className="rounded-lg border border-border bg-surface-1 px-2.5 py-1.5 text-[10px] text-foreground hover:bg-surface-2 transition-colors">
+                        {q.icon} {q.label}
+                      </button>
+                    ))}
+                  </div>
+                  {/* AI recommendation */}
+                  <div className="rounded-lg border border-border bg-surface-1 p-2.5 flex items-start gap-2">
+                    <Sparkles size={10} className="text-muted-foreground mt-0.5 shrink-0" />
+                    <p className="text-[10px] text-muted-foreground"><span className="font-medium text-foreground">Tip:</span> {suggestion}</p>
+                  </div>
                 </motion.div>
               )}
 
               {/* Typing indicator */}
               {streaming && messages[messages.length - 1]?.role !== "assistant" && (
                 <div className="flex items-center gap-2">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-skill-green/10">
-                    <Bot size={11} className="text-skill-green" />
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-2 border border-border">
+                    <Bot size={10} className="text-foreground" />
                   </div>
-                  <div className="flex items-center gap-2 rounded-2xl bg-surface-2 px-3 py-2">
-                    <div className="flex gap-1">
-                      <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
-                      <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
-                      <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
+                  <div className="flex items-center gap-2 rounded-xl bg-surface-2 border border-border px-3 py-2">
+                    <div className="flex gap-0.5">
+                      {[0, 0.15, 0.3].map((d, i) => (
+                        <motion.span key={i} animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 0.9, delay: d }} className="h-1 w-1 rounded-full bg-muted-foreground" />
+                      ))}
                     </div>
-                    <span className="text-[10px] text-muted-foreground">SkillBot is thinking…</span>
+                    <span className="text-[10px] text-muted-foreground">Thinking…</span>
                   </div>
                 </div>
               )}
@@ -250,24 +363,23 @@ const LiveChatWidget = () => {
             </div>
 
             {/* Input */}
-            <div className="border-t border-border bg-card/80 backdrop-blur-sm p-3">
+            <div className="border-t border-border bg-surface-1 p-3">
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Ask SkillBot anything…"
+                  placeholder={mode === "ai" ? "Ask SkillBot…" : "Message support…"}
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendChat()}
-                  className="h-10 flex-1 rounded-xl border border-border bg-surface-1 px-4 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none transition-colors"
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && !e.shiftKey && handleSend()}
+                  className="h-9 flex-1 rounded-lg border border-border bg-card px-3 text-xs text-foreground placeholder:text-muted-foreground/40 focus:border-foreground/30 focus:outline-none transition-colors"
                 />
-                <motion.button
-                  onClick={() => sendChat()}
-                  whileTap={{ scale: 0.9 }}
+                <button
+                  onClick={() => handleSend()}
                   disabled={streaming || !input.trim()}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground text-background disabled:opacity-30 transition-opacity"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground text-background disabled:opacity-20 transition-opacity"
                 >
-                  <Send size={14} />
-                </motion.button>
+                  <Send size={12} />
+                </button>
               </div>
             </div>
           </motion.div>
@@ -276,41 +388,33 @@ const LiveChatWidget = () => {
 
       {/* Floating button */}
       <div className="relative">
-        {/* Pulse ring */}
         {showPulse && !chatOpen && (
           <motion.div
-            className="absolute inset-0 rounded-full bg-skill-green/20"
-            animate={{ scale: [1, 1.6, 1.6], opacity: [0.6, 0, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }}
+            className="absolute inset-0 rounded-full border-2 border-foreground/20"
+            animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+            transition={{ repeat: Infinity, duration: 2 }}
           />
         )}
-
-        {/* Unread badge */}
         {unread > 0 && !chatOpen && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground"
-          >
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-1 -right-1 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-[10px] font-bold text-background border-2 border-card">
             {unread}
           </motion.div>
         )}
-
         <motion.button
           onClick={chatOpen ? () => setChatOpen(false) : handleOpen}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="relative flex h-14 w-14 items-center justify-center rounded-full bg-foreground text-background shadow-lg shadow-foreground/10"
+          className="relative flex h-14 w-14 items-center justify-center rounded-full bg-foreground text-background shadow-lg border border-foreground/10"
           title="Chat with SkillBot"
         >
           <AnimatePresence mode="wait">
             {chatOpen ? (
               <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
-                <X size={20} />
+                <X size={18} />
               </motion.div>
             ) : (
               <motion.div key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}>
-                <Headset size={20} />
+                <Headset size={18} />
               </motion.div>
             )}
           </AnimatePresence>
