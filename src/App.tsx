@@ -42,6 +42,11 @@ const GuildPage = lazy(() => import("./features/guild/GuildPage"));
 const SuccessStoriesPage = lazy(() => import("./features/success-stories/SuccessStoriesPage"));
 const BrowseGuildsPage = lazy(() => import("./features/guild/BrowseGuildsPage"));
 const BrowseUsersPage = lazy(() => import("./features/users/BrowseUsersPage"));
+const ClipsPage = lazy(() => import("./features/clips/ClipsPage"));
+const SettingsPage = lazy(() => import("./features/settings/SettingsPage"));
+const MessagesPage = lazy(() => import("./features/messages/MessagesPage"));
+const NotificationsPage = lazy(() => import("./features/notifications/NotificationsPage"));
+const OnboardingPage = lazy(() => import("./features/onboarding/OnboardingPage"));
 const SavedPostsPage = lazy(() => import("./features/saved/SavedPostsPage"));
 const AuctionsPage = lazy(() => import("./features/marketplace/pages/AuctionsPage"));
 const CoCreationPage = lazy(() => import("./features/marketplace/pages/CoCreationPage"));
@@ -105,6 +110,11 @@ const AnimatedRoutes = () => {
           <Route path="/saved" element={<SavedPostsPage />} />
           <Route path="/guilds" element={<BrowseGuildsPage />} />
           <Route path="/users" element={<BrowseUsersPage />} />
+          <Route path="/clips" element={<ClipsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/messages" element={<MessagesPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/onboarding" element={<OnboardingPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/coming-soon" element={<ComingSoonPage />} />
           <Route path="/500" element={<ServerErrorPage />} />
