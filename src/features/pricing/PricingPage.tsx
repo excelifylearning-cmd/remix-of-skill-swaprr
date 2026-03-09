@@ -217,8 +217,9 @@ const PricingPage = () => {
     return { baseEarnings: Math.round(baseEarnings), tax: Math.round(tax), net: Math.round(net), taxRate: Math.round(taxRate * 100), monthlyCost, proSavings: Math.round(proSavings), recommended, guildValue: Math.round(guildValue) };
   }, [calcSkill, calcGigs, calcComplexity, calcTier, calcGuild, calcMembers, annual]);
 
-  // Animate stat counters on mount
+  // Animate stat counters when liveStats change
   useEffect(() => {
+    if (!liveStats.length) return;
     const targets = liveStats.map((s) => (typeof s.value === "number" ? s.value : 0));
     const duration = 2000;
     const start = Date.now();
@@ -230,7 +231,7 @@ const PricingPage = () => {
       if (progress < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
-  }, []);
+  }, [liveStats]);
 
   return (
     <PageTransition>
