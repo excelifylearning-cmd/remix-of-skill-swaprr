@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Cookie, X, Settings, Check } from "lucide-react";
+import { Cookie, X, Settings, Check, Shield, BarChart3, User } from "lucide-react";
 
 const CookieConsent = () => {
   const [show, setShow] = useState(false);
@@ -11,120 +11,259 @@ const CookieConsent = () => {
   useEffect(() => {
     const consent = localStorage.getItem("cookie-consent");
     if (!consent) {
-      const timer = setTimeout(() => setShow(true), 1500);
+      const timer = setTimeout(() => setShow(true), 2000);
       return () => clearTimeout(timer);
     }
   }, []);
 
-  const accept = () => {
-    localStorage.setItem("cookie-consent", JSON.stringify({ essential: true, analytics: true, preferences: true }));
+  const acceptAll = () => {
+    const consentData = { essential: true, analytics: true, preferences: true, timestamp: Date.now() };
+    localStorage.setItem("cookie-consent", JSON.stringify(consentData));
+    // Actually set cookies based on consent
+    if (analytics) {
+      localStorage.setItem("analytics-enabled", "true");
+    }
+    if (preferences) {
+      localStorage.setItem("preferences-enabled", "true");
+    }
     setShow(false);
   };
 
-  const savePrefs = () => {
-    localStorage.setItem("cookie-consent", JSON.stringify({ essential: true, analytics, preferences }));
+  const savePreferences = () => {
+    const consentData = { essential: true, analytics, preferences, timestamp: Date.now() };
+    localStorage.setItem("cookie-consent", JSON.stringify(consentData));
+    // Set cookies based on user preferences
+    localStorage.setItem("analytics-enabled", analytics.toString());
+    localStorage.setItem("preferences-enabled", preferences.toString());
+    setShow(false);
+  };
+
+  const declineAll = () => {
+    const consentData = { essential: true, analytics: false, preferences: false, timestamp: Date.now() };
+    localStorage.setItem("cookie-consent", JSON.stringify(consentData));
+    localStorage.setItem("analytics-enabled", "false");
+    localStorage.setItem("preferences-enabled", "false");
+    setAnalytics(false);
+    setPreferences(false);
     setShow(false);
   };
 
   return (
     <AnimatePresence>
       {show && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ type: "spring", damping: 25 }}
-          className="fixed bottom-4 right-4 z-[9995] max-w-xs rounded-2xl border border-border bg-card p-4 shadow-2xl sm:bottom-6 sm:right-6"
-        >
-          <button onClick={() => setShow(false)} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
-            <X size={16} />
-          </button>
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9994] bg-background/80 backdrop-blur-sm"
+            onClick={() => setShow(false)}
+          />
 
-          <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2">
-              <Cookie size={18} className="text-badge-gold" />
-            </div>
-            <div>
-              <h3 className="font-heading text-sm font-bold text-foreground">We use cookies</h3>
-              <p className="text-xs text-muted-foreground">To make your experience better.</p>
-            </div>
-          </div>
+          {/* Main Cookie Dialog */}
+          <motion.div
+            initial={{ y: 100, opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 100, opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", damping: 30, stiffness: 400 }}
+            className="fixed bottom-4 left-4 right-4 z-[9995] mx-auto max-w-md rounded-3xl border border-border/50 bg-card/95 p-6 shadow-2xl backdrop-blur-xl sm:bottom-6 sm:left-auto sm:right-6 sm:max-w-sm"
+          >
+            {/* Close Button */}
+            <motion.button 
+              onClick={() => setShow(false)} 
+              className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-surface-1 hover:text-foreground"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <X size={14} />
+            </motion.button>
 
-          <AnimatePresence mode="wait">
-            {!showPrefs ? (
-              <motion.div key="main" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
-                  We use essential cookies for functionality and optional cookies for analytics. Read our{" "}
-                  <a href="/legal" className="text-foreground underline">Cookie Policy</a>.
-                </p>
-                <div className="flex gap-2">
-                  <motion.button
-                    onClick={accept}
-                    className="flex-1 rounded-xl bg-foreground py-2.5 text-xs font-semibold text-background"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    Accept All
-                  </motion.button>
-                  <motion.button
-                    onClick={() => setShowPrefs(true)}
-                    className="flex items-center justify-center gap-1.5 rounded-xl border border-border px-4 py-2.5 text-xs text-muted-foreground hover:text-foreground"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Settings size={12} /> Manage
-                  </motion.button>
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div key="prefs" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <div className="mb-4 space-y-3">
-                  <div className="flex items-center justify-between rounded-lg bg-surface-1 p-3">
-                    <div>
-                      <p className="text-xs font-medium text-foreground">Essential</p>
-                      <p className="text-[10px] text-muted-foreground">Required for the platform</p>
+            <AnimatePresence mode="wait">
+              {!showPrefs ? (
+                <motion.div 
+                  key="main" 
+                  initial={{ opacity: 0, y: 10 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {/* Header */}
+                  <div className="mb-5 flex items-start gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 ring-1 ring-primary/20">
+                      <Cookie size={20} className="text-primary" />
                     </div>
-                    <div className="flex h-5 w-9 items-center rounded-full bg-skill-green/20 px-0.5">
-                      <div className="h-4 w-4 translate-x-4 rounded-full bg-skill-green" />
+                    <div className="flex-1">
+                      <h3 className="font-heading text-base font-bold text-foreground">Cookie Preferences</h3>
+                      <p className="mt-0.5 text-xs text-muted-foreground">We value your privacy</p>
                     </div>
                   </div>
-                  {[
-                    { label: "Analytics", desc: "Help us improve", val: analytics, set: setAnalytics },
-                    { label: "Preferences", desc: "Remember your settings", val: preferences, set: setPreferences },
-                  ].map((c) => (
-                    <button
-                      key={c.label}
-                      onClick={() => c.set(!c.val)}
-                      className="flex w-full items-center justify-between rounded-lg bg-surface-1 p-3"
+
+                  {/* Description */}
+                  <p className="mb-5 text-sm leading-relaxed text-muted-foreground">
+                    We use cookies to enhance your browsing experience and analyze site traffic. You can customize your preferences or learn more in our{" "}
+                    <motion.a 
+                      href="/legal" 
+                      className="font-medium text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary"
+                      whileHover={{ scale: 1.02 }}
                     >
-                      <div className="text-left">
-                        <p className="text-xs font-medium text-foreground">{c.label}</p>
-                        <p className="text-[10px] text-muted-foreground">{c.desc}</p>
+                      Cookie Policy
+                    </motion.a>.
+                  </p>
+
+                  {/* Action Buttons */}
+                  <div className="space-y-3">
+                    <motion.button
+                      onClick={acceptAll}
+                      className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25"
+                      whileHover={{ scale: 1.02, boxShadow: "0 10px 40px hsl(var(--primary) / 0.4)" }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Check size={16} />
+                      Accept All Cookies
+                    </motion.button>
+                    
+                    <div className="flex gap-2">
+                      <motion.button
+                        onClick={() => setShowPrefs(true)}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-surface-1/50 py-2.5 text-xs font-medium text-foreground backdrop-blur-sm hover:bg-surface-1"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Settings size={14} />
+                        Customize
+                      </motion.button>
+                      <motion.button
+                        onClick={declineAll}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-muted-foreground/50"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        Decline All
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div 
+                  key="prefs" 
+                  initial={{ opacity: 0, y: 10 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {/* Header */}
+                  <div className="mb-5 flex items-center gap-3">
+                    <motion.button
+                      onClick={() => setShowPrefs(false)}
+                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-surface-1 hover:text-foreground"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <X size={14} />
+                    </motion.button>
+                    <div>
+                      <h3 className="font-heading text-base font-bold text-foreground">Cookie Settings</h3>
+                      <p className="text-xs text-muted-foreground">Choose what you're comfortable with</p>
+                    </div>
+                  </div>
+
+                  {/* Cookie Categories */}
+                  <div className="mb-5 space-y-3">
+                    {/* Essential Cookies */}
+                    <div className="rounded-xl border border-border/50 bg-gradient-to-r from-skill-green/5 to-skill-green/10 p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="rounded-lg bg-skill-green/20 p-2">
+                            <Shield size={16} className="text-skill-green" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">Essential Cookies</p>
+                            <p className="text-xs text-muted-foreground">Required for core functionality</p>
+                          </div>
+                        </div>
+                        <div className="flex h-6 w-11 items-center rounded-full bg-skill-green/30 px-1">
+                          <div className="h-4 w-4 translate-x-5 rounded-full bg-skill-green shadow-sm" />
+                        </div>
                       </div>
-                      <div className={`flex h-5 w-9 items-center rounded-full px-0.5 transition-colors ${c.val ? "bg-skill-green/20" : "bg-surface-2"}`}>
-                        <motion.div
-                          className={`h-4 w-4 rounded-full transition-colors ${c.val ? "bg-skill-green" : "bg-muted-foreground"}`}
-                          animate={{ x: c.val ? 16 : 0 }}
-                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                        />
+                    </div>
+
+                    {/* Analytics Cookies */}
+                    <div className="rounded-xl border border-border/50 bg-surface-1/30 p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="rounded-lg bg-primary/20 p-2">
+                            <BarChart3 size={16} className="text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">Analytics Cookies</p>
+                            <p className="text-xs text-muted-foreground">Help us improve our platform</p>
+                          </div>
+                        </div>
+                        <motion.button
+                          onClick={() => setAnalytics(!analytics)}
+                          className={`flex h-6 w-11 items-center rounded-full px-1 transition-colors ${
+                            analytics ? "bg-primary/30" : "bg-surface-2"
+                          }`}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <motion.div
+                            className={`h-4 w-4 rounded-full shadow-sm transition-colors ${
+                              analytics ? "bg-primary" : "bg-muted-foreground"
+                            }`}
+                            animate={{ x: analytics ? 20 : 0 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          />
+                        </motion.button>
                       </div>
-                    </button>
-                  ))}
-                </div>
-                <div className="flex gap-2">
+                    </div>
+
+                    {/* Preference Cookies */}
+                    <div className="rounded-xl border border-border/50 bg-surface-1/30 p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="rounded-lg bg-accent/20 p-2">
+                            <User size={16} className="text-accent" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">Preference Cookies</p>
+                            <p className="text-xs text-muted-foreground">Remember your choices</p>
+                          </div>
+                        </div>
+                        <motion.button
+                          onClick={() => setPreferences(!preferences)}
+                          className={`flex h-6 w-11 items-center rounded-full px-1 transition-colors ${
+                            preferences ? "bg-accent/30" : "bg-surface-2"
+                          }`}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <motion.div
+                            className={`h-4 w-4 rounded-full shadow-sm transition-colors ${
+                              preferences ? "bg-accent" : "bg-muted-foreground"
+                            }`}
+                            animate={{ x: preferences ? 20 : 0 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          />
+                        </motion.button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Save Button */}
                   <motion.button
-                    onClick={savePrefs}
-                    className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-foreground py-2.5 text-xs font-semibold text-background"
-                    whileHover={{ scale: 1.02 }}
+                    onClick={savePreferences}
+                    className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25"
+                    whileHover={{ scale: 1.02, boxShadow: "0 10px 40px hsl(var(--primary) / 0.4)" }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Check size={12} /> Save Preferences
+                    <Check size={16} />
+                    Save My Preferences
                   </motion.button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </>
       )}
     </AnimatePresence>
   );
