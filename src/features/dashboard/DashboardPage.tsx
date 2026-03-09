@@ -818,10 +818,7 @@ const GuildsTab = () => {
           members: 0, rank: g.guilds?.rank || 0, role: g.role, icon: "⚔️",
         })));
       } else {
-        setMyGuilds([
-          { id: 1, name: "Design Masters", members: 128, rank: 3, role: "Member", icon: "🎨" },
-          { id: 2, name: "Code Ninjas", members: 256, rank: 1, role: "Officer", icon: "⚔️" },
-        ]);
+        setMyGuilds([]);
       }
       setLoading(false);
     };
