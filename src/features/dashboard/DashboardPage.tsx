@@ -1022,6 +1022,108 @@ const SettingsTab = ({ profile, updateProfile }: { profile: any; updateProfile: 
 };
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   ANALYTICS TAB (Mini Dashboard)
+═══════════════════════════════════════════════════════════════════════════ */
+
+const DashboardAnalyticsTab = ({ profile }: { profile: any }) => {
+  const { user } = useAuth();
+  const [stats, setStats] = useState({ gigs: 0, earned: 0, spent: 0, disputes: 0 });
+  const [recentGigs, setRecentGigs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const [gigRes, txRes, disputeRes] = await Promise.all([
+        supabase.from("listings").select("id, title, points, views, rating, status, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(10),
+        supabase.from("sp_transactions").select("amount, type").eq("user_id", user.id),
+        supabase.from("disputes").select("id").or(`filed_by.eq.${user.id},filed_against.eq.${user.id}`),
+      ]);
+      const gigs = gigRes.data || [];
+      const txs = txRes.data || [];
+      const earned = txs.filter((t: any) => t.amount > 0).reduce((a: number, t: any) => a + t.amount, 0);
+      const spent = txs.filter((t: any) => t.amount < 0).reduce((a: number, t: any) => a + Math.abs(t.amount), 0);
+      setStats({ gigs: gigs.length, earned, spent, disputes: (disputeRes.data || []).length });
+      setRecentGigs(gigs.slice(0, 5));
+      setLoading(false);
+    };
+    load();
+  }, [user]);
+
+  if (loading) return <div className="py-16 text-center"><div className="h-5 w-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin mx-auto" /></div>;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="font-heading text-2xl font-bold text-foreground">My Analytics</h2>
+        <Link to="/analytics" className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+          Full Analytics <ChevronRight size={12} />
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Total Gigs", value: stats.gigs, icon: Briefcase, color: "text-court-blue" },
+          { label: "SP Earned", value: stats.earned, icon: TrendingUp, color: "text-skill-green" },
+          { label: "SP Spent", value: stats.spent, icon: Coins, color: "text-badge-gold" },
+          { label: "Disputes", value: stats.disputes, icon: Scale, color: "text-foreground" },
+        ].map((stat, i) => (
+          <motion.div key={i} className="rounded-xl border border-border bg-card p-5 text-center" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+            <stat.icon size={18} className={`mx-auto mb-2 ${stat.color}`} />
+            <p className={`font-heading text-2xl font-black ${stat.color}`}>{stat.value.toLocaleString()}</p>
+            <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h3 className="font-heading text-lg font-bold text-foreground mb-4">SP Balance</h3>
+        <div className="flex items-center gap-6 mb-4">
+          <div>
+            <p className="font-heading text-3xl font-black text-badge-gold">{(profile?.sp || 100).toLocaleString()}</p>
+            <p className="text-xs text-muted-foreground">Current Balance</p>
+          </div>
+          <div className="h-12 w-px bg-border" />
+          <div>
+            <p className="font-heading text-xl font-bold text-skill-green">+{stats.earned}</p>
+            <p className="text-xs text-muted-foreground">Total Earned</p>
+          </div>
+          <div>
+            <p className="font-heading text-xl font-bold text-alert-red">-{stats.spent}</p>
+            <p className="text-xs text-muted-foreground">Total Spent</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h3 className="font-heading text-lg font-bold text-foreground mb-4">Gig Performance</h3>
+        {recentGigs.length > 0 ? (
+          <div className="space-y-2">
+            {recentGigs.map((gig) => (
+              <div key={gig.id} className="flex items-center justify-between rounded-lg bg-surface-1 p-3">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{gig.title}</p>
+                  <div className="flex items-center gap-3 mt-0.5">
+                    <span className="flex items-center gap-1 text-[10px] text-muted-foreground"><Eye size={10} /> {gig.views || 0}</span>
+                    <span className="flex items-center gap-1 text-[10px] text-muted-foreground"><Star size={10} /> {gig.rating || 0}</span>
+                    <span className="flex items-center gap-1 text-[10px] text-muted-foreground"><Coins size={10} /> {gig.points} SP</span>
+                  </div>
+                </div>
+                <Badge className={`text-[10px] ${gig.status === "active" ? "bg-skill-green/10 text-skill-green border-skill-green/20" : "bg-surface-2 text-muted-foreground border-border"}`}>
+                  {gig.status}
+                </Badge>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="py-8 text-center text-sm text-muted-foreground">No gigs yet. Create your first gig to see analytics!</div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
    DASHBOARD SIDEBAR COMPONENT
 ═══════════════════════════════════════════════════════════════════════════ */
 
