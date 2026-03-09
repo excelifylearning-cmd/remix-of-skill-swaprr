@@ -1,10 +1,11 @@
 import {
   Compass, Flame, Coins, Gavel, Layers, GitMerge, Briefcase, Zap,
-  HandHeart, Sparkles, SlidersHorizontal, ChevronDown, Plus, X,
+  HandHeart, Sparkles, SlidersHorizontal, Plus,
 } from "lucide-react";
 import { modes, categories, type MarketplaceMode } from "../data/mockData";
-import type { MarketplaceFilters } from "../hooks/useMarketplaceFilters";
+import type { MarketplaceFilters } from "../hooks/useMarketplaceData";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { Link } from "react-router-dom";
 
 const modeIcons: Record<string, React.ElementType> = {
   explore: Compass, trending: Flame, "sp-only": Coins, auctions: Gavel,
@@ -33,7 +34,6 @@ export default function MarketplaceSidebar({ mode, onModeChange, filters, onFilt
   return (
     <aside className="w-[240px] flex-shrink-0 border-r border-border bg-card/50 backdrop-blur-sm h-full overflow-y-auto">
       <div className="p-4 space-y-6">
-        {/* Modes */}
         <div className="space-y-1">
           <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2">Browse</p>
           {modes.map(m => {
@@ -63,10 +63,8 @@ export default function MarketplaceSidebar({ mode, onModeChange, filters, onFilt
           })}
         </div>
 
-        {/* Divider */}
         <div className="h-px bg-border" />
 
-        {/* Filters */}
         <div className="space-y-1">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5">
@@ -86,7 +84,6 @@ export default function MarketplaceSidebar({ mode, onModeChange, filters, onFilt
           </div>
 
           <Accordion type="multiple" defaultValue={["category"]} className="space-y-0">
-            {/* Category */}
             <AccordionItem value="category" className="border-0">
               <AccordionTrigger className="py-2 text-xs font-heading font-semibold text-foreground hover:no-underline">
                 Category
@@ -104,14 +101,12 @@ export default function MarketplaceSidebar({ mode, onModeChange, filters, onFilt
                       }`}
                     >
                       <span>{c.label}</span>
-                      <span className="font-mono text-[10px] opacity-60">{c.count}</span>
                     </button>
                   ))}
                 </div>
               </AccordionContent>
             </AccordionItem>
 
-            {/* ELO Range */}
             <AccordionItem value="elo" className="border-0">
               <AccordionTrigger className="py-2 text-xs font-heading font-semibold text-foreground hover:no-underline">
                 ELO Range
@@ -135,7 +130,6 @@ export default function MarketplaceSidebar({ mode, onModeChange, filters, onFilt
               </AccordionContent>
             </AccordionItem>
 
-            {/* Verified */}
             <AccordionItem value="verified" className="border-0">
               <AccordionTrigger className="py-2 text-xs font-heading font-semibold text-foreground hover:no-underline">
                 Verified
@@ -154,7 +148,6 @@ export default function MarketplaceSidebar({ mode, onModeChange, filters, onFilt
               </AccordionContent>
             </AccordionItem>
 
-            {/* Delivery Time */}
             <AccordionItem value="delivery" className="border-0">
               <AccordionTrigger className="py-2 text-xs font-heading font-semibold text-foreground hover:no-underline">
                 Delivery Time
@@ -180,14 +173,12 @@ export default function MarketplaceSidebar({ mode, onModeChange, filters, onFilt
           </Accordion>
         </div>
 
-        {/* Divider */}
         <div className="h-px bg-border" />
 
-        {/* Post Gig CTA */}
-        <button className="w-full flex items-center justify-center gap-2 h-10 rounded-xl bg-foreground text-background font-heading font-semibold text-sm hover:bg-foreground/90 transition-colors">
+        <Link to="/dashboard?tab=gigs" className="w-full flex items-center justify-center gap-2 h-10 rounded-xl bg-foreground text-background font-heading font-semibold text-sm hover:bg-foreground/90 transition-colors">
           <Plus className="w-4 h-4" />
           Post a Gig
-        </button>
+        </Link>
       </div>
     </aside>
   );

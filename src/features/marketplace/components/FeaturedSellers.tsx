@@ -1,12 +1,56 @@
-import { Star, Shield, Award } from "lucide-react";
-import { featuredSellers } from "../data/mockData";
+import { useState, useEffect } from "react";
+import { Star, Shield } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { eloTier } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
 
+interface FeaturedSellerData {
+  name: string;
+  avatar: string;
+  elo: number;
+  rating: number;
+  verified: boolean;
+  swaps: number;
+  badge: string;
+}
+
 export default function FeaturedSellers() {
+  const [sellers, setSellers] = useState<FeaturedSellerData[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name, full_name, elo, id_verified, total_gigs_completed, avatar_url")
+        .order("elo", { ascending: false })
+        .limit(6);
+
+      if (data?.length) {
+        setSellers(data.map((p: any) => {
+          const name = p.display_name || p.full_name || "User";
+          const initials = name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+          return {
+            name,
+            avatar: initials,
+            elo: p.elo || 1000,
+            rating: 4.8,
+            verified: p.id_verified || false,
+            swaps: p.total_gigs_completed || 0,
+            badge: p.elo >= 1700 ? "Expert" : p.elo >= 1500 ? "Top Rated" : "Rising Star",
+          };
+        }));
+      }
+    };
+    load();
+  }, []);
+
+  if (sellers.length === 0) {
+    return <p className="text-xs text-muted-foreground">No featured sellers yet</p>;
+  }
+
   return (
     <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
-      {featuredSellers.map(s => {
+      {sellers.map(s => {
         const tier = eloTier(s.elo);
         return (
           <UserPreviewPopover
@@ -25,7 +69,7 @@ export default function FeaturedSellers() {
               <div className="text-left">
                 <div className="flex items-center gap-1">
                   <span className="text-xs font-heading font-semibold text-foreground">{s.name}</span>
-                  <Shield className="w-3 h-3 text-skill-green" />
+                  {s.verified && <Shield className="w-3 h-3 text-skill-green" />}
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                   <span className={`font-mono ${tier.color}`}>{s.elo}</span>

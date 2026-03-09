@@ -1,5 +1,7 @@
-import { X, Star, Shield, Clock, Eye, ArrowRight, Heart, Share2, Bookmark, MessageSquare, Flag, GraduationCap, CheckCircle2, Trophy } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Star, Shield, Clock, Eye, ArrowRight, Heart, Share2, Bookmark, Flag, GraduationCap, CheckCircle2, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { type Gig } from "../data/mockData";
 import { eloTier, formatIcon, formatColor } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
@@ -12,30 +14,37 @@ interface Props {
 }
 
 export default function GigQuickView({ gig, open, onClose }: Props) {
+  const [reviews, setReviews] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!gig?.sellerId) { setReviews([]); return; }
+    const load = async () => {
+      const { data } = await (supabase as any)
+        .from("reviews")
+        .select("*")
+        .eq("reviewee_id", gig.sellerId)
+        .order("created_at", { ascending: false })
+        .limit(3);
+      setReviews(data || []);
+    };
+    load();
+  }, [gig?.sellerId]);
+
   if (!gig) return null;
 
   const tier = eloTier(gig.elo);
   const FormatIcon = formatIcon(gig.format);
   const fColor = formatColor(gig.format);
 
-  const mockReviews = [
-    { name: "Alice M.", rating: 5, text: "Excellent work, delivered early with great communication.", time: "2 weeks ago" },
-    { name: "Bob R.", rating: 5, text: "Very professional. Would swap again.", time: "1 month ago" },
-    { name: "Sara K.", rating: 4, text: "Good quality, needed one revision but overall solid.", time: "1 month ago" },
-  ];
-
   return (
     <>
-      {/* Backdrop */}
       {open && (
         <div className="fixed inset-0 bg-background/60 backdrop-blur-sm z-40" onClick={onClose} />
       )}
 
-      {/* Drawer */}
       <div className={`fixed top-0 right-0 h-full w-full max-w-[480px] bg-card border-l border-border z-50 transform transition-transform duration-300 ease-out ${
         open ? "translate-x-0" : "translate-x-full"
       } overflow-y-auto`}>
-        {/* Header */}
         <div className="sticky top-0 bg-card/90 backdrop-blur-xl border-b border-border px-6 py-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-2">
             <span className={`flex items-center gap-1 text-[10px] font-mono ${fColor} bg-surface-2 px-2 py-0.5 rounded-md`}>
@@ -49,7 +58,6 @@ export default function GigQuickView({ gig, open, onClose }: Props) {
         </div>
 
         <div className="px-6 py-6 space-y-6">
-          {/* Title */}
           <div>
             <h2 className="font-heading font-bold text-foreground text-xl leading-tight">{gig.skill}</h2>
             <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
@@ -57,7 +65,6 @@ export default function GigQuickView({ gig, open, onClose }: Props) {
             </p>
           </div>
 
-          {/* Seller card */}
           <div className={`rounded-xl border ${tier.border} ${tier.bg} p-4`}>
             <UserPreviewPopover
               name={gig.seller} avatar={gig.avatar} elo={gig.elo} rating={gig.rating}
@@ -95,13 +102,11 @@ export default function GigQuickView({ gig, open, onClose }: Props) {
             )}
           </div>
 
-          {/* Description */}
           <div>
             <h4 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Description</h4>
             <p className="text-sm text-foreground/90 leading-relaxed">{gig.desc}</p>
           </div>
 
-          {/* Requirements */}
           {gig.requirements && gig.requirements.length > 0 && (
             <div>
               <h4 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Requirements</h4>
@@ -116,7 +121,6 @@ export default function GigQuickView({ gig, open, onClose }: Props) {
             </div>
           )}
 
-          {/* Stats grid */}
           <div className="grid grid-cols-3 gap-3">
             {[
               { label: "Delivery", value: `${gig.deliveryDays} days`, icon: Clock },
@@ -131,7 +135,6 @@ export default function GigQuickView({ gig, open, onClose }: Props) {
             ))}
           </div>
 
-          {/* SP Info */}
           {gig.points > 0 && (
             <div className="rounded-xl bg-skill-green/5 border border-skill-green/20 p-4 flex items-center justify-between">
               <div>
@@ -142,7 +145,6 @@ export default function GigQuickView({ gig, open, onClose }: Props) {
             </div>
           )}
 
-          {/* Tags */}
           {gig.tags && (
             <div className="flex flex-wrap gap-1.5">
               {gig.tags.map(t => (
@@ -151,28 +153,30 @@ export default function GigQuickView({ gig, open, onClose }: Props) {
             </div>
           )}
 
-          {/* Reviews preview */}
+          {/* Reviews from DB */}
           <div>
             <h4 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">Recent Reviews</h4>
             <div className="space-y-3">
-              {mockReviews.map(r => (
-                <div key={r.name} className="rounded-xl bg-surface-1 border border-border p-3">
+              {reviews.map((r: any) => (
+                <div key={r.id} className="rounded-xl bg-surface-1 border border-border p-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-heading font-semibold text-foreground">{r.name}</span>
+                    <span className="text-xs font-heading font-semibold text-foreground">{r.reviewer_name || "User"}</span>
                     <div className="flex items-center gap-0.5">
-                      {Array.from({ length: r.rating }).map((_, i) => (
+                      {Array.from({ length: r.overall_rating || 5 }).map((_, i) => (
                         <Star key={i} className="w-3 h-3 text-badge-gold fill-current" />
                       ))}
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">{r.text}</p>
-                  <p className="text-[10px] text-muted-foreground/60 mt-1">{r.time}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{r.comment}</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">{new Date(r.created_at).toLocaleDateString()}</p>
                 </div>
               ))}
+              {reviews.length === 0 && (
+                <p className="text-xs text-muted-foreground text-center py-3">No reviews yet</p>
+              )}
             </div>
           </div>
 
-          {/* Actions */}
           <div className="space-y-3 pb-6">
             <button className="w-full h-12 rounded-xl bg-foreground text-background font-heading font-bold text-sm hover:bg-foreground/90 transition-colors">
               Propose Swap
