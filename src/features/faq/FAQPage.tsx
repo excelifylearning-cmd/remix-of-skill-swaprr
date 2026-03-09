@@ -204,8 +204,8 @@ const FAQPage = () => {
             <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: "spring" }}>
               <HelpCircle size={48} className="mx-auto mb-4 text-muted-foreground" />
             </motion.div>
-            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-4 font-heading text-5xl font-black text-foreground sm:text-6xl lg:text-7xl">
-              Frequently Asked<br /><span className="text-muted-foreground">Questions</span>
+            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-4 font-heading text-5xl font-black text-foreground sm:text-6xl lg:text-7xl leading-[1.1]">
+              Frequently Asked <span className="text-muted-foreground">Questions</span>
             </motion.h1>
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mx-auto mb-8 max-w-xl text-lg text-muted-foreground">
               Everything you need to know about SkillSwappr — from getting started to advanced features.
@@ -231,18 +231,29 @@ const FAQPage = () => {
             <div className="mx-auto max-w-4xl px-6">
               <p className="mb-4 text-sm text-muted-foreground">{allFilteredFaqs.length} results for "{searchQuery}"</p>
               <div className="space-y-3">
-                {allFilteredFaqs.map((f, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="rounded-xl border border-border bg-card p-5">
-                    <div className="mb-2 flex items-center gap-2">
-                      <f.sectionIcon size={12} className={f.sectionColor} />
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{f.section}</span>
-                    </div>
-                    <h4 className="mb-2 text-sm font-semibold text-foreground">{f.q}</h4>
-                    <p className="text-sm leading-relaxed text-muted-foreground">{f.a}</p>
-                  </motion.div>
-                ))}
+                {allFilteredFaqs.map((f, i) => {
+                  const hl = (text: string) => {
+                    const idx = text.toLowerCase().indexOf(searchQuery.toLowerCase());
+                    if (idx === -1) return text;
+                    return <>{text.slice(0, idx)}<mark className="bg-badge-gold/20 text-foreground rounded-sm px-0.5">{text.slice(idx, idx + searchQuery.length)}</mark>{text.slice(idx + searchQuery.length)}</>;
+                  };
+                  return (
+                    <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="rounded-xl border border-border bg-card p-5">
+                      <div className="mb-2 flex items-center gap-2">
+                        <f.sectionIcon size={12} className={f.sectionColor} />
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{f.section}</span>
+                      </div>
+                      <h4 className="mb-2 text-sm font-semibold text-foreground">{hl(f.q)}</h4>
+                      <p className="text-sm leading-relaxed text-muted-foreground">{hl(f.a)}</p>
+                    </motion.div>
+                  );
+                })}
                 {allFilteredFaqs.length === 0 && (
-                  <p className="py-12 text-center text-sm text-muted-foreground">No questions match your search. Try different keywords.</p>
+                  <div className="py-12 text-center">
+                    <Search size={32} className="mx-auto mb-3 text-muted-foreground/30" />
+                    <p className="text-sm text-foreground font-medium">No questions match your search</p>
+                    <p className="text-xs text-muted-foreground mt-1">Try different keywords or browse categories below</p>
+                  </div>
                 )}
               </div>
             </div>
@@ -254,19 +265,17 @@ const FAQPage = () => {
           <>
             {/* Category Nav */}
             <div className="sticky top-16 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
-              <div className="relative">
-                <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-6 bg-gradient-to-r from-background/80 to-transparent sm:hidden" />
-                <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-6 bg-gradient-to-l from-background/80 to-transparent sm:hidden" />
-                <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-6 py-3 scrollbar-hide scroll-smooth">
+              <div className="mx-auto max-w-7xl px-6 py-3">
+                <div className="flex flex-wrap gap-2">
                   {faqSections.map((s) => (
                     <button
                       key={s.id}
                       onClick={() => setActiveSection(s.id)}
-                      className={`flex flex-shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all ${
-                        activeSection === s.id ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
+                      className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium transition-all whitespace-nowrap ${
+                        activeSection === s.id ? "bg-foreground text-background" : "bg-surface-1 text-muted-foreground hover:text-foreground hover:bg-surface-2"
                       }`}
                     >
-                      <s.icon size={14} />
+                      <s.icon size={13} />
                       {s.title}
                     </button>
                   ))}
