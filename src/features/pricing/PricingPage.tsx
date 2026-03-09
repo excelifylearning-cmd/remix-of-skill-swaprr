@@ -106,14 +106,7 @@ const rarityColor = (r: string) => {
   return "bg-surface-2 text-muted-foreground";
 };
 
-const liveStats = [
-  { label: "Active Swaps Right Now", value: 847, icon: Activity, color: "text-skill-green" },
-  { label: "Points Exchanged Today", value: 23450, icon: Coins, color: "text-badge-gold" },
-  { label: "Avg Gig Completion", value: "4.2h", icon: Clock, color: "text-court-blue" },
-  { label: "Users Online", value: 1243, icon: Users, color: "text-foreground" },
-  { label: "Gigs Posted Today", value: 312, icon: TrendingUp, color: "text-skill-green" },
-  { label: "5-Star Reviews Today", value: 189, icon: Star, color: "text-badge-gold" },
-];
+/* liveStats and skillDemand are now fetched from the database — see useLivePricingStats hook below */
 
 const skillDemand = [
   { skill: "UI/UX Design", demand: 94, avgValue: "35 SP", swapsToday: 47, trend: "+12%" },
