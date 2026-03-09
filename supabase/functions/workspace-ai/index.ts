@@ -32,16 +32,26 @@ serve(async (req) => {
 
   try {
     const { messages, action, content, targetLanguage } = await req.json();
+    
+    // Portable AI provider: check env vars in priority order
     const LOVABLE_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_KEY) {
-      return new Response(JSON.stringify({ error: "AI not configured" }), {
+    const CUSTOM_KEY = Deno.env.get("AI_CHAT_API_KEY") || Deno.env.get("OPENAI_API_KEY");
+    
+    const apiKey = LOVABLE_KEY || CUSTOM_KEY;
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: "No AI API key configured. Set LOVABLE_API_KEY, AI_CHAT_API_KEY, or OPENAI_API_KEY." }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    const defaultUrl = LOVABLE_KEY 
+      ? "https://ai.gateway.lovable.dev/v1/chat/completions"
+      : "https://api.openai.com/v1/chat/completions";
+    const gatewayUrl = Deno.env.get("AI_PROVIDER_URL") || defaultUrl;
+    const model = LOVABLE_KEY ? "google/gemini-3-flash-preview" : "gpt-4o-mini";
+
     let aiMessages: any[] = [{ role: "system", content: SYSTEM_PROMPT }];
 
-    // Action-based routing
     if (action === "translate") {
       aiMessages.push({
         role: "user",
@@ -63,20 +73,19 @@ serve(async (req) => {
         content: `Help me write a clear, well-structured dispute reason for Skill Court. The issue is: "${content}". Include suggested evidence to gather.`,
       });
     } else {
-      // General chat mode
       aiMessages = [...aiMessages, ...(messages || [])];
     }
 
-    const useStream = !action; // Only stream for chat mode
+    const useStream = !action;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(gatewayUrl, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model,
         messages: aiMessages,
         stream: useStream,
       }),
@@ -106,7 +115,6 @@ serve(async (req) => {
       });
     }
 
-    // Non-streaming: return parsed result
     const data = await response.json();
     const result = data.choices?.[0]?.message?.content || "";
     return new Response(JSON.stringify({ result }), {

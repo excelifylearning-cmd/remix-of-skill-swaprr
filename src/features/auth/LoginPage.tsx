@@ -6,7 +6,7 @@ import PageTransition from "@/components/shared/PageTransition";
 import { validateEmail } from "@/lib/email-validation";
 import { useAuth } from "@/lib/auth-context";
 import { logFormSubmission, logInteraction } from "@/lib/activity-logger";
-import { lovable } from "@/integrations/lovable/index";
+import { portableAuth } from "@/lib/oauth";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -47,10 +47,8 @@ const LoginPage = () => {
     setGoogleLoading(true);
     setError("");
     try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
-      if (result.error) {
+      const result = await portableAuth.signInWithGoogle(window.location.origin);
+      if (result && "error" in result && result.error) {
         setError("Google sign-in failed. Please try again.");
         setGoogleLoading(false);
       }

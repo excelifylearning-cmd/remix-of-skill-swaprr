@@ -22,24 +22,25 @@ serve(async (req) => {
   try {
     const { messages } = await req.json();
     
-    // Try Lovable AI first, fall back to AI_CHAT_API_KEY
+    // Portable AI provider: check env vars in priority order
     const LOVABLE_KEY = Deno.env.get("LOVABLE_API_KEY");
-    const CUSTOM_KEY = Deno.env.get("AI_CHAT_API_KEY");
+    const CUSTOM_KEY = Deno.env.get("AI_CHAT_API_KEY") || Deno.env.get("OPENAI_API_KEY");
     
     const apiKey = LOVABLE_KEY || CUSTOM_KEY;
     if (!apiKey) {
       return new Response(JSON.stringify({ 
-        error: "No AI API key configured. Please add LOVABLE_API_KEY or AI_CHAT_API_KEY." 
+        error: "No AI API key configured. Set LOVABLE_API_KEY, AI_CHAT_API_KEY, or OPENAI_API_KEY." 
       }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const gatewayUrl = LOVABLE_KEY 
+    // Configurable gateway URL for portability
+    const defaultUrl = LOVABLE_KEY 
       ? "https://ai.gateway.lovable.dev/v1/chat/completions"
       : "https://api.openai.com/v1/chat/completions";
-
+    const gatewayUrl = Deno.env.get("AI_PROVIDER_URL") || defaultUrl;
     const model = LOVABLE_KEY ? "google/gemini-2.5-flash-lite" : "gpt-4o-mini";
 
     const response = await fetch(gatewayUrl, {

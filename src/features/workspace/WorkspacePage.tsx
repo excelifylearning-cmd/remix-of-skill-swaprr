@@ -1113,7 +1113,7 @@ const AiAssistantPanel = ({ workspaceId }: { workspaceId: string }) => {
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-2 border-b border-border px-4 py-3">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-court-blue/10"><Bot size={16} className="text-court-blue" /></div>
-        <div><p className="text-sm font-semibold text-foreground">AI Assistant</p><p className="text-[10px] text-court-blue">Powered by Lovable AI</p></div>
+        <div><p className="text-sm font-semibold text-foreground">AI Assistant</p><p className="text-[10px] text-court-blue">AI Powered</p></div>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map((msg, i) => (
