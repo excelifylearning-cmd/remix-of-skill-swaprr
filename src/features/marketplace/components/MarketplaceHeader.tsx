@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Search, Grid3X3, List, ArrowUpDown, Sparkles, X } from "lucide-react";
 import { categories, aiSuggestions } from "../data/mockData";
-import { categoryIcon, categoryColor } from "../utils/marketplace-utils";
+import { categoryIcon } from "../utils/marketplace-utils";
 
 const sortOptions = ["Trending", "Newest", "Highest ELO", "Most Points", "Most Views"];
 
@@ -27,7 +27,6 @@ export default function MarketplaceHeader({
   return (
     <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-border">
       <div className="px-6 py-4 space-y-3">
-        {/* Search row */}
         <div className="flex items-center gap-3">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -41,14 +40,10 @@ export default function MarketplaceHeader({
               className="w-full h-10 pl-10 pr-10 bg-surface-1 border border-border rounded-xl text-sm font-body text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/20 transition-colors"
             />
             {search && (
-              <button
-                onClick={() => onSearchChange("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
+              <button onClick={() => onSearchChange("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
-            {/* AI Suggestions dropdown */}
             {showSuggestions && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-xl p-2 shadow-lg z-30">
                 <p className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
@@ -67,7 +62,6 @@ export default function MarketplaceHeader({
             )}
           </div>
 
-          {/* Sort */}
           <div className="relative">
             <button
               onClick={() => setShowSort(!showSort)}
@@ -93,7 +87,6 @@ export default function MarketplaceHeader({
             )}
           </div>
 
-          {/* View toggle */}
           <div className="flex border border-border rounded-xl overflow-hidden">
             <button
               onClick={() => onViewModeChange("grid")}
@@ -114,7 +107,6 @@ export default function MarketplaceHeader({
           </div>
         </div>
 
-        {/* Category pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
           {categories.map(c => {
             const Icon = categoryIcon(c.label);
@@ -131,7 +123,6 @@ export default function MarketplaceHeader({
               >
                 <Icon className="w-3 h-3" />
                 {c.label}
-                <span className="font-mono text-[10px] opacity-60">{c.count}</span>
               </button>
             );
           })}

@@ -3,15 +3,12 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, Star, Shield, Clock, Eye, ArrowRight, Heart, Share2, Bookmark,
-  MessageSquare, Flag, GraduationCap, CheckCircle2, Trophy, ChevronRight,
+  MessageSquare, Flag, GraduationCap, CheckCircle2, ChevronRight, Gavel, Coins, Layers,
 } from "lucide-react";
 import AppNav from "@/components/shared/AppNav";
 import { supabase } from "@/integrations/supabase/client";
-import { gigs as mockGigs } from "../data/mockData";
 import { eloTier, formatIcon, formatColor } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
-import GuildPreviewPopover from "./GuildPreviewPopover";
-import GigCard from "./GigCard";
 import ProposalModal from "./ProposalModal";
 import LoginPrompt from "@/components/shared/LoginPrompt";
 import { useAuth } from "@/lib/auth-context";
@@ -33,11 +30,9 @@ export default function GigDetailPage() {
   const [proposalOpen, setProposalOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
 
-  // Try DB first, fallback to mock
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      // Try UUID lookup
       const { data: dbListing } = await supabase
         .from("listings")
         .select("*, profiles!listings_user_id_profiles_fkey(display_name, full_name, elo, id_verified, university, total_gigs_completed, avatar_url)")
@@ -47,7 +42,6 @@ export default function GigDetailPage() {
       if (dbListing) {
         setListing(dbListing);
         setSellerProfile(dbListing.profiles);
-        // Load reviews for this seller
         const { data: revs } = await (supabase as any)
           .from("reviews")
           .select("*")
@@ -55,28 +49,6 @@ export default function GigDetailPage() {
           .order("created_at", { ascending: false })
           .limit(5);
         setReviews(revs || []);
-      } else {
-        // Fallback to mock
-        const mock = mockGigs.find(g => g.id === Number(gigId));
-        if (mock) {
-          setListing({
-            id: mock.id, title: mock.skill, description: mock.desc, wants: mock.wants,
-            category: mock.category, format: mock.format, points: mock.points,
-            delivery_days: mock.deliveryDays, views: mock.views, hot: mock.hot,
-            rating: mock.rating, user_id: mock.sellerId || "mock", price: `${mock.points} SP`,
-            _mock: true, _gig: mock,
-          });
-          setSellerProfile({
-            display_name: mock.seller, full_name: mock.seller, elo: mock.elo,
-            id_verified: mock.verified, university: mock.uni,
-            total_gigs_completed: mock.completedSwaps,
-          });
-          setReviews([
-            { reviewer_name: "Alice M.", overall_rating: 5, comment: "Excellent work, delivered early!", created_at: "2026-02-20" },
-            { reviewer_name: "Bob R.", overall_rating: 5, comment: "Very professional.", created_at: "2026-02-10" },
-            { reviewer_name: "Sara K.", overall_rating: 4, comment: "Good quality, solid work.", created_at: "2026-01-25" },
-          ]);
-        }
       }
       setLoading(false);
     };
@@ -122,6 +94,11 @@ export default function GigDetailPage() {
     setProposalOpen(true);
   };
 
+  // Format-specific panels
+  const isAuction = listing.format === "Auction";
+  const isSPOnly = listing.format === "SP Only";
+  const isCoCreation = listing.format === "Co-Creation";
+
   return (
     <div className="min-h-screen bg-background">
       <AppNav />
@@ -131,7 +108,6 @@ export default function GigDetailPage() {
         transition={{ duration: 0.3 }}
         className="max-w-6xl mx-auto px-6 py-8"
       >
-        {/* Breadcrumb */}
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6">
           <Link to="/marketplace" className="hover:text-foreground transition-colors">Marketplace</Link>
           <ChevronRight className="w-3 h-3" />
@@ -139,9 +115,7 @@ export default function GigDetailPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Header */}
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <span className={`flex items-center gap-1 text-xs font-mono ${fColor} bg-surface-2 px-2.5 py-1 rounded-lg`}>
@@ -157,13 +131,46 @@ export default function GigDetailPage() {
               )}
             </div>
 
-            {/* Description */}
             <div>
               <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">About This Gig</h3>
               <p className="text-foreground/90 leading-relaxed">{listing.description}</p>
             </div>
 
-            {/* Delivery Stages */}
+            {/* Auction-specific: bid history */}
+            {isAuction && (
+              <div className="rounded-xl border border-alert-red/20 bg-alert-red/5 p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Gavel className="w-4 h-4 text-alert-red" />
+                  <h3 className="text-sm font-heading font-bold text-foreground">Live Auction</h3>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="text-center">
+                    <p className="text-xl font-mono font-bold text-alert-red">{listing.current_bid || 0} SP</p>
+                    <p className="text-[10px] text-muted-foreground">Current Bid</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xl font-mono font-bold text-foreground">{listing.bid_count || 0}</p>
+                    <p className="text-[10px] text-muted-foreground">Total Bids</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xl font-mono font-bold text-badge-gold">{listing.ends_at ? Math.max(0, Math.floor((new Date(listing.ends_at).getTime() - Date.now()) / 60000)) : "∞"}m</p>
+                    <p className="text-[10px] text-muted-foreground">Time Left</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Co-Creation: team info */}
+            {isCoCreation && (
+              <div className="rounded-xl border border-court-blue/20 bg-court-blue/5 p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Layers className="w-4 h-4 text-court-blue" />
+                  <h3 className="text-sm font-heading font-bold text-foreground">Co-Creation Team</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">Team slots and roles will appear here when the gig is matched.</p>
+              </div>
+            )}
+
             <div>
               <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">Delivery Timeline</h3>
               <div className="space-y-2">
@@ -179,7 +186,6 @@ export default function GigDetailPage() {
               </div>
             </div>
 
-            {/* Reviews */}
             <div>
               <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">
                 Reviews ({reviews.length})
@@ -206,10 +212,8 @@ export default function GigDetailPage() {
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
-              {/* Seller card */}
               <div className={`rounded-2xl border ${tier.border} ${tier.bg} p-5 ${tier.glow}`}>
                 <Link to={`/profile/${listing.user_id}`} className="flex items-center gap-3">
                   <div className={`w-14 h-14 rounded-xl border ${tier.border} ${tier.bg} flex items-center justify-center font-heading font-bold text-lg ${tier.color}`}>
@@ -238,7 +242,6 @@ export default function GigDetailPage() {
                 </div>
               </div>
 
-              {/* Stats */}
               <div className="grid grid-cols-3 gap-2">
                 {[
                   { label: "Delivery", value: `${listing.delivery_days || 7}d`, icon: Clock },
@@ -253,7 +256,6 @@ export default function GigDetailPage() {
                 ))}
               </div>
 
-              {/* SP bonus */}
               {listing.points > 0 && (
                 <div className="rounded-xl bg-skill-green/5 border border-skill-green/20 p-4 text-center">
                   <p className="text-2xl font-mono font-bold text-skill-green">+{listing.points} SP</p>
@@ -261,14 +263,20 @@ export default function GigDetailPage() {
                 </div>
               )}
 
-              {/* Actions */}
               <div className="space-y-2">
-                <button
-                  onClick={handlePropose}
-                  className="w-full h-12 rounded-xl bg-foreground text-background font-heading font-bold text-sm hover:bg-foreground/90 transition-colors"
-                >
-                  Propose Swap
-                </button>
+                {isAuction ? (
+                  <button onClick={handlePropose} className="w-full h-12 rounded-xl bg-alert-red text-white font-heading font-bold text-sm hover:bg-alert-red/90 transition-colors flex items-center justify-center gap-2">
+                    <Gavel className="w-4 h-4" /> Place Bid
+                  </button>
+                ) : isSPOnly ? (
+                  <button onClick={handlePropose} className="w-full h-12 rounded-xl bg-badge-gold text-background font-heading font-bold text-sm hover:bg-badge-gold/90 transition-colors flex items-center justify-center gap-2">
+                    <Coins className="w-4 h-4" /> Purchase with SP
+                  </button>
+                ) : (
+                  <button onClick={handlePropose} className="w-full h-12 rounded-xl bg-foreground text-background font-heading font-bold text-sm hover:bg-foreground/90 transition-colors">
+                    Propose Swap
+                  </button>
+                )}
                 <button className="w-full h-10 rounded-xl border border-border text-foreground text-xs font-heading font-semibold hover:bg-surface-2 transition-colors flex items-center justify-center gap-1.5">
                   <MessageSquare className="w-3.5 h-3.5" />Message Seller
                 </button>
@@ -293,7 +301,6 @@ export default function GigDetailPage() {
         </div>
       </motion.div>
 
-      {/* Proposal Modal */}
       {proposalOpen && (
         <ProposalModal
           listing={{

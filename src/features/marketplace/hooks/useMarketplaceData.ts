@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { gigs as mockGigs, type Gig, type MarketplaceMode } from "../data/mockData";
+import { type Gig, type MarketplaceMode } from "../data/mockData";
 import { ITEMS_PER_PAGE_GRID, ITEMS_PER_PAGE_LIST } from "../utils/marketplace-utils";
 
 export interface MarketplaceFilters {
@@ -67,7 +67,7 @@ function listingToGig(l: ListingRow, index: number): Gig {
   const name = l.profiles?.display_name || l.profiles?.full_name || "User";
   const initials = name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
   return {
-    id: index + 1,
+    id: l.id || index + 1,
     skill: l.title,
     wants: l.wants || "Open to offers",
     points: l.points || 0,
@@ -107,19 +107,14 @@ export function useMarketplaceData() {
 
   const loadListings = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("listings")
       .select("*, profiles!listings_user_id_profiles_fkey(display_name, full_name, elo, id_verified, university, total_gigs_completed, avatar_url)")
       .eq("status", "active")
       .order("created_at", { ascending: false })
-      .limit(100);
+      .limit(200);
 
-    if (data && data.length > 0) {
-      setDbGigs(data.map((l: any, i: number) => listingToGig(l, i)));
-    } else {
-      // Fallback to mock data
-      setDbGigs(mockGigs);
-    }
+    setDbGigs((data || []).map((l: any, i: number) => listingToGig(l, i)));
     setLoading(false);
   };
 
@@ -178,6 +173,9 @@ export function useMarketplaceData() {
     else if (mode === "cocreation") result = result.filter(g => g.format === "Co-Creation");
     else if (mode === "fusion") result = result.filter(g => g.format === "Skill Fusion");
     else if (mode === "flash") result = result.filter(g => g.format === "Flash Market");
+    else if (mode === "sp-only") result = result.filter(g => g.format === "SP Only");
+    else if (mode === "projects") result = result.filter(g => g.format === "Projects");
+    else if (mode === "requests") result = result.filter(g => g.format === "Request");
     else if (mode === "recommended") result = result.sort((a, b) => b.elo - a.elo);
 
     if (filters.sort === "Newest") result.sort((a, b) => 0);
