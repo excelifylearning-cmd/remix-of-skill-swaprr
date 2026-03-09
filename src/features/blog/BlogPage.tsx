@@ -189,11 +189,10 @@ const BlogPage = () => {
       if (data) setComments(data);
       
       // Increment view count
-      await supabase.rpc("increment", {
-        table_name: "blog_posts",
-        row_id: selectedPost.id,
-        column_name: "view_count"
-      });
+      await supabase
+        .from("blog_posts")
+        .update({ view_count: selectedPost.view_count + 1 })
+        .eq("id", selectedPost.id);
     };
     
     fetchComments();
