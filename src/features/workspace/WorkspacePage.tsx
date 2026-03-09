@@ -1234,6 +1234,7 @@ const WorkspacePage = () => {
   const [transactionCode, setTransactionCode] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string>("owner");
   const [preferredLang, setPreferredLang] = useState("en");
+  const [workspaceType, setWorkspaceType] = useState("direct_swap");
   const workspaceId = id || "demo-workspace-001";
   const userId = user?.id || null;
 
