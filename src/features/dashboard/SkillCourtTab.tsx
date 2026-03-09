@@ -390,11 +390,28 @@ const CaseDetailView = ({ caseId, onBack, isJuror }: { caseId: string; onBack: (
 };
 
 /* ═══════════════════════════════════════════════════════
-   FILE A CASE FORM
+   FILE A CASE FORM — activity-based with auto-populate
 ═══════════════════════════════════════════════════════ */
+
+interface DisputeSource {
+  id: string;
+  type: "listing" | "escrow";
+  title: string;
+  sp: number;
+  counterpartyId: string;
+  counterpartyLabel: string;
+  format: string;
+  date: string;
+}
 
 const FileCaseForm = ({ onBack, onFiled }: { onBack: () => void; onFiled: () => void }) => {
   const { user } = useAuth();
+  const [step, setStep] = useState<"pick" | "form">("pick");
+  const [sources, setSources] = useState<DisputeSource[]>([]);
+  const [loadingSources, setLoadingSources] = useState(true);
+  const [selected, setSelected] = useState<DisputeSource | null>(null);
+
+  // Form state
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [againstId, setAgainstId] = useState("");
@@ -402,8 +419,67 @@ const FileCaseForm = ({ onBack, onFiled }: { onBack: () => void; onFiled: () => 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  // Load user's listings + escrow contracts as disputable activities
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      setLoadingSources(true);
+      const [listingsRes, escrowBuyerRes, escrowSellerRes] = await Promise.all([
+        supabase.from("listings").select("id, title, points, format, user_id, created_at, status").eq("user_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("escrow_contracts").select("id, total_sp, buyer_id, seller_id, workspace_id, status, created_at").eq("buyer_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("escrow_contracts").select("id, total_sp, buyer_id, seller_id, workspace_id, status, created_at").eq("seller_id", user.id).order("created_at", { ascending: false }),
+      ]);
+
+      const items: DisputeSource[] = [];
+
+      // Listings where user participated (they created)
+      (listingsRes.data || []).forEach((l: any) => {
+        items.push({
+          id: l.id, type: "listing", title: l.title,
+          sp: l.points || 0, counterpartyId: "", counterpartyLabel: "N/A (your listing)",
+          format: l.format || "Direct Swap", date: l.created_at,
+        });
+      });
+
+      // Escrow contracts (buyer side — counterparty is seller)
+      (escrowBuyerRes.data || []).forEach((e: any) => {
+        items.push({
+          id: e.id, type: "escrow", title: `Escrow: ${e.workspace_id?.slice(0, 8) || "Contract"}`,
+          sp: e.total_sp || 0, counterpartyId: e.seller_id,
+          counterpartyLabel: `Seller ${e.seller_id?.slice(0, 8)}…`,
+          format: "Escrow", date: e.created_at,
+        });
+      });
+
+      // Escrow contracts (seller side — counterparty is buyer)
+      (escrowSellerRes.data || []).forEach((e: any) => {
+        // Avoid duplicates if same contract
+        if (items.some(i => i.id === e.id)) return;
+        items.push({
+          id: e.id, type: "escrow", title: `Escrow: ${e.workspace_id?.slice(0, 8) || "Contract"}`,
+          sp: e.total_sp || 0, counterpartyId: e.buyer_id,
+          counterpartyLabel: `Buyer ${e.buyer_id?.slice(0, 8)}…`,
+          format: "Escrow", date: e.created_at,
+        });
+      });
+
+      setSources(items);
+      setLoadingSources(false);
+    };
+    load();
+  }, [user]);
+
+  const selectSource = (src: DisputeSource) => {
+    setSelected(src);
+    setTitle(`Dispute: ${src.title}`);
+    setDesc(`Filing dispute regarding "${src.title}" (${src.format}, ${src.sp} SP). Source: ${src.type} #${src.id.slice(0, 8)}.`);
+    setAgainstId(src.counterpartyId);
+    setSpAmount(String(src.sp));
+    setStep("form");
+  };
+
   const submit = async () => {
-    if (!title.trim() || !againstId.trim() || !user) { setError("Fill all required fields"); return; }
+    if (!title.trim() || !againstId.trim() || !user) { setError("Fill all required fields. A counterparty is required."); return; }
     setSubmitting(true); setError("");
     const { error: e } = await supabase.from("disputes").insert({
       title: title.trim(),
@@ -416,14 +492,101 @@ const FileCaseForm = ({ onBack, onFiled }: { onBack: () => void; onFiled: () => 
     onFiled();
   };
 
+  // Step 1: Pick an activity
+  if (step === "pick") {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <button onClick={onBack} className="flex h-9 w-9 items-center justify-center rounded-xl border border-border text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft size={16} />
+          </button>
+          <div>
+            <h2 className="font-heading text-xl font-bold text-foreground">File a Dispute</h2>
+            <p className="text-xs text-muted-foreground">Select the gig or contract you want to dispute</p>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-court-blue/20 bg-court-blue/5 p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <AlertTriangle size={14} className="text-court-blue" />
+            <span className="text-sm font-medium text-foreground">Choose an Activity</span>
+          </div>
+          <p className="text-xs text-muted-foreground">Pick a listing or escrow contract to auto-fill dispute details. Only activities with a counterparty can be disputed.</p>
+        </div>
+
+        {loadingSources ? (
+          <div className="py-16 text-center"><div className="h-5 w-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin mx-auto" /></div>
+        ) : sources.length > 0 ? (
+          <div className="space-y-3">
+            {sources.map(src => (
+              <motion.button
+                key={`${src.type}-${src.id}`}
+                onClick={() => selectSource(src)}
+                className="w-full text-left rounded-2xl border border-border bg-card p-4 hover:border-foreground/20 transition-all group"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    {src.type === "escrow" ? (
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-badge-gold/10"><Shield size={14} className="text-badge-gold" /></div>
+                    ) : (
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-court-blue/10"><FileText size={14} className="text-court-blue" /></div>
+                    )}
+                    <div>
+                      <p className="text-sm font-bold text-foreground group-hover:text-foreground">{src.title}</p>
+                      <p className="text-[10px] text-muted-foreground">{src.format} · {new Date(src.date).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-skill-green">{src.sp} SP</p>
+                    <p className="text-[10px] text-muted-foreground">{src.counterpartyId ? `vs ${src.counterpartyId.slice(0, 8)}…` : "No counterparty"}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-end">
+                  <span className="text-xs text-court-blue group-hover:underline flex items-center gap-1">
+                    File dispute on this <ChevronRight size={12} />
+                  </span>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        ) : (
+          <div className="py-16 text-center">
+            <FileText size={32} className="mx-auto mb-3 text-muted-foreground/30" />
+            <p className="text-foreground font-medium">No activities found</p>
+            <p className="text-sm text-muted-foreground">Create a gig or complete a swap first</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Step 2: Pre-filled form
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <button onClick={onBack} className="flex h-9 w-9 items-center justify-center rounded-xl border border-border text-muted-foreground hover:text-foreground transition-colors">
+        <button onClick={() => setStep("pick")} className="flex h-9 w-9 items-center justify-center rounded-xl border border-border text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft size={16} />
         </button>
-        <h2 className="font-heading text-xl font-bold text-foreground">File a Dispute</h2>
+        <h2 className="font-heading text-xl font-bold text-foreground">Confirm Dispute Details</h2>
       </div>
+
+      {/* Source badge */}
+      {selected && (
+        <div className="rounded-xl border border-border bg-surface-1 p-3 flex items-center gap-3">
+          {selected.type === "escrow" ? (
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-badge-gold/10"><Shield size={18} className="text-badge-gold" /></div>
+          ) : (
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-court-blue/10"><FileText size={18} className="text-court-blue" /></div>
+          )}
+          <div className="flex-1">
+            <p className="text-sm font-bold text-foreground">{selected.title}</p>
+            <p className="text-[10px] text-muted-foreground">{selected.format} · {selected.sp} SP · {selected.counterpartyLabel}</p>
+          </div>
+          <button onClick={() => setStep("pick")} className="text-xs text-court-blue hover:underline">Change</button>
+        </div>
+      )}
 
       {error && (
         <div className="rounded-lg bg-alert-red/5 border border-alert-red/20 p-3 text-xs text-alert-red">{error}</div>
@@ -437,6 +600,9 @@ const FileCaseForm = ({ onBack, onFiled }: { onBack: () => void; onFiled: () => 
         <div>
           <label className="text-xs font-mono uppercase text-muted-foreground mb-1 block">Filed Against (User ID) *</label>
           <input value={againstId} onChange={e => setAgainstId(e.target.value)} placeholder="User ID of the other party" className="w-full h-11 rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none" />
+          {!againstId && selected?.type === "listing" && (
+            <p className="text-[10px] text-badge-gold mt-1">⚠ This listing has no counterparty yet. Enter the user ID manually.</p>
+          )}
         </div>
         <div>
           <label className="text-xs font-mono uppercase text-muted-foreground mb-1 block">SP Amount at Stake</label>
