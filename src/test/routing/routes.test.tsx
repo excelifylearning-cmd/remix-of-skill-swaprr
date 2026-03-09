@@ -16,7 +16,7 @@ vi.mock("@/components/shared/CookieConsent", () => ({ default: () => null }));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 describe("Routing", () => {
-  it("renders 404 for unknown routes", async () => {
+  it("renders 404 page for unknown routes", async () => {
     const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
       <QueryClientProvider client={qc}>
@@ -30,7 +30,8 @@ describe("Routing", () => {
       </QueryClientProvider>
     );
     await waitFor(() => {
-      expect(screen.getByText(/404/i)).toBeInTheDocument();
+      // The 404 page renders "Page not found" text
+      expect(screen.getByText(/page not found/i)).toBeInTheDocument();
     });
   });
 });
