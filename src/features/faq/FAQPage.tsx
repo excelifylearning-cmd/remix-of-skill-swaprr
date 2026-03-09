@@ -265,19 +265,17 @@ const FAQPage = () => {
           <>
             {/* Category Nav */}
             <div className="sticky top-16 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
-              <div className="relative">
-                <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-6 bg-gradient-to-r from-background/80 to-transparent sm:hidden" />
-                <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-6 bg-gradient-to-l from-background/80 to-transparent sm:hidden" />
-                <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-6 py-3 scrollbar-hide scroll-smooth">
+              <div className="mx-auto max-w-7xl px-6 py-3">
+                <div className="flex flex-wrap gap-2">
                   {faqSections.map((s) => (
                     <button
                       key={s.id}
                       onClick={() => setActiveSection(s.id)}
-                      className={`flex flex-shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all ${
-                        activeSection === s.id ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
+                      className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium transition-all whitespace-nowrap ${
+                        activeSection === s.id ? "bg-foreground text-background" : "bg-surface-1 text-muted-foreground hover:text-foreground hover:bg-surface-2"
                       }`}
                     >
-                      <s.icon size={14} />
+                      <s.icon size={13} />
                       {s.title}
                     </button>
                   ))}
