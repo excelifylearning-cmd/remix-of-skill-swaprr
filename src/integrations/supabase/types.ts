@@ -290,6 +290,82 @@ export type Database = {
         }
         Relationships: []
       }
+      case_comments: {
+        Row: {
+          author_id: string
+          case_id: string
+          content: string
+          created_at: string
+          id: string
+          is_judge_note: boolean
+        }
+        Insert: {
+          author_id: string
+          case_id: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_judge_note?: boolean
+        }
+        Update: {
+          author_id?: string
+          case_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_judge_note?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_comments_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_evidence: {
+        Row: {
+          case_id: string
+          content: string
+          created_at: string
+          evidence_type: string
+          file_url: string | null
+          id: string
+          submitted_by: string
+          title: string
+        }
+        Insert: {
+          case_id: string
+          content?: string
+          created_at?: string
+          evidence_type?: string
+          file_url?: string | null
+          id?: string
+          submitted_by: string
+          title?: string
+        }
+        Update: {
+          case_id?: string
+          content?: string
+          created_at?: string
+          evidence_type?: string
+          file_url?: string | null
+          id?: string
+          submitted_by?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_evidence_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       changelog_entries: {
         Row: {
           changes: Json
@@ -1712,6 +1788,82 @@ export type Database = {
         }
         Relationships: []
       }
+      jury_assignments: {
+        Row: {
+          assigned_at: string
+          case_id: string
+          deadline: string | null
+          id: string
+          juror_id: string
+          juror_type: string
+          status: string
+        }
+        Insert: {
+          assigned_at?: string
+          case_id: string
+          deadline?: string | null
+          id?: string
+          juror_id: string
+          juror_type?: string
+          status?: string
+        }
+        Update: {
+          assigned_at?: string
+          case_id?: string
+          deadline?: string | null
+          id?: string
+          juror_id?: string
+          juror_type?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jury_assignments_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jury_votes: {
+        Row: {
+          case_id: string
+          id: string
+          juror_id: string
+          reasoning: string
+          vote: string
+          voted_at: string
+          weight: number
+        }
+        Insert: {
+          case_id: string
+          id?: string
+          juror_id: string
+          reasoning?: string
+          vote?: string
+          voted_at?: string
+          weight?: number
+        }
+        Update: {
+          case_id?: string
+          id?: string
+          juror_id?: string
+          reasoning?: string
+          vote?: string
+          voted_at?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jury_votes_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leaderboard_achievements: {
         Row: {
           achieved_at: string
@@ -2543,6 +2695,74 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      support_conversations: {
+        Row: {
+          assigned_admin: string | null
+          created_at: string
+          id: string
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_admin?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_admin?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      support_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_system: boolean
+          sender_id: string
+          translated_content: string | null
+        }
+        Insert: {
+          content?: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_system?: boolean
+          sender_id: string
+          translated_content?: string | null
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_system?: boolean
+          sender_id?: string
+          translated_content?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "support_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tournament_participants: {
         Row: {
