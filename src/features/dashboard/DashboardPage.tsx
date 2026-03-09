@@ -1115,7 +1115,7 @@ const DashboardPage = () => {
       case "skill-court": return <SkillCourtTab />;
       case "guilds": return <GuildsTab />;
       case "wallet": return <WalletTab profile={profile} />;
-      case "analytics": return <div className="text-center py-20 text-muted-foreground">Analytics coming soon...</div>;
+      case "analytics": return <DashboardAnalyticsTab profile={profile} />;
       case "settings": return <SettingsTab profile={profile} updateProfile={updateProfile} />;
       default: return <OverviewTab profile={profile} />;
     }
