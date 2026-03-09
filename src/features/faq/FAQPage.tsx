@@ -231,18 +231,29 @@ const FAQPage = () => {
             <div className="mx-auto max-w-4xl px-6">
               <p className="mb-4 text-sm text-muted-foreground">{allFilteredFaqs.length} results for "{searchQuery}"</p>
               <div className="space-y-3">
-                {allFilteredFaqs.map((f, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="rounded-xl border border-border bg-card p-5">
-                    <div className="mb-2 flex items-center gap-2">
-                      <f.sectionIcon size={12} className={f.sectionColor} />
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{f.section}</span>
-                    </div>
-                    <h4 className="mb-2 text-sm font-semibold text-foreground">{f.q}</h4>
-                    <p className="text-sm leading-relaxed text-muted-foreground">{f.a}</p>
-                  </motion.div>
-                ))}
+                {allFilteredFaqs.map((f, i) => {
+                  const hl = (text: string) => {
+                    const idx = text.toLowerCase().indexOf(searchQuery.toLowerCase());
+                    if (idx === -1) return text;
+                    return <>{text.slice(0, idx)}<mark className="bg-badge-gold/20 text-foreground rounded-sm px-0.5">{text.slice(idx, idx + searchQuery.length)}</mark>{text.slice(idx + searchQuery.length)}</>;
+                  };
+                  return (
+                    <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="rounded-xl border border-border bg-card p-5">
+                      <div className="mb-2 flex items-center gap-2">
+                        <f.sectionIcon size={12} className={f.sectionColor} />
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{f.section}</span>
+                      </div>
+                      <h4 className="mb-2 text-sm font-semibold text-foreground">{hl(f.q)}</h4>
+                      <p className="text-sm leading-relaxed text-muted-foreground">{hl(f.a)}</p>
+                    </motion.div>
+                  );
+                })}
                 {allFilteredFaqs.length === 0 && (
-                  <p className="py-12 text-center text-sm text-muted-foreground">No questions match your search. Try different keywords.</p>
+                  <div className="py-12 text-center">
+                    <Search size={32} className="mx-auto mb-3 text-muted-foreground/30" />
+                    <p className="text-sm text-foreground font-medium">No questions match your search</p>
+                    <p className="text-xs text-muted-foreground mt-1">Try different keywords or browse categories below</p>
+                  </div>
                 )}
               </div>
             </div>
