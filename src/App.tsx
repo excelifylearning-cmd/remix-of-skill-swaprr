@@ -71,6 +71,13 @@ const AnimatedRoutes = () => {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/enterprise" element={<EnterprisePage />} />
           <Route path="/marketplace" element={<MarketplacePage />} />
+          <Route path="/marketplace/auctions" element={<AuctionsPage />} />
+          <Route path="/marketplace/cocreation" element={<CoCreationPage />} />
+          <Route path="/marketplace/skill-fusion" element={<SkillFusionPage />} />
+          <Route path="/marketplace/sp-only" element={<SPOnlyPage />} />
+          <Route path="/marketplace/flash-market" element={<FlashMarketPage />} />
+          <Route path="/marketplace/projects" element={<ProjectsPage />} />
+          <Route path="/marketplace/requests" element={<RequestsPage />} />
           <Route path="/marketplace/:gigId" element={<GigDetailPage />} />
           <Route path="/legal" element={<LegalPage />} />
           <Route path="/roadmap" element={<RoadmapPage />} />

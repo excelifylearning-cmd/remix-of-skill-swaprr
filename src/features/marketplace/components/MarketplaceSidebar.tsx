@@ -5,12 +5,22 @@ import {
 import { modes, categories, type MarketplaceMode } from "../data/mockData";
 import type { MarketplaceFilters } from "../hooks/useMarketplaceData";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const modeIcons: Record<string, React.ElementType> = {
   explore: Compass, trending: Flame, "sp-only": Coins, auctions: Gavel,
   cocreation: Layers, fusion: GitMerge, projects: Briefcase, flash: Zap,
   requests: HandHeart, recommended: Sparkles,
+};
+
+const modeRoutes: Record<string, string> = {
+  auctions: "/marketplace/auctions",
+  cocreation: "/marketplace/cocreation",
+  fusion: "/marketplace/skill-fusion",
+  "sp-only": "/marketplace/sp-only",
+  flash: "/marketplace/flash-market",
+  projects: "/marketplace/projects",
+  requests: "/marketplace/requests",
 };
 
 const eloOptions = ["Any", "Bronze", "Silver", "Gold", "Diamond"];
@@ -31,6 +41,17 @@ interface Props {
 }
 
 export default function MarketplaceSidebar({ mode, onModeChange, filters, onFilterChange, activeFilterCount, onResetFilters }: Props) {
+  const navigate = useNavigate();
+
+  const handleModeClick = (key: MarketplaceMode) => {
+    const route = modeRoutes[key];
+    if (route) {
+      navigate(route);
+    } else {
+      onModeChange(key);
+    }
+  };
+
   return (
     <aside className="w-[240px] flex-shrink-0 border-r border-border bg-card/50 backdrop-blur-sm h-full overflow-y-auto">
       <div className="p-4 space-y-6">
@@ -39,10 +60,11 @@ export default function MarketplaceSidebar({ mode, onModeChange, filters, onFilt
           {modes.map(m => {
             const Icon = modeIcons[m.key] || Compass;
             const active = mode === m.key;
+            const hasRoute = !!modeRoutes[m.key];
             return (
               <button
                 key={m.key}
-                onClick={() => onModeChange(m.key)}
+                onClick={() => handleModeClick(m.key)}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-body transition-all ${
                   active
                     ? "bg-foreground text-background font-semibold"
@@ -57,6 +79,9 @@ export default function MarketplaceSidebar({ mode, onModeChange, filters, onFilt
                   }`}>
                     {m.badge}
                   </span>
+                )}
+                {hasRoute && !active && (
+                  <span className="text-[8px] text-muted-foreground/50">→</span>
                 )}
               </button>
             );
