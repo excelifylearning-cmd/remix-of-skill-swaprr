@@ -288,7 +288,7 @@ const LiveChatWidget = () => {
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground text-background">
                     {mode === "ai" ? <Bot size={16} /> : <UserCheck size={16} />}
                   </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-500 border-2 border-background" />
+                  <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-skill-green border-2 border-background" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground tracking-tight">{mode === "ai" ? "SkillBot" : "Live Support"}</p>
