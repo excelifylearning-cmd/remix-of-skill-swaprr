@@ -492,10 +492,24 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
           {
+            foreignKeyName: "disputes_filed_against_profiles_fkey"
+            columns: ["filed_against"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "disputes_filed_by_profiles_fkey"
             columns: ["filed_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "disputes_filed_by_profiles_fkey"
+            columns: ["filed_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["user_id"]
           },
         ]
@@ -1137,6 +1151,36 @@ export type Database = {
           },
         ]
       }
+      funnel_events: {
+        Row: {
+          created_at: string
+          funnel: string
+          id: string
+          metadata: Json | null
+          session_id: string
+          step: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          funnel: string
+          id?: string
+          metadata?: Json | null
+          session_id: string
+          step: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          funnel?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string
+          step?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       guild_achievements: {
         Row: {
           achievement_id: string
@@ -1291,6 +1335,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "guild_members_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["user_id"]
           },
         ]
@@ -1692,7 +1743,32 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "listings_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["user_id"]
+          },
         ]
+      }
+      newsletter_subscriptions: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -2220,6 +2296,75 @@ export type Database = {
           },
         ]
       }
+      saved_posts: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          post_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          post_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          post_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      search_analytics: {
+        Row: {
+          category: string | null
+          clicked_result_rank: number | null
+          created_at: string
+          filters_used: Json | null
+          id: string
+          metadata: Json | null
+          query: string
+          results_count: number | null
+          session_id: string
+          time_to_click_ms: number | null
+          user_id: string | null
+          zero_results: boolean | null
+        }
+        Insert: {
+          category?: string | null
+          clicked_result_rank?: number | null
+          created_at?: string
+          filters_used?: Json | null
+          id?: string
+          metadata?: Json | null
+          query: string
+          results_count?: number | null
+          session_id: string
+          time_to_click_ms?: number | null
+          user_id?: string | null
+          zero_results?: boolean | null
+        }
+        Update: {
+          category?: string | null
+          clicked_result_rank?: number | null
+          created_at?: string
+          filters_used?: Json | null
+          id?: string
+          metadata?: Json | null
+          query?: string
+          results_count?: number | null
+          session_id?: string
+          time_to_click_ms?: number | null
+          user_id?: string | null
+          zero_results?: boolean | null
+        }
+        Relationships: []
+      }
       service_incidents: {
         Row: {
           created_at: string
@@ -2595,6 +2740,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "user_achievements_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       user_badges: {
@@ -2629,6 +2781,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_badges_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["user_id"]
           },
         ]
@@ -2934,7 +3093,45 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_emoji: string | null
+          avatar_url: string | null
+          bio: string | null
+          display_name: string | null
+          elo: number | null
+          skills: string[] | null
+          tier: string | null
+          total_gigs_completed: number | null
+          university: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_emoji?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          display_name?: string | null
+          elo?: number | null
+          skills?: string[] | null
+          tier?: string | null
+          total_gigs_completed?: number | null
+          university?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_emoji?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          display_name?: string | null
+          elo?: number | null
+          skills?: string[] | null
+          tier?: string | null
+          total_gigs_completed?: number | null
+          university?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
