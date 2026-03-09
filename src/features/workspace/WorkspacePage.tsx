@@ -1294,7 +1294,10 @@ const WorkspacePage = () => {
             <button onClick={() => navigate("/dashboard?tab=my-gigs")} className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-1 transition-colors"><ArrowLeft size={18} /></button>
             <div>
               <h1 className="font-heading text-lg font-bold text-foreground">Workspace</h1>
-              <p className="text-xs text-muted-foreground">ID: {workspaceId.slice(0, 16)}... · <span className="capitalize">{userRole}</span></p>
+              <p className="text-xs text-muted-foreground">
+                ID: {workspaceId.slice(0, 16)}... · <span className="capitalize">{userRole}</span>
+                {workspaceType !== "direct_swap" && <span className="ml-1.5 text-[10px] font-mono bg-surface-2 px-1.5 py-0.5 rounded capitalize">{workspaceType.replace(/_/g, " ")}</span>}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
