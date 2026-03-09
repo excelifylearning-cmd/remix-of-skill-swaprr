@@ -1272,6 +1272,9 @@ const WorkspacePage = () => {
         const { data: profile } = await supabase.from("profiles").select("languages").eq("user_id", userId).maybeSingle();
         if (profile?.languages?.[0]) setPreferredLang(profile.languages[0]);
       }
+      // Fetch workspace type
+      const { data: ws } = await (supabase as any).from("workspaces").select("workspace_type").eq("id", workspaceId).maybeSingle();
+      if (ws?.workspace_type) setWorkspaceType(ws.workspace_type);
     })();
   }, [workspaceId, userId]);
 
