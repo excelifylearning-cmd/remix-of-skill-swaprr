@@ -336,7 +336,7 @@ const ForumsPage = () => {
           )}
         </AnimatePresence>
 
-        <LoginPrompt isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)} />
+        <LoginPrompt open={showLoginPrompt} onOpenChange={setShowLoginPrompt} />
       </div>
     </PageTransition>
   );
