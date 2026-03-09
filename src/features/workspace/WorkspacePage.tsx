@@ -1284,6 +1284,7 @@ const WorkspacePage = () => {
   };
 
   const partnerName = escrow ? (escrow.buyer_id === userId ? "Seller" : "Buyer") : "Partner";
+  const sidebarSections = getSidebarSections(workspaceType);
 
   return (
     <PageTransition>
