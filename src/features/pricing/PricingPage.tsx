@@ -484,19 +484,22 @@ const PricingPage = () => {
               </motion.p>
             </div>
             <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {liveStats.map((stat, i) => (
+              {liveStats.map((stat, i) => {
+                const IconComp = stat.iconName === "Activity" ? Activity : stat.iconName === "Coins" ? Coins : stat.iconName === "Clock" ? Clock : stat.iconName === "Users" ? Users : stat.iconName === "TrendingUp" ? TrendingUp : Star;
+                return (
                 <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5">
                   <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-surface-2">
-                    <stat.icon size={20} className={stat.color} />
+                    <IconComp size={20} className={stat.color} />
                   </div>
                   <div>
                     <p className="font-heading text-2xl font-black text-foreground">
-                      {typeof stat.value === "number" ? animatedStats[i].toLocaleString() : stat.value}
+                      {typeof stat.value === "number" ? (animatedStats[i] ?? 0).toLocaleString() : stat.value}
                     </p>
                     <p className="text-xs text-muted-foreground">{stat.label}</p>
                   </div>
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
