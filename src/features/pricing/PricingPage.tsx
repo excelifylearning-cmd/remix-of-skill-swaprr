@@ -14,6 +14,7 @@ import PageTransition from "@/components/shared/PageTransition";
 import Footer from "@/components/shared/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { logFormSubmission, logPageView } from "@/lib/activity-logger";
+import { useLivePricingStats } from "./hooks/useLivePricingStats";
 
 
 /* ─── Data ─── */
@@ -106,25 +107,8 @@ const rarityColor = (r: string) => {
   return "bg-surface-2 text-muted-foreground";
 };
 
-const liveStats = [
-  { label: "Active Swaps Right Now", value: 847, icon: Activity, color: "text-skill-green" },
-  { label: "Points Exchanged Today", value: 23450, icon: Coins, color: "text-badge-gold" },
-  { label: "Avg Gig Completion", value: "4.2h", icon: Clock, color: "text-court-blue" },
-  { label: "Users Online", value: 1243, icon: Users, color: "text-foreground" },
-  { label: "Gigs Posted Today", value: 312, icon: TrendingUp, color: "text-skill-green" },
-  { label: "5-Star Reviews Today", value: 189, icon: Star, color: "text-badge-gold" },
-];
+/* liveStats and skillDemand are now fetched from the database — see useLivePricingStats hook below */
 
-const skillDemand = [
-  { skill: "UI/UX Design", demand: 94, avgValue: "35 SP", swapsToday: 47, trend: "+12%" },
-  { skill: "Full-Stack Dev", demand: 91, avgValue: "45 SP", swapsToday: 38, trend: "+8%" },
-  { skill: "Video Editing", demand: 82, avgValue: "30 SP", swapsToday: 29, trend: "+15%" },
-  { skill: "Copywriting", demand: 78, avgValue: "20 SP", swapsToday: 34, trend: "+5%" },
-  { skill: "Data Science", demand: 75, avgValue: "40 SP", swapsToday: 21, trend: "+22%" },
-  { skill: "Mobile Dev", demand: 88, avgValue: "42 SP", swapsToday: 32, trend: "+10%" },
-  { skill: "Marketing", demand: 70, avgValue: "25 SP", swapsToday: 26, trend: "+7%" },
-  { skill: "Illustration", demand: 73, avgValue: "28 SP", swapsToday: 19, trend: "+18%" },
-];
 
 const socialProof = [
   { name: "Aisha K.", tier: "Free → Pro", quote: "The reduced tax rate paid for Pro in the first week. My gigs get 3x more views.", stat: "+340% visibility" },
@@ -191,7 +175,8 @@ const calcSkills = [
 
 const PricingPage = () => {
   const [annual, setAnnual] = useState(false);
-  const [animatedStats, setAnimatedStats] = useState(liveStats.map(() => 0));
+  const { liveStats, skillDemand, loading: statsLoading } = useLivePricingStats();
+  const [animatedStats, setAnimatedStats] = useState<number[]>([]);
   const [calcSkill, setCalcSkill] = useState(calcSkills[0].name);
   const [calcGigs, setCalcGigs] = useState(8);
   const [calcComplexity, setCalcComplexity] = useState(3);
@@ -232,8 +217,9 @@ const PricingPage = () => {
     return { baseEarnings: Math.round(baseEarnings), tax: Math.round(tax), net: Math.round(net), taxRate: Math.round(taxRate * 100), monthlyCost, proSavings: Math.round(proSavings), recommended, guildValue: Math.round(guildValue) };
   }, [calcSkill, calcGigs, calcComplexity, calcTier, calcGuild, calcMembers, annual]);
 
-  // Animate stat counters on mount
+  // Animate stat counters when liveStats change
   useEffect(() => {
+    if (!liveStats.length) return;
     const targets = liveStats.map((s) => (typeof s.value === "number" ? s.value : 0));
     const duration = 2000;
     const start = Date.now();
@@ -245,7 +231,7 @@ const PricingPage = () => {
       if (progress < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
-  }, []);
+  }, [liveStats]);
 
   return (
     <PageTransition>
@@ -498,19 +484,22 @@ const PricingPage = () => {
               </motion.p>
             </div>
             <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {liveStats.map((stat, i) => (
+              {liveStats.map((stat, i) => {
+                const IconComp = stat.iconName === "Activity" ? Activity : stat.iconName === "Coins" ? Coins : stat.iconName === "Clock" ? Clock : stat.iconName === "Users" ? Users : stat.iconName === "TrendingUp" ? TrendingUp : Star;
+                return (
                 <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5">
                   <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-surface-2">
-                    <stat.icon size={20} className={stat.color} />
+                    <IconComp size={20} className={stat.color} />
                   </div>
                   <div>
                     <p className="font-heading text-2xl font-black text-foreground">
-                      {typeof stat.value === "number" ? animatedStats[i].toLocaleString() : stat.value}
+                      {typeof stat.value === "number" ? (animatedStats[i] ?? 0).toLocaleString() : stat.value}
                     </p>
                     <p className="text-xs text-muted-foreground">{stat.label}</p>
                   </div>
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
