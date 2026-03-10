@@ -9,6 +9,7 @@ import ScrollToTop from "@/components/shared/ScrollToTop";
 import LoadingScreen from "@/components/shared/LoadingScreen";
 import LiveChatWidget from "@/components/shared/LiveChatWidget";
 import CookieConsent from "@/components/shared/CookieConsent";
+import MobileBottomNav from "@/components/shared/MobileBottomNav";
 import TelemetryProvider from "@/components/shared/TelemetryProvider";
 import { AuthProvider } from "@/lib/auth-context";
 
