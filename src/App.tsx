@@ -9,6 +9,7 @@ import ScrollToTop from "@/components/shared/ScrollToTop";
 import LoadingScreen from "@/components/shared/LoadingScreen";
 import LiveChatWidget from "@/components/shared/LiveChatWidget";
 import CookieConsent from "@/components/shared/CookieConsent";
+import MobileBottomNav from "@/components/shared/MobileBottomNav";
 import TelemetryProvider from "@/components/shared/TelemetryProvider";
 import { AuthProvider } from "@/lib/auth-context";
 
@@ -43,10 +44,6 @@ const SuccessStoriesPage = lazy(() => import("./features/success-stories/Success
 const BrowseGuildsPage = lazy(() => import("./features/guild/BrowseGuildsPage"));
 const BrowseUsersPage = lazy(() => import("./features/users/BrowseUsersPage"));
 const ClipsPage = lazy(() => import("./features/clips/ClipsPage"));
-const SettingsPage = lazy(() => import("./features/settings/SettingsPage"));
-const MessagesPage = lazy(() => import("./features/messages/MessagesPage"));
-const NotificationsPage = lazy(() => import("./features/notifications/NotificationsPage"));
-const OnboardingPage = lazy(() => import("./features/onboarding/OnboardingPage"));
 const SavedPostsPage = lazy(() => import("./features/saved/SavedPostsPage"));
 const AuctionsPage = lazy(() => import("./features/marketplace/pages/AuctionsPage"));
 const CoCreationPage = lazy(() => import("./features/marketplace/pages/CoCreationPage"));
@@ -111,10 +108,6 @@ const AnimatedRoutes = () => {
           <Route path="/guilds" element={<BrowseGuildsPage />} />
           <Route path="/users" element={<BrowseUsersPage />} />
           <Route path="/clips" element={<ClipsPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/messages" element={<MessagesPage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/onboarding" element={<OnboardingPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/coming-soon" element={<ComingSoonPage />} />
           <Route path="/500" element={<ServerErrorPage />} />
@@ -137,6 +130,7 @@ const App = () => (
           <ScrollToTop />
           <TelemetryProvider />
           <AnimatedRoutes />
+          <MobileBottomNav />
           <LiveChatWidget />
           <CookieConsent />
         </BrowserRouter>
