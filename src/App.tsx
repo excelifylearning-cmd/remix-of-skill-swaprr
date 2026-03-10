@@ -130,6 +130,7 @@ const App = () => (
           <ScrollToTop />
           <TelemetryProvider />
           <AnimatedRoutes />
+          <MobileBottomNav />
           <LiveChatWidget />
           <CookieConsent />
         </BrowserRouter>
