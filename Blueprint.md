@@ -1,1359 +1,231 @@
-\# Skill Swappr — Comprehensive Design & Feature Document
-
-\---
-
-\#\# Design System (Non-Negotiable Standards)
-
-\*\*Typography\*\*
-
-\- Primary: "Satoshi" (headings, bold UI) — imported via @font-face, no Google Fonts fallback  
-\- Secondary: "General Sans" (body text, descriptions)  
-\- Mono: "JetBrains Mono" (codes, transaction IDs, stats)  
-\- No system fonts anywhere. Every text element uses one of these three.
-
-\*\*Color Palette (Monotone-First)\*\*
-
-\- Background: \`\#0A0A0A\` (near-black), \`\#111111\`, \`\#1A1A1A\` (layered surfaces)  
-\- Primary Surface: \`\#FFFFFF\` (white text, white cards on dark)  
-\- Silver: \`\#C0C0C0\` (secondary text, borders, muted elements)  
-\- Accent Silver: \`\#E5E5E5\` (hover states, highlights)  
-\- Skill Points Green: \`\#10B981\` (only for points, earnings, positive)  
-\- Alert Red: \`\#EF4444\` (only for destructive, court penalties, warnings)  
-\- Badge Gold: \`\#F59E0B\` (only for badges, achievements, premium)  
-\- Court Blue: \`\#3B82F6\` (only for Skill Court elements)  
-\- Everything else is grayscale. No random colors. The page should feel like a premium black-and-white editorial with surgical color pops.
-
-\*\*Animation Rules\*\*
-
-\- Every page transition: full-page fade \+ slide (Framer Motion \`AnimatePresence\`)  
-\- Every section on scroll: staggered reveal with \`IntersectionObserver\` \+ Framer Motion  
-\- Every button: micro-scale on hover (1.02x), press animation (0.98x), ripple on click  
-\- Every card: 3D tilt on hover (CSS \`perspective\` \+ \`rotateX/Y\`), subtle shadow shift  
-\- Navigation: magnetic cursor effect on nav items, underline slide animation  
-\- Numbers/stats: count-up animation on scroll into view  
-\- Loading states: skeleton shimmer (silver gradient sweep), never spinners  
-\- Page hero sections: Spline 3D embed or particle field (each page unique)  
-\- Parallax on scroll for layered sections  
-\- Cursor-following gradient spotlight on dark backgrounds  
-\- Text reveals: letter-by-letter or word-by-word on hero headlines  
-\- No element appears without animation. Static \= broken.
-
-\*\*Component Design Rules\*\*
-
-\- No shadcn defaults used as-is — every component gets custom styling matching the monotone theme  
-\- Cards: glass-morphism with subtle backdrop-blur on dark, sharp borders on light  
-\- Buttons: pill-shaped primary, ghost secondary, all with hover state animations  
-\- Inputs: borderless with bottom-line focus animation  
-\- Modals: slide-up from bottom with backdrop blur  
-\- Tooltips: custom dark glass style, not default radix  
-\- Every icon is Lucide but wrapped in animated containers  
-\- Custom layouts for everything  
-\- No shared or re used components anywhere except nav bar, logo and footer
-
-\---
-
-\#\# Page-by-Page Breakdown
-
-\---
-
-\#\#\# PAGE 1: HOME
-
-The home page is the flagship. It must feel like a Webflow/Awwwards site, not a SaaS template.
-
-\*\*Section 1 — Hero\*\*
-
-\- Full-viewport dark background with Spline 3D interactive scene (floating skill icons orbiting a central node)  
-\- Headline with word-by-word reveal animation: "Trade Skills. Build Together."  
-\- Subtext in silver explaining the concept in one line  
-\- Two CTAs: "Start Swapping" (white pill button) and "Watch How" (ghost button that opens embedded video modal)  
-\- Cursor-following gradient spotlight effect  
-\- Floating skill point coins animating in background (CSS 3D)
-
-\*\*Section 2 — How Skill Points Work (Animated Infographic)\*\*
-
-\- Horizontal scroll-triggered animation showing the flow:  
-  1\. You sign up → earn 100 points  
-  2\. You post a gig (e.g., "I'll design your logo")  
-  3\. Someone accepts and offers their skill (e.g., "I'll code your site")  
-  4\. Points balance the difference (website \> logo, so logo person adds 50 points)  
-  5\. Both users taxed 5% points on completion (economy control)  
-  6\. Points can also be earned via referrals, court duty, achievements  
-\- Each step is a custom illustrated panel that animates in sequence  
-\- Interactive: user can click each step to see more detail in a slide-out panel
-
-\*\*Section 3 — Live Marketplace Preview\*\*
-
-\- Real-time ticker of trending gigs (horizontally scrolling cards)  
-\- Each card shows: skill offered, skill wanted, point balance, seller avatar, ELO badge  
-\- Cards have 3D tilt hover effect  
-\- "Browse Marketplace" CTA at end of ticker  
-\- Category filter chips above (Design, Dev, Writing, Video, etc.) with magnetic hover
-
-\*\*Section 4 — Platform Formats Showcase\*\*
-
-\- Tabbed interface (not accordion, not cards) — each tab reveals a unique animated panel:  
-  \- \*\*Direct Swap\*\*: 1-on-1 skill exchange visualization  
-  \- \*\*Auction\*\*: Multiple sellers competing, countdown timer mockup  
-  \- \*\*Co-Creation Studio\*\*: Multi-person workspace preview with avatar stack  
-  \- \*\*Skill Fusion\*\*: Combined skill gig (frontend \+ backend \= full app)  
-  \- \*\*Projects\*\*: Multi-gig project breakdown visualization  
-\- Each tab has its own micro-animation and illustration
-
-\*\*Section 5 — Gamification Preview\*\*
-
-\- Interactive ELO rating visualization (gauge that animates)  
-\- Badge collection showcase (3D rotating badges)  
-\- Achievement unlock animation preview  
-\- Streak counter with fire animation  
-\- Guild wars leaderboard mini-preview  
-\- "Level up by doing great work" messaging
-
-\*\*Section 6 — Gig Workspace Preview\*\*
-
-\- Embedded interactive mockup of a gig workspace showing:  
-  \- Messenger with auto-translate indicator  
-  \- Whiteboard (tldraw preview screenshot)  
-  \- Video call interface  
-  \- File sharing with timestamps  
-  \- Stage progress bar with point allocation  
-\- Hover on each section to see it expand with description  
-\- "Every gig gets its own workspace" headline
-
-\*\*Section 7 — Skill Court Teaser\*\*
-
-\- Dark dramatic section with court-themed design (gavel icon, scales)  
-\- Explains: disputes resolved by community \+ AI \+ experts  
-\- Animated breakdown of judge composition (25% users, 25% AI, 50% experts)  
-\- "Your reputation matters" with ELO impact visualization  
-\- Verdict animation preview (guilty/not guilty scale tipping)
-
-\*\*Section 8 — Guild System Preview\*\*
-
-\- Guild card with treasury, member count, ELO average  
-\- Guild benefits list with icon animations  
-\- "Form your team. Share resources. Compete." messaging  
-\- Guild wars mini-leaderboard  
-\- Lending system quick explainer (guild lends points to members)
-
-\*\*Section 9 — University Partners & Trust\*\*
-
-\- Partner university logos in an infinite horizontal scroll marquee  
-\- Verified university badge showcase  
-\- Trust indicators: verified identity, ELO system, transaction codes, AI quality checks  
-\- Stats counters: gigs completed, points exchanged, disputes resolved
-
-\*\*Section 10 — Success Stories (Integrated)\*\*
-
-\- Featured story: full-width card with student photo, before/after, quote  
-\- 3 additional story cards in a staggered grid  
-\- Video testimonial embed  
-\- "Submit Your Story" CTA  
-\- Partnership mentions woven into stories (e.g., "through our partnership with X University")
-
-\*\*Section 11 — Pricing Quick View\*\*
-
-\- Three tier cards (Free / Pro / Enterprise) with 3D flip on hover to show details  
-\- Skill points package pricing below  
-\- "Calculate your value" CTA linking to full pricing page  
-\- Animated comparison slider
-
-\*\*Section 12 — CTA Footer Section\*\*
-
-\- Large "Start Swapping Skills Today" headline  
-\- Email signup with animated input  
-\- App store badges (future)  
-\- Social links with hover animations  
-\- Full sitemap in grid layout
-
-\---
-
-\#\#\# PAGE 2: ABOUT \+ SUCCESS STORIES \+ PARTNERSHIPS (Merged)
-
-\*\*Section 1 — Mission Hero\*\*
-
-\- Full-viewport with Spline 3D scene (hands exchanging skills)  
-\- "Built by students, for students" headline with letter animation  
-\- Mission statement in large silver text
-
-\*\*Section 2 — The Problem We Solve\*\*
-
-\- Split layout: left side shows traditional freelancing pain points (high fees, cash barriers, no trust)  
-\- Right side shows Skill Swappr solution for each  
-\- Animated line connecting problems to solutions
-
-\*\*Section 3 — Platform Timeline\*\*
-
-\- Vertical scrolling timeline with milestones  
-\- Each milestone has a date, description, and icon  
-\- Parallax scroll effect on the timeline line
-
-\*\*Section 4 — Success Stories Gallery\*\*
-
-\- Featured story: cinematic full-width with video background  
-\- Filterable grid of stories by skill type, university, format used  
-\- Each card expands into a full case study overlay  
-\- Impact metrics per story (points earned, skills gained, gigs completed)
-
-\*\*Section 5 — University Partnerships\*\*
-
-\- Interactive map showing partner universities  
-\- Each pin click shows university details, custom badge, student count  
-\- Partnership benefits breakdown (for universities and students)  
-\- "Become a Partner" application form with multi-step wizard
-
-\*\*Section 6 — Industry Partnerships\*\*
-
-\- Tool and platform integrations showcase  
-\- Enterprise partner logos and case studies  
-\- Co-marketing highlights
-
-\*\*Section 7 — Team Section\*\*
-
-\- Team member cards with 3D flip (front: photo/name, back: bio/links)  
-\- Advisory board row  
-\- "Join the Team" CTA
-
-\*\*Section 8 — Community Stats\*\*
-
-\- Large animated counter section  
-\- Active users, gigs completed, points in circulation, guilds formed, disputes resolved  
-\- Updated in real-time feel (count-up animation)
-
-\*\*Section 9 — Values & Culture\*\*
-
-\- Icon-driven values grid (fairness, transparency, gamification, community)  
-\- Each value card has hover animation revealing how it manifests in features
-
-\---
-
-\#\#\# PAGE 3: FEATURES
-
-\*\*Section 1 — Hero\*\*
-
-\- "Everything you need to swap skills" with particle animation background  
-\- Feature category navigation (sticky horizontal scroll)
-
-\*\*Section 2 — Skill Points Economy (Deep Dive)\*\*
-
-\- Animated flow diagram: earning → spending → taxation → buying → referral earning  
-\- Interactive calculator: "If you do X gigs, you earn Y points, taxed Z"  
-\- Economy health indicators explanation (why taxation prevents inflation)  
-\- Point allocation on gig stages explained with visual
-
-\*\*Section 3 — Gig Formats (Expanded)\*\*
-
-\- Each format gets its own expandable panel with unique illustration:  
-  \- \*\*Direct Swap\*\*: Two users exchange, points balance the difference. Both taxed. Stages with point insurance.  
-  \- \*\*Auction\*\*: Poster sets task, multiple people submit work, best wins most points, others get consolation. Prevents gaming by requiring deliverable proof.  
-  \- \*\*Co-Creation Studio\*\*: Project owner breaks project into roles, invites or posts each role, shared workspace with whiteboard and video. Points distributed per role completion.  
-  \- \*\*Skill Fusion\*\*: Multi-skill gig (e.g., full app). One gig, multiple skill requirements. Can be filled by one person or split.  
-  \- \*\*Projects\*\*: Like a mini product — user defines "build an app," platform suggests component gigs (logo, database, frontend). Each is a sub-gig with own workspace.  
-  \- \*\*Reverse Auction / Skill Rental\*\*: You pay points to rent someone's time for consultation or help. Specific person, not public competition.  
-  \- \*\*Flash Market\*\*: Time-limited gigs with bonus point multipliers.  
-  \- \*\*Subscription Gigs\*\*: Recurring service exchanges (e.g., weekly content writing for weekly design work).  
-  \- \*\*Gig Bundling\*\*: Package multiple small gigs together.
-
-\*\*Section 4 — Gig Workspace Features\*\*
-
-\- Visual workspace mockup with labeled sections:  
-  \- \*\*Messenger\*\*: Real-time chat, auto-translated to preferred language, voice notes, file sharing with timestamps and references (Discord-style threading). Built with WebSocket, no third-party chat SDK visible to user.  
-  \- \*\*Whiteboard\*\*: tldraw embedded, shared real-time, saved per gig for reference.  
-  \- \*\*Video Call\*\*: WebRTC-based, built-in screen sharing, recorded and saved to workspace. No Zoom/Meet — fully in-platform.  
-  \- \*\*File Library\*\*: All shared files time-stamped, versioned, searchable. Referenced in chat like attachments.  
-  \- \*\*Stage Tracker\*\*: Visual progress bar with stages. Each stage has allocated points. If a party abandons, the other gets their points back \+ the abandoner's allocated points for that stage. This is the insurance mechanism.  
-  \- \*\*Deliverable Submission\*\*: Final submission form. Buyer must accept. Pre-specified revision count honored. Guild/expert pre-approval optional before submission.  
-  \- \*\*AI Quality Panel\*\*: Plagiarism check, quality score, version comparison, delivery standard compliance — all visible in sidebar.
-
-\*\*Section 5 — Trust & Quality System\*\*
-
-\- Progressive work reveal: work shown in stages so buyer sees progress, AI predicts satisfaction  
-\- Transaction codes: every gig gets a unique code, lookupable by anyone for verification  
-\- Fingerprinting: work contains digital fingerprints for authenticity  
-\- Review & rating system: only after gig completion and verification, both parties rate  
-\- Reporting: flag system with evidence submission  
-\- Reputation insurance: high-ELO users get priority in disputes  
-\- Scam pattern detection: AI monitors for suspicious behavior patterns
-
-\*\*Section 6 — Gamification System\*\*
-
-\- \*\*ELO Rating\*\*: Chess-like rating. Win gigs \= gain ELO. Bad reviews \= lose ELO. Court losses \= lose ELO. Displayed on profile.  
-\- \*\*Skill Mastery\*\*: Per-skill progression (Beginner → Intermediate → Advanced → Expert → Master). Unlocks based on completed gigs \+ ratings in that skill.  
-\- \*\*Achievements\*\*: Specific milestones (first gig, 10 gigs, first auction win, guild leader, court judge). Each has a badge and a small benefit (e.g., reduced tax, featured listing).  
-\- \*\*Streaks\*\*: Daily/weekly activity streaks. Bonus points for maintaining streaks. Streak freeze purchasable with points.  
-\- \*\*Challenges\*\*: Platform-issued challenges (complete 3 gigs this week, try a new skill). Rewards in points and badges.  
-\- \*\*Guild Wars\*\*: Guilds compete on metrics (gigs completed, average rating, points earned). Winners get treasury bonus.  
-\- \*\*Competitions\*\*: Open competitions where many users submit work for a theme. Community votes. Winners get major point awards.  
-\- \*\*Quarterly Wraps\*\*: Every 3 months, users get a visual summary (like Spotify Wrapped) of their activity, growth, skills gained.  
-\- \*\*Yearly Wraps\*\*: Annual deep dive with nostalgia timeline.  
-\- \*\*Lifetime Tiers\*\*: Bronze → Silver → Gold → Platinum → Diamond based on lifetime activity. Each tier unlocks features (Projects mode needs Gold, Co-Creation needs Silver, etc.).  
-\- \*\*Milestone Celebrations\*\*: Animated celebrations on key milestones (100th gig, 1000 points earned, etc.).
-
-\*\*Section 7 — Guild System (Deep Dive)\*\*
-
-\- What is a guild: team of users who pool resources, share reputation, compete together  
-\- \*\*Treasury\*\*: Guild has a shared point pool. Members contribute. Guild can lend points to members for gigs.  
-\- \*\*Lending\*\*: Guild lends member X points for a gig. Member pays back after completion. Interest optional.  
-\- \*\*Delegation\*\*: Guild leader can assign incoming gigs to specific members.  
-\- \*\*Guild ELO\*\*: Average of member ELOs. Affects guild ranking and war matchmaking.  
-\- \*\*Guild Portfolio\*\*: Collective showcase of member work.  
-\- \*\*Guild Profile Page\*\*: Public page showing members, stats, portfolio, wars won.  
-\- \*\*Guild Wars\*\*: Periodic competitions between guilds. Metrics-based. Treasury rewards.  
-\- \*\*Guild Approval\*\*: Members can review each other's deliverables before submission for quality control.  
-\- \*\*Guild Page\*\*: Dedicated page per guild with management tools, treasury dashboard, member list, lending log, war history.
-
-\*\*Section 8 — Skill Court (Deep Dive)\*\*
-
-\- When triggered: dispute between buyer and seller (abandonment, quality complaint, non-delivery)  
-\- \*\*Case Submission\*\*: Both parties submit evidence (screenshots, chat logs, deliverables, workspace history — all auto-attached from gig workspace)  
-\- \*\*Judge Composition\*\*: 25% random users (minimum ELO threshold), 25% AI analysis, 50% experts/high-rated users in the relevant skill field  
-\- \*\*Voting\*\*: Judges review evidence, cast vote with written reasoning. Weighted by judge ELO.  
-\- \*\*Verdict\*\*: Majority wins. Points redistributed accordingly. Loser's ELO decreases, winner's increases.  
-\- \*\*Judge Rewards\*\*: Judges earn points and ELO for participating. Bad/lazy judgments (flagged by AI or appealed successfully) reduce judge ELO.  
-\- \*\*Free Tier Requirement\*\*: Free users must serve as court judges periodically to maintain gig posting privileges. Cannot post above X gigs without court duty.  
-\- \*\*Expert Incentive\*\*: Experts gain skill points and ELO for judging, making it worthwhile.  
-\- \*\*Appeal System\*\*: One appeal allowed per case. Goes to higher-ELO panel.
-
-\*\*Section 9 — AI Integration (Not a Page — Woven Into Platform)\*\*
-
-\- AI is not a separate page. It appears contextually:  
-  \- \*\*In Gig Creation\*\*: Dynamic pricing recommendations, skill market intelligence, demand forecasting  
-  \- \*\*In Workspace\*\*: Quality checks, plagiarism detection, version comparison, delivery standard compliance, predicted buyer satisfaction  
-  \- \*\*In Court\*\*: AI as 25% of judges, evidence analysis, pattern detection  
-  \- \*\*In Profiles\*\*: Portfolio improvement suggestions, case study generation help  
-  \- \*\*In Search\*\*: Semantic search engine, gig recommendations, proximity matching  
-  \- \*\*In Moderation\*\*: Behavior flags, fake account detection, scam patterns  
-  \- \*\*In Analytics\*\*: Earnings forecast, skill market intelligence, performance benchmarks, client intelligence  
-  \- \*\*Personal AI Helper\*\*: Floating assistant available on all pages (slide-out panel), contextually aware of what you're doing
-
-\*\*Section 10 — Enterprise Mode\*\*
-
-\- Enterprises access a curated pool of vetted platform experts  
-\- Post projects, consultations, or job listings  
-\- AI-matched expert recommendations  
-\- Direct hire pipeline  
-\- Enterprise dashboard (separate from user dashboard)
-
-\---
-
-\#\#\# PAGE 4: HOW IT WORKS
-
-\*\*Section 1 — Hero\*\*
-
-\- "From signup to your first swap in 5 minutes" with step counter animation  
-\- Animated path/journey line that guides the page
-
-\*\*Section 2 — Sign Up & Guided Tour\*\*
-
-\- Step-by-step walkthrough of onboarding:  
-  1\. Email signup with verification  
-  2\. Profile creation (name, avatar, university, skills)  
-  3\. Guided tour begins — interactive walkthrough of marketplace, gig creation, workspace, points  
-  4\. Earn 100 skill points on tour completion  
-  5\. University badge verification (if applicable)  
-\- Tour rewards breakdown with point animations
-
-\*\*Section 3 — Browsing & Discovering\*\*
-
-\- How marketplace search works: categories, trending, popular, curated, recommended, proximity-based, semantic search  
-\- Filter demonstration with animated UI mockup  
-\- How recommendations work (skill matching, ELO compatibility)
-
-\*\*Section 4 — Creating a Gig\*\*
-
-\- Step-by-step gig creation flow:  
-  1\. Choose format (direct, auction, co-creation, etc.)  
-  2\. Define skill offered and skill wanted  
-  3\. Set stages with point allocation per stage  
-  4\. AI suggests pricing based on market intelligence  
-  5\. Set deliverable specs and revision count  
-  6\. Publish  
-\- Visual of each step with animated form mockup
-
-\*\*Section 5 — The Gig Lifecycle\*\*
-
-\- Full lifecycle diagram (animated on scroll):  
-  1\. Gig posted → Buyer browses → Match/bid/auction  
-  2\. Both parties enter workspace  
-  3\. Work through stages, progressive reveal, AI monitoring  
-  4\. Final deliverable submitted  
-  5\. Buyer reviews, requests revisions or accepts  
-  6\. Both rate and review  
-  7\. Points distributed, tax deducted  
-  8\. Transaction code generated for verification  
-\- Insurance mechanism explained: if party A abandons at stage 3 of 5, party B gets their own allocated points back \+ party A's stage points
-
-\*\*Section 6 — Buyer Path\*\*
-
-\- Browse → Select gig or post want → Match with seller → Enter workspace → Receive work → Accept/revise → Rate  
-\- Buyer-specific features: subscription management, favorites, bid tracking
-
-\*\*Section 7 — Seller Path\*\*
-
-\- Create gig → Get matched/win auction → Enter workspace → Deliver work → Get rated → Earn points  
-\- Seller-specific features: analytics, portfolio building, clips, keyword optimization
-
-\*\*Section 8 — Guild Path\*\*
-
-\- Form/join guild → Pool treasury → Delegate gigs → Compete in wars → Collective reputation  
-\- How lending works with visual example
-
-\*\*Section 9 — Dispute Path\*\*
-
-\- Disagreement → File case → Evidence auto-collected → Judges assigned → Vote → Verdict → ELO adjusted  
-\- Timeline of a typical case
-
-\---
-
-\#\#\# PAGE 5: PRICING
-
-\*\*Section 1 — Hero\*\*
-
-\- "Invest in your skills" with animated skill point coins  
-\- Quick value proposition
-
-\*\*Section 2 — Tier Comparison\*\*
-
-\- Three tiers with unique card designs (not a boring table):  
-  \- \*\*Free\*\*: X gigs/month, basic search, must do court duty, standard profile, no projects/co-creation  
-  \- \*\*Pro\*\*: Unlimited gigs, all formats unlocked, featured listings, profile highlighting, priority support, advanced analytics, reduced tax rate  
-  \- \*\*Enterprise\*\*: Everything in Pro \+ vetted expert access, hiring pipeline, custom integrations, dedicated support  
-\- Each card has 3D flip animation (front: price \+ headline, back: full feature list)  
-\- Toggle for monthly/yearly with discount animation
-
-\*\*Section 3 — Skill Points Packages\*\*
-
-\- Point bundles with volume discounts  
-\- Animated coin stack visualization  
-\- Use cases: "50 points \= balance a small gig difference," "200 points \= fund a full project"
-
-\*\*Section 4 — Interactive Pricing Calculator\*\*
-
-\- Inputs: number of gigs per month, average gig complexity, skill level  
-\- Outputs: recommended tier, estimated points needed, estimated earnings, tax impact  
-\- Animated calculation with results reveal
-
-\*\*Section 5 — Lifetime Tiers Progression\*\*
-
-\- Visual progression: Bronze → Silver → Gold → Platinum → Diamond  
-\- What unlocks at each tier (formats, features, reduced taxes, etc.)  
-\- "You're not just paying — you're leveling up"
-
-\*\*Section 6 — Badge System\*\*
-
-\- All available badges displayed in a grid  
-\- Hover to see unlock criteria and benefits  
-\- Premium badges for Pro/Enterprise tiers  
-\- University partnership badges
-
-\*\*Section 7 — ROI Calculator\*\*
-
-\- "What's your skill worth?" tool  
-\- Input your skill, see market demand, average point value, potential earnings  
-\- Powered by skill market intelligence data
-
-\*\*Section 8 — Testimonials by Tier\*\*
-
-\- Real stories from Free, Pro, and Enterprise users  
-\- Each shows their journey and what the tier enabled
-
-\*\*Section 9 — Enterprise Custom Quote\*\*
-
-\- Multi-step form for enterprise inquiries  
-\- Custom pricing based on team size, needs, integrations
-
-\*\*Section 10 — FAQ\*\*
-
-\- Accordion with common pricing questions  
-\- "Can I earn without paying?" — Yes, via gigs, referrals, court duty, achievements
-
-\---
-
-\#\#\# PAGE 6: PRIVACY & LEGAL (Multi-Tab Single Page)
-
-\*\*Section 1 — Navigation\*\*
-
-\- Sidebar with sections: Privacy Policy, Terms of Service, GDPR Compliance, Community Guidelines, IP Policy, Cookie Policy  
-\- Sticky table of contents per section
-
-\*\*Section 2-7 — Each Policy\*\*
-
-\- Clean typography, searchable  
-\- Last updated date  
-\- Key points summary at top of each  
-\- Data export request form (in Privacy)  
-\- Account deletion flow (in Privacy)  
-\- Cookie consent preferences (in Cookie Policy)  
-\- Report violation form (in Community Guidelines)
-
-\---
-
-\#\#\# PAGE 7: ENTERPRISE
-
-\*\*Section 1 — Hero\*\*
-
-\- "Access vetted student talent" with enterprise-themed 3D scene  
-\- CTA: "Book a Demo"
-
-\*\*Section 2 — How Enterprise Mode Works\*\*
-
-\- Post a project/job → AI matches experts → Review profiles/ELO → Hire → Workspace → Deliver  
-\- Visual pipeline diagram
-
-\*\*Section 3 — Expert Pool\*\*
-
-\- Browse vetted experts by skill, ELO, university, portfolio  
-\- Preview cards with ratings and badges
-
-\*\*Section 4 — Use Cases\*\*
-
-\- Consultation, project-based work, full-time hiring, team augmentation  
-\- Case study per use case
-
-\*\*Section 5 — Security & Compliance\*\*
-
-\- Data encryption, verified identities, NDA support, IP protection  
-\- Compliance badges (GDPR, SOC2 aspirational)
-
-\*\*Section 6 — Integrations\*\*
-
-\- Payment processors, project management tools, communication platforms  
-\- API access preview
-
-\*\*Section 7 — Pricing\*\*
-
-\- Enterprise tier details  
-\- Custom quote CTA
-
-\*\*Section 8 — Contact / Demo\*\*
-
-\- Calendar embed for demo booking  
-\- Contact form  
-\- Direct line for enterprise clients
-
-\---
-
-\#\#\# PAGE 8: ROADMAP
-
-\*\*Section 1 — Hero\*\*
-
-\- "Built in public, shaped by you"
-
-\*\*Section 2 — Interactive Roadmap Timeline\*\*
-
-\- Vertical timeline with phases, each expandable  
-\- Color-coded: completed (green), in progress (amber), planned (silver)  
-\- Click to see details and vote
-
-\*\*Section 3 — Feature Voting\*\*
-
-\- Submit feature requests  
-\- Upvote existing requests  
-\- Most voted highlighted
-
-\*\*Section 4 — Changelog\*\*
-
-\- Reverse-chronological update feed  
-\- Each entry: date, title, description, category tag
-
-\*\*Section 5 — Status & Uptime\*\*
-
-\- Current platform status indicators (API, Marketplace, Messenger, etc.)  
-\- Uptime percentage over 30/90 days  
-\- Incident history log
-
-\*\*Section 6 — Bug Bounty & Open Issues\*\*
-
-\- How to report bugs  
-\- Bug bounty reward tiers (points-based)  
-\- Open issues that community can help with (earn points)
-
-\*\*Section 7 — Security Audits\*\*
-
-\- Audit history and results summary  
-\- Pentest schedule  
-\- Incident response process overview
-
-\---
-
-\#\#\# PAGE 9: USER PROFILE / PORTFOLIO
-
-\*\*Section 1 — Profile Header\*\*
-
-\- Customizable banner and avatar  
-\- Name, university badge, ELO rating display, lifetime tier badge  
-\- Skill tags with mastery level indicators  
-\- Follow/endorse buttons  
-\- Verified identity badge
-
-\*\*Section 2 — Portfolio Gallery\*\*
-
-\- Grid of work items with 3D card hover  
-\- Each item: thumbnail, title, skill tags, rating received  
-\- Expandable into full case study view  
-\- Time-lapse of work documentation (if enabled)  
-\- Video feed recordings from gigs
-
-\*\*Section 3 — Clips\*\*
-
-\- Short video clips of portfolio work  
-\- Shareable as challenge templates on socials  
-\- Social widgets for proof of work
-
-\*\*Section 4 — Stats Dashboard\*\*
-
-\- Gigs completed, points earned, ELO history graph, achievement count  
-\- Skill breakdown radar chart  
-\- Rating distribution
-
-\*\*Section 5 — Endorsements & Reviews\*\*
-
-\- Peer endorsements (LinkedIn-style)  
-\- Gig reviews with verified badges  
-\- Rating breakdown by skill
-
-\*\*Section 6 — Guild Membership\*\*
-
-\- Current guild display with link to guild page  
-\- Role in guild, contribution stats
-
-\*\*Section 7 — Activity Feed\*\*
-
-\- Recent gigs, achievements, badge unlocks  
-\- Nostalgia timeline (yearly wrap link)
-
-\*\*Section 8 — Case Study Builder\*\*
-
-\- Create detailed case studies from completed gigs  
-\- Featured on blog/portfolio  
-\- Interactive elements support
-
-\---
-
-\#\#\# PAGE 10: MARKETPLACE / GIG BROWSING
-
-\*\*Section 1 — Search Bar & Filters\*\*
-
-\- Semantic search with AI suggestions  
-\- Filter by: category, format, point range, seller ELO, university, proximity, trending/popular/curated/recommended
-
-\*\*Section 2 — Category Navigation\*\*
-
-\- Visual category cards with icons (Design, Dev, Writing, Video, Marketing, etc.)  
-\- Subcategories on click
-
-\*\*Section 3 — Trending Gigs\*\*
-
-\- Horizontally scrolling featured gigs  
-\- Real-time popularity indicators
-
-\*\*Section 4 — Gig Grid\*\*
-
-\- Card-based grid with 3D tilt hover  
-\- Each card: title, skill offered/wanted, point value, seller avatar, ELO, rating  
-\- Quick-view overlay on click
-
-\*\*Section 5 — Auction Listings\*\*
-
-\- Active auctions with countdown timers  
-\- Bid count, current submissions
-
-\*\*Section 6 — Co-Creation Projects\*\*
-
-\- Multi-role projects seeking collaborators  
-\- Role slots with fill indicators
-
-\*\*Section 7 — Flash Market\*\*
-
-\- Time-limited deals with countdown  
-\- Bonus multiplier badges
-
-\*\*Section 8 — Recommended For You\*\*
-
-\- AI-curated based on skills, history, network
-
-\---
-
-\#\#\# PAGE 11: GIG CREATION
-
-\*\*Section 1 — Format Selection\*\*
-
-\- Choose: Direct Swap, Auction, Co-Creation, Skill Fusion, Project, Subscription, Flash  
-\- Each format has tooltip explanation with animation
-
-\*\*Section 2 — Skill Definition\*\*
-
-\- Skill offered (with mastery level auto-filled)  
-\- Skill wanted (or "open to offers")  
-\- AI market intelligence sidebar: demand for this skill, suggested point value, competition level
-
-\*\*Section 3 — Stage Builder\*\*
-
-\- Add stages with descriptions  
-\- Allocate points per stage (visual slider)  
-\- Insurance explanation: "If they leave at stage 2, you keep their stage 1-2 points"
-
-\*\*Section 4 — Deliverable Specs\*\*
-
-\- Define what final deliverable looks like  
-\- Set revision count  
-\- Set delivery timeline  
-\- AI suggests standards based on skill type
-
-\*\*Section 5 — Pricing & Points\*\*
-
-\- AI dynamic pricing recommendation  
-\- Manual override  
-\- Point balance preview (what you'll earn/spend)
-
-\*\*Section 6 — Preview & Publish\*\*
-
-\- Full preview of how gig appears in marketplace  
-\- Edit before publishing  
-\- Publish with confirmation animation
-
-\*\*Section 7 — Post-Publish\*\*
-
-\- Share to socials  
-\- Track views and bids in real-time  
-\- Edit/pause/close gig
-
-\---
-
-\#\#\# PAGE 12: GIG WORKSPACE (Contains Messenger, Whiteboard, Video — NOT Separate Pages)
-
-\*\*Section 1 — Workspace Header\*\*
-
-\- Gig title, stage indicator, both party avatars, point allocation bar  
-\- Status: In Progress / Review / Completed / Disputed
-
-\*\*Section 2 — Stage Progress Panel\*\*
-
-\- Visual progress bar with stages  
-\- Click stage to see allocated points, deliverables, status  
-\- Abandon protection indicator
-
-\*\*Section 3 — Messenger (Embedded Section)\*\*
-
-\- Real-time chat (WebSocket-based)  
-\- Auto-translate to preferred language  
-\- Voice notes with playback  
-\- File sharing with drag-drop, timestamps, version tracking  
-\- Message threading/referencing (Discord-style)  
-\- Message search  
-\- All messages logged and stored for dispute evidence
-
-\*\*Section 4 — Whiteboard (Embedded Section)\*\*
-
-\- tldraw embedded canvas  
-\- Real-time collaboration  
-\- Save snapshots to workspace files  
-\- Reference in chat
-
-\*\*Section 5 — Video Call (Embedded Section)\*\*
-
-\- WebRTC peer-to-peer video/audio  
-\- Built-in screen sharing (show your work live)  
-\- Recording saved to workspace (buyer can give live feedback)  
-\- No third-party: fully in-platform
-
-\*\*Section 6 — File Library\*\*
-
-\- All shared files organized chronologically  
-\- Version history per file  
-\- Preview support (images, PDFs, code)  
-\- Search and filter
-
-\*\*Section 7 — Deliverable Submission\*\*
-
-\- Submit final work with description  
-\- Attach files from library  
-\- AI quality check runs automatically (plagiarism, quality score, standard compliance)  
-\- Optional: guild/expert pre-approval before submission  
-\- Buyer accepts or requests revision (within pre-specified count)
-
-\*\*Section 8 — Review & Close\*\*
-
-\- Both parties leave review and rating  
-\- Transaction code generated  
-\- Points distributed with tax deduction visualization  
-\- Workspace archived but accessible for lookup
-
-\---
-
-\#\#\# PAGE 13: SELLER DASHBOARD
-
-\*\*Section 1 — Overview\*\*
-
-\- Key metrics: active gigs, total earnings, ELO, current streak, pending deliverables  
-\- Earnings graph (weekly/monthly)  
-\- Quick actions: create gig, view workspace, check messages
-
-\*\*Section 2 — Active Gigs & Workspaces\*\*
-
-\- List of in-progress gigs with stage indicators  
-\- Click to enter workspace  
-\- Bid/auction status on pending gigs
-
-\*\*Section 3 — Earnings & Wallet\*\*
-
-\- Point balance, earning history, tax deductions log  
-\- Withdraw options (future cash-out, merch store)  
-\- Wallet transaction history
-
-\*\*Section 4 — Analytics\*\*
-
-\- Gig performance: views, clicks, conversion rate  
-\- Keyword performance (which tags drive traffic)  
-\- Skill market intelligence: demand trends for your skills  
-\- Earnings forecast based on activity  
-\- Portfolio impact tracking  
-\- Performance benchmarks vs similar sellers
-
-\*\*Section 5 — Profile & Portfolio Management\*\*
-
-\- Edit profile, skills, portfolio items  
-\- Clips management  
-\- Case study builder access  
-\- Social widget generator
-
-\*\*Section 6 — Gamification Hub\*\*
-
-\- Achievements progress (with unlock criteria)  
-\- Current challenges  
-\- Streak status with freeze option  
-\- Badge collection  
-\- Leaderboard position  
-\- Practice gigs available
-
-\*\*Section 7 — Network & Social\*\*
-
-\- Followers/following lists  
-\- Guild membership and tools  
-\- Endorsements received/given  
-\- Smart contracts (active agreements)  
-\- Referral dashboard with earnings
-
-\*\*Section 8 — Account & Settings\*\*
-
-\- Notification preferences  
-\- Language and timezone  
-\- Privacy settings  
-\- Data export  
-\- Account recovery/deletion
-
-\---
-
-\#\#\# PAGE 14: BUYER DASHBOARD
-
-\*\*Section 1 — Overview\*\*
-
-\- Active orders, pending deliverables, points spent, gigs completed
-
-\*\*Section 2 — Active Orders\*\*
-
-\- In-progress gigs with workspace links  
-\- Stage progress per order  
-\- Pending reviews
-
-\*\*Section 3 — Browse & Discover\*\*
-
-\- Quick access to marketplace with personalized recommendations  
-\- Saved/favorited gigs and sellers  
-\- Bid tracking on auctions
-
-\*\*Section 4 — Reviews & Ratings Given\*\*
-
-\- History of reviews left  
-\- Rating summary
-
-\*\*Section 5 — Subscription Management\*\*
-
-\- Active subscription gigs  
-\- Tier management (Free/Pro)
-
-\*\*Section 6 — Transaction History\*\*
-
-\- All completed gigs with codes  
-\- Points spent/received breakdown  
-\- Invoice generation
-
-\*\*Section 7 — Wallet & Points\*\*
-
-\- Balance, purchase history, tax deductions
-
-\---
-
-\#\#\# PAGE 15: GUILD DASHBOARD & PROFILE
-
-\*\*Section 1 — Guild Profile (Public)\*\*
-
-\- Guild name, banner, description, member count, average ELO  
-\- Portfolio of collective work  
-\- War history and trophies  
-\- Join request CTA
-
-\*\*Section 2 — Member Management\*\*
-
-\- Member list with roles, ELO, contribution stats  
-\- Invite/remove members  
-\- Role assignment
-
-\*\*Section 3 — Treasury\*\*
-
-\- Point pool balance  
-\- Contribution history  
-\- Lending log (who borrowed, how much, repayment status)  
-\- Treasury allocation controls
-
-\*\*Section 4 — Guild Wars\*\*
-
-\- Active war status  
-\- Historical war results  
-\- Leaderboard position
-
-\*\*Section 5 — Delegation\*\*
-
-\- Incoming gig assignments  
-\- Task distribution interface  
-\- Progress tracking per delegated task
-
-\*\*Section 6 — Guild Analytics\*\*
-
-\- Collective stats, growth trends, skill distribution  
-\- Member performance comparison
-
-\*\*Section 7 — Settings\*\*
-
-\- Guild rules, joining criteria, treasury policies
-
-\---
-
-\#\#\# PAGE 16: SKILL COURT
-
-\*\*Section 1 — Court Overview\*\*
-
-\- Active cases count, your judge rating, cases judged, verdict accuracy  
-\- "Court is in session" dramatic header
-
-\*\*Section 2 — Active Cases\*\*
-
-\- List of cases you can judge  
-\- Filter by skill area, severity  
-\- Case summary preview
-
-\*\*Section 3 — Case View (Expandable/Modal)\*\*
-
-\- Full evidence display: chat logs, deliverables, workspace history, file timeline  
-\- Both party statements  
-\- AI analysis summary  
-\- Vote panel with reasoning text area  
-\- Judge composition indicator
-
-\*\*Section 4 — Your Cases (As Plaintiff/Defendant)\*\*
-
-\- Cases you're involved in  
-\- Status, assigned judges, timeline  
-\- Evidence submission interface
-
-\*\*Section 5 — Verdict History\*\*
-
-\- Past verdicts with reasoning  
-\- ELO impact per verdict  
-\- Appeal status
-
-\*\*Section 6 — Your Judge Stats\*\*
-
-\- Judge ELO, accuracy rate, cases completed  
-\- Rewards earned from judging  
-\- "Judges gain skill points and ELO for participating"
-
-\*\*Section 7 — Court Rules\*\*
-
-\- How judging works  
-\- Weighted voting explanation  
-\- Free tier court duty requirements  
-\- Appeal process
-
-\---
-
-\#\#\# PAGE 17: FORUMS
-
-\*\*Section 1 — Category Navigation\*\*
-
-\- Forum categories: General, Skills, Guilds, Feedback, Help, Off-Topic  
-\- Each with post count and latest activity
-
-\*\*Section 2 — Thread List\*\*
-
-\- Sortable by latest, popular, unanswered  
-\- Thread cards with author, preview, reply count, tags
-
-\*\*Section 3 — Thread View\*\*
-
-\- Original post with rich text  
-\- Reply chain with vote/like  
-\- Author badges and ELO visible
-
-\*\*Section 4 — Create Thread\*\*
-
-\- Rich text editor  
-\- Category and tag selection  
-\- AI suggestion for similar existing threads
-
-\*\*Section 5 — User Highlights\*\*
-
-\- Featured community members  
-\- Weekly top contributors
-
-\*\*Section 6 — Search\*\*
-
-\- Full-text search across threads  
-\- Filter by category, date, author
-
-\*\*Section 7 — Pinned / Announcements\*\*
-
-\- Official announcements section  
-\- Community guidelines reminder
-
-\---
-
-\#\#\# PAGE 18: HELP, DOCS, STATUS & REPORTING (Merged)
-
-\*\*Section 1 — Help Center Hero\*\*
-
-\- Search bar with AI-powered suggestions  
-\- Popular topics quick links
-
-\*\*Section 2 — Knowledge Base\*\*
-
-\- Categorized articles  
-\- Step-by-step guides with screenshots  
-\- Video tutorials
-
-\*\*Section 3 — API Documentation\*\*
-
-\- Endpoint reference  
-\- Code examples  
-\- Authentication guide  
-\- Rate limits
-
-\*\*Section 4 — AI Chatbot\*\*
-
-\- Floating chatbot (same as AI helper integrated everywhere)  
-\- Contextual help based on current page
-
-\*\*Section 5 — Contact & Support\*\*
-
-\- Ticket submission form  
-\- Email support  
-\- Phone for premium/enterprise  
-\- Help desk queue status
-
-\*\*Section 6 — Platform Status & Uptime\*\*
-
-\- Real-time status of all services  
-\- Uptime history (30/90/365 day)  
-\- Incident log with postmortems  
-\- Subscribe to status updates
-
-\*\*Section 7 — Bug Bounty Program\*\*
-
-\- How to report vulnerabilities  
-\- Reward tiers (points \+ badges)  
-\- Hall of fame for contributors
-
-\*\*Section 8 — Reporting\*\*
-
-\- Report a user/gig/guild  
-\- Evidence attachment  
-\- Report tracking  
-\- Reputation insurance explanation
-
-\*\*Section 9 — Certifications & Compliance\*\*
-
-\- Platform certifications  
-\- Security practices overview
-
-\---
-
-\#\#\# PAGE 19: TRANSACTION LOOKUP
-
-\*\*Section 1 — Lookup Form\*\*
-
-\- Enter transaction/gig code  
-\- Animated search with verification animation
-
-\*\*Section 2 — Transaction Summary\*\*
-
-\- Gig details, parties involved, timeline  
-\- Point distribution breakdown  
-\- Stage completion status
-
-\*\*Section 3 — Work Preview\*\*
-
-\- Deliverable preview (limited, respecting IP)  
-\- Quality score and AI assessment
-
-\*\*Section 4 — Verification Status\*\*
-
-\- Verified/unverified indicator  
-\- Seller identity verification level  
-\- Review summary
-
-\*\*Section 5 — Report from Lookup\*\*
-
-\- Flag suspicious transaction  
-\- Submit evidence
-
-\---
-
-\#\#\# PAGE 20: LEADERBOARD
-
-\*\*Section 1 — Global Leaderboard\*\*
-
-\- Top users by ELO, animated rank cards  
-\- Filter by skill, time period, university
-
-\*\*Section 2 — Skill Leaderboards\*\*
-
-\- Per-skill rankings  
-\- Mastery level distribution
-
-\*\*Section 3 — Guild Leaderboard\*\*
-
-\- Guild rankings by ELO, wars won, treasury size  
-\- War history highlights
-
-\*\*Section 4 — Court Judges Leaderboard\*\*
-
-\- Top judges by accuracy and cases handled  
-\- Judge tier badges
-
-\*\*Section 5 — Rising Stars\*\*
-
-\- New users climbing fast  
-\- Streak leaders
-
-\*\*Section 6 — University Leaderboard\*\*
-
-\- Rankings by partner university  
-\- Inter-university competitions
-
-\*\*Section 7 — Hall of Fame\*\*
-
-\- Lifetime achievement spotlights  
-\- Diamond tier showcase
-
-\---
-
-\#\#\# PAGE 21: HISTORY
-
-\*\*Section 1 — Activity Timeline\*\*
-
-\- Chronological feed of all user actions  
-\- Filterable by type (gigs, points, achievements, court, guild)
-
-\*\*Section 2 — Gig History\*\*
-
-\- Completed and cancelled gigs  
-\- Each expandable with workspace archive link
-
-\*\*Section 3 — Points Ledger\*\*
-
-\- Every point transaction: earned, spent, taxed, bought, gifted, lent  
-\- Running balance graph
-
-\*\*Section 4 — Quarterly Wrap\*\*
-
-\- Latest wrap with animated stats reveal  
-\- Past wraps archive
-
-\*\*Section 5 — Yearly Wrap\*\*
-
-\- Annual deep dive  
-\- Nostalgia timeline with milestones
-
-\*\*Section 6 — Achievement History\*\*
-
-\- When each badge/achievement was earned  
-\- Milestone celebrations replay
-
-\---
-
-\#\#\# PAGE 22: ENTERPRISE PRO DASHBOARD
-
-\*\*Section 1 — Overview\*\*
-
-\- Active projects, experts engaged, budget spent, hiring pipeline stats
-
-\*\*Section 2 — Expert Discovery\*\*
-
-\- AI-matched expert recommendations  
-\- Browse by skill, ELO, university, availability  
-\- Shortlist management
-
-\*\*Section 3 — Project Management\*\*
-
-\- Active enterprise projects  
-\- Expert assignments  
-\- Deliverable tracking
-
-\*\*Section 4 — Hiring Pipeline\*\*
-
-\- Candidates in pipeline stages  
-\- Interview scheduling  
-\- Offer management
-
-\*\*Section 5 — Consultation Booking\*\*
-
-\- Schedule consultations with experts  
-\- Calendar integration
-
-\*\*Section 6 — Analytics & Reports\*\*
-
-\- Project completion rates, expert performance, ROI  
-\- Exportable reports
-
-\*\*Section 7 — Billing & Invoicing\*\*
-
-\- Invoice history  
-\- Budget allocation  
-\- Payment method management
-
-\---
-
-\#\# Feature Interaction Map
-
-How major systems interact:
-
-\`\`\`text  
-SIGN UP → Guided Tour (earn 100 pts) → Profile Creation → Marketplace  
-                                                              │  
-                    ┌─────────────────────────────────────────┘  
-                    ▼  
-              MARKETPLACE ──→ Browse / Search / Filter / AI Recommend  
-                    │  
-                    ├──→ Direct Swap ──→ Match ──→ GIG WORKSPACE  
-                    ├──→ Auction ──→ Submit Work ──→ Winner Selected ──→ WORKSPACE  
-                    ├──→ Co-Creation ──→ Multi-Role Fill ──→ Shared WORKSPACE  
-                    ├──→ Skill Fusion ──→ Multi-Skill Match ──→ WORKSPACE  
-                    └──→ Project ──→ Sub-Gigs Created ──→ Multiple WORKSPACES  
-                                                              │  
-                    ┌─────────────────────────────────────────┘  
-                    ▼  
-            GIG WORKSPACE (messenger, whiteboard, video, files, stages)  
-                    │  
-                    ├──→ Stage Progress ──→ Points Allocated Per Stage  
-                    │                         └──→ Abandon? → Other party gets points (INSURANCE)  
-                    │  
-                    ├──→ AI Quality Monitor (plagiarism, quality, satisfaction prediction)  
-                    │  
-                    ├──→ Deliverable Submit ──→ Guild/Expert Pre-Approval? ──→ Buyer Review  
-                    │                                                              │  
-                    │                              ┌───────────────────────────────┘  
-                    │                              ▼  
-                    │                    Accept ──→ POINTS DISTRIBUTED (minus tax)  
-                    │                         └──→ Transaction Code Generated  
-                    │                         └──→ Both Parties Rate & Review  
-                    │  
-                    │                    Reject ──→ Revision (if within count)  
-                    │                         └──→ Dispute ──→ SKILL COURT  
-                    │  
-                    └──→ Dispute Filed ──→ SKILL COURT  
-                                              │  
-                    ┌─────────────────────────┘  
-                    ▼  
-              SKILL COURT  
-                    ├──→ Evidence Auto-Collected from Workspace  
-                    ├──→ Judges Assigned (25% users, 25% AI, 50% experts)  
-                    ├──→ Voting with Reasoning (weighted by judge ELO)  
-                    ├──→ Verdict ──→ Points Redistributed  
-                    │            └──→ ELO Adjusted (winner up, loser down)  
-                    │            └──→ Judge ELO Adjusted (good judgment \= up)  
-                    └──→ Appeal? ──→ Higher Panel Re-Review
-
-POINTS ECONOMY:  
-  Earn: Gigs, Referrals, Achievements, Court Duty, Challenges, Sign-up  
-  Spend: Balancing gig value, Buying services, Streak freeze, Flash market  
-  Tax: X% on every completed gig (both parties) — prevents inflation  
-  Buy: Real money → Points packages  
-  Cash Out (Future): Points → Merch, Plaques, Cash  
-  Lend: Guild treasury → Member → Repay after gig
-
-GUILDS ──→ Treasury (pooled points)  
-       ──→ Lending to members  
-       ──→ Delegation of gigs  
-       ──→ Guild Wars (compete with other guilds)  
-       ──→ Collective Portfolio  
-       ──→ Member approval of deliverables
-
-ELO SYSTEM:  
-  Increases: Good reviews, gig completions, court wins, good judging  
-  Decreases: Bad reviews, court losses, abandonment, bad judging  
-  Affects: Search ranking, court eligibility, feature unlocks, guild wars matchmaking
-
-LIFETIME TIERS (unlock features):  
-  Bronze (start) → Silver (unlock Co-Creation) → Gold (unlock Projects)  
-  → Platinum (unlock Enterprise features) → Diamond (all features, reduced tax)
-
-NOTIFICATIONS:  
-  Every action triggers relevant notifications  
-  Duolingo-style push for streaks, achievements, gig updates  
-  Customizable preferences
-
-LOGGING:  
-  activity\_log captures: every click, upload, message, transaction,  
-  rating, search, page view, gig action, court action — everything.  
-  Used for: AI training, analytics, dispute evidence, wraps, insights  
-\`\`\`
-
-\---
-
-\#\# Development Rules
-
-1\. \*\*No code truncation\*\* — every file written completely, no \`// ... rest of code\`  
-2\. \*\*User approval required\*\* — no moving to next section/page without explicit approval  
-3\. \*\*Tests for every component\*\* — vitest \+ @testing-library/react  
-4\. \*\*TRACKER.md\*\* — manual file tracking: phases, pages, sections, bugs, status  
-5\. \*\*Supabase-portable\*\* — all migrations, RLS, edge functions in \`supabase/\` folder  
-6\. \*\*Unique design per page\*\* — no reused layouts, every page has bespoke sections  
-7\. \*\*Animation on everything\*\* — no static elements, Framer Motion \+ CSS 3D \+ Spline throughout  
-8\. \*\*Custom fonts only\*\* — Satoshi, General Sans, JetBrains Mono imported via @font-face  
-9\. \*\*Monotone palette\*\* — silver/white/black with surgical color pops (green, red, gold, blue)  
-10\. \*\*AI integrated contextually\*\* — not a separate page, appears as helper/panel on relevant pages  
-11\. \*\*Messenger/whiteboard/video in workspace\*\* — not separate pages, embedded sections in gig workspace  
-12\. \*\*Comprehensive logging\*\* — every user action logged to activity\_log  
-13\. \*\*No admin dashboard in Phase 1\*\* — deferred to later phase  
-14\. \*\*Modular architecture\*\* — \`src/features/{domain}/\` structure for easy migration  
-15\. \*\*No Lovable lock-in\*\* — standard React \+ Supabase SDK only
-
-\---
-
-\#\# Phase Execution Order
-
-1\. \*\*Project Setup\*\*: Folder structure, design tokens, custom fonts, animation utilities, TRACKER.md  
-2\. \*\*Home Page\*\*: All 12 sections with full animations and 3D  
-3\. \*\*About \+ Stories \+ Partnerships\*\*: 9 sections merged page  
-4\. \*\*Features\*\*: 10 sections deep dive  
-5\. \*\*How It Works\*\*: 9 sections walkthrough  
-6\. \*\*Pricing\*\*: 10 sections with calculators  
-7\. \*\*Privacy & Legal\*\*: Multi-tab legal pages  
-8\. \*\*Enterprise\*\*: 8 sections  
-9\. \*\*Roadmap\*\*: 7 sections with voting  
-10\. \*\*Auth & Onboarding\*\*: Sign up, guided tour, profile creation  
-11\. \*\*User Profile / Portfolio\*\*: 8 sections  
-12\. \*\*Marketplace / Gig Browsing\*\*: 8 sections  
-13\. \*\*Gig Creation\*\*: 7 sections  
-14\. \*\*Gig Workspace\*\*: 8 sections (contains messenger, whiteboard, video)  
-15\. \*\*Seller Dashboard\*\*: 8 sections  
-16\. \*\*Buyer Dashboard\*\*: 7 sections  
-17\. \*\*Guild Dashboard\*\*: 7 sections  
-18\. \*\*Skill Court\*\*: 7 sections  
-19\. \*\*Forums\*\*: 7 sections  
-20\. \*\*Help/Docs/Status/Reporting\*\*: 9 sections merged  
-21\. \*\*Transaction Lookup\*\*: 5 sections  
-22\. \*\*Leaderboard\*\*: 7 sections  
-23\. \*\*History\*\*: 6 sections  
-24\. \*\*Enterprise Dashboard\*\*: 7 sections
-
-Each page built and approved before moving to the next.  
+# Skill Swappr — Blueprint (Launch Requirements)
+
+> Master reference for all 85 requirements (blanks excluded from original 130-point doc).
+> Status key: ✅ Done | 🟡 Partial | 🔴 Not Built | 🎨 Needs Redesign (functional but design pending)
+> Difficulty: 🟢 Easy (1-2 sessions) | 🟠 Medium (2-4 sessions) | 🔴 Hard (4+ sessions)
+> Priority: 🔥 Critical | ⚡ High | 📌 Low
+
+---
+
+## Requirements Table
+
+| # | Requirement | Status | Difficulty | Priority | Category | What Exists | What's Missing | How to Build |
+|---|------------|--------|-----------|----------|----------|-------------|----------------|--------------|
+| 1 | Sign up with guided tour and onboarding | ✅ Done | 🟢 Easy | 🔥 Critical | Auth | 12-step signup flow in `SignupPage.tsx`, `handle_new_user()` trigger creates profile + role, `profiles.onboarding_complete` flag | SP reward trigger on tour completion not logged as transaction | Add `sp_transactions` insert in `handle_new_user()` trigger for 100 SP signup bonus |
+| 2 | Starting skill points rewards | 🟡 Partial | 🟢 Easy | 🔥 Critical | Economy | `profiles.sp` defaults to 100, `sp_transactions` table exists | No trigger logging the initial 100 SP as a transaction entry | DB trigger: on profile creation, insert into `sp_transactions` (amount: 100, type: 'signup_bonus') |
+| 3 | Skill points tax and economy | 🟡 Partial | 🟠 Medium | 🔥 Critical | Economy | `sp_transactions` table with `tax_amount` column, `profiles.sp` balance | No SP transfer function, no tax calculation, no balance enforcement, no payment integration | Create `transfer_sp()` DB function: debit sender, credit receiver, calculate 5% tax, insert transaction records, enforce balance >= 0 |
+| 4 | User dashboard | 🎨 Needs Redesign | 🟠 Medium | 🔥 Critical | Dashboard | `DashboardPage.tsx` (1,124 lines), 8 tabs (Overview/Gigs/Create/Court/Guilds/Wallet/Analytics/Settings), queries `listings`, `escrow_contracts`, `profiles`, `notifications` | Design not approved — awaiting new design from user | Rebuild UI once design provided. Backend wiring is functional |
+| 5 | Admin dashboard | 🔴 Not Built | 🔴 Hard | ⚡ High | Dashboard | `user_roles` table with `admin` role, `has_role()` security definer function | No admin UI page, no moderation queue, no user management | Create `src/features/admin/AdminDashboardPage.tsx` with user management, content moderation queue, platform stats, role management. Gate with `has_role(uid, 'admin')` |
+| 6 | Profile portfolios | 🎨 Needs Redesign | 🟠 Medium | ⚡ High | Profile | `ProfilePage.tsx` (674 lines), reads from `profiles` table (40+ columns), portfolio items as JSON, badges/achievements rendered, inline edit mode | Design not approved | Rebuild UI once design provided. Backend fully wired |
+| 7 | Messenger, Gigs, Whiteboard, Video Calls | 🟡 Partial | 🔴 Hard | 🔥 Critical | Workspace | Workspace messenger: real-time via `workspace_messages` + Supabase realtime. Gig creation in dashboard. Whiteboard: canvas element (local only). Video: UI placeholder | Whiteboard not collaborative (no CRDT/Yjs). Video has no WebRTC. No global messenger outside workspaces | Whiteboard: integrate tldraw or Excalidraw with Supabase realtime sync. Video: evaluate Daily.co/LiveKit integration. Global messenger: new `messages` table + realtime channel |
+| 10 | Skill Academy of Tutorials and Playlists | 🔴 Not Built | 🔴 Hard | 📌 Low | Education | Nothing | No tables, no pages, no UI | Create `tutorials`, `playlists`, `tutorial_progress` tables. Build `src/features/academy/AcademyPage.tsx` with video player, progress tracking, playlist navigation |
+| 11 | Real-time tutors | 🔴 Not Built | 🔴 Hard | 📌 Low | Education | Nothing | No live tutoring system | Would need video call infrastructure (see Req 7) + tutor matching + booking system. Depends on Req 7 video |
+| 12 | Skill Certificates | 🟡 Partial | 🟠 Medium | 📌 Low | Gamification | `profiles.certificates` JSON column | No certification system, no issuing, no verification, no PDF generation | Create `certificates` table (user_id, skill, issued_at, verified_by, pdf_url). Edge function to generate PDF certificate. Verify via transaction code |
+| 14 | Guilds | 🟡 Partial | 🟠 Medium | ⚡ High | Guilds | 8 guild tables exist (`guilds`, `guild_members`, `guild_projects`, `guild_treasury_log`, `guild_loans`, `guild_wars`, `guild_achievements`, `guild_badges`). `GuildPage.tsx`, `BrowseGuildsPage.tsx`, `GuildDashboardPage.tsx` exist. Browse queries live data | Create guild UI not fully wired, join flow incomplete, treasury/lending UI missing | Wire create guild form → `guilds` insert. Wire join → `guild_members` insert. Build treasury/lending management panels in guild dashboard |
+| 15 | Teams | 🟡 Partial | 🟠 Medium | 📌 Low | Workspace | `workspace_members` table with roles (admin/editor/viewer), invite-by-email in workspace | No standalone teams concept outside workspaces | Could create `teams` table or extend guild system. Low priority — workspace members serve this purpose |
+| 16 | Smart Contracts | 🟡 Partial | 🟠 Medium | ⚡ High | Economy | `escrow_contracts` table (buyer/seller, terms JSON, total_sp, released_sp, status). Workspace escrow panel reads/writes | No actual contract execution engine, no automated SP release on stage completion | Create `execute_stage_release()` DB function: on stage mark complete → release allocated SP → update escrow. Add automation triggers |
+| 18 | Clip generator and viewer with cross-platform posting + referral | 🟡 Partial | 🔴 Hard | ⚡ High | Clips | `ClipsPage.tsx` — TikTok-style vertical scroll UI with snap scrolling, category filters | All clips are hardcoded mock data. No `clips` table. No video upload. No clip generation. No referral links. No cross-platform posting | Create `clips` table (user_id, title, video_url, tags, views, likes). Storage bucket for clip videos. Upload UI in dashboard. Referral link generator. Social share buttons with UTM params |
+| 19 | Badges | ✅ Done | 🟢 Easy | ⚡ High | Gamification | `badges`, `user_badges`, `guild_badges` tables. ProfilePage renders badges from DB | No automated badge awarding triggers | Create DB triggers: on gig completion count → award "First Gig" badge. On ELO threshold → award tier badge. Edge function for complex badge logic |
+| 20 | Events | ✅ Done | 🟢 Easy | ⚡ High | Community | `events`, `event_registrations` tables (20+ columns). `EventsPage.tsx` queries DB. `tournaments`, `tournament_participants` tables | Registration flow works. Event creation admin UI missing | Add event creation form (admin/enterprise only). Tournament bracket visualization |
+| 21 | Multiple Buyer Seller Formats | ✅ Done | — | 🔥 Critical | Marketplace | 7 formats: Direct, Auction, Co-Creation, Skill Fusion, SP Only, Flash Market, Requests, Projects. Each has dedicated route + page + card component. All query `listings` filtered by `format` | Proposal acceptance doesn't auto-create workspace | Wire `ProposalModal` submit → create `escrow_contracts` + workspace entry + `workspace_members` |
+| 22 | Skill Court | ✅ Done | — | 🔥 Critical | Court | `disputes`, `case_evidence`, `case_comments`, `jury_assignments`, `jury_votes` tables. `SkillCourtTab.tsx` (680+ lines) — case viewer, evidence, voting, AI assist. Dashboard integration | Weighted voting not enforced server-side. ELO impact not calculated on verdict | Create `resolve_case()` DB function: tally weighted votes → set verdict → adjust ELO for both parties + judges → redistribute SP |
+| 24 | Mobile App | 🟡 Partial | 🟠 Medium | ⚡ High | Mobile | `MobileBottomNav.tsx` — 5-tab bottom nav. Responsive design across pages. ClipsPage immersive mobile design. `useIsMobile()` hook | No native app, no PWA manifest, no service worker | Add `manifest.json` for PWA installability. Add service worker for offline. Native app would be separate React Native project |
+| 25 | ELO Rating | 🟡 Partial | 🟠 Medium | 🔥 Critical | Gamification | `profiles.elo` (default 1000). ELO displayed on profile, leaderboard, marketplace. Tier system (Bronze/Silver/Gold/Platinum/Diamond) | No ELO calculation engine — no function to update after gig/court | Create `update_elo()` DB function: K-factor based calc. Call after: gig review (winner/loser based on rating), court verdict, judge participation. Update `profiles.elo` + insert `ranking_history` |
+| 27 | AI helper throughout entire journey | ✅ Done | — | ⚡ High | AI | `ai-chat` edge function, `workspace-ai` edge function, `LiveChatWidget.tsx` (global), Workspace AI panel, Court AI assist, AI quality scoring on deliverables | Image/video AI generation in workspace not built | Extend `workspace-ai` to support image gen via Lovable AI models. Add code assistance panel |
+| 28 | Transaction verification with gig summary, clips, telemetry | ✅ Done | — | 🔥 Critical | Transactions | `transactions` table (30+ JSON columns), `TransactionLookupPage.tsx`, `transaction-generator.ts` | Clip attachment to transactions missing | Add `clip_id` column to transactions. Link workspace clips to transaction record |
+| 29 | Multiple gig stages with escrow for abandonment insurance | ✅ Done | — | 🔥 Critical | Workspace | `workspace_stages` (name, status, sp_allocated, order_index). `escrow_contracts` (total_sp, released_sp). Workspace Stages + Escrow panels | Automated SP release on stage complete not triggered | See Req 16 — `execute_stage_release()` function |
+| 31 | Guilds: big projects, delegation, lending, reward sharing, quality checks | 🟡 Partial | 🔴 Hard | ⚡ High | Guilds | `guild_projects`, `guild_loans`, `guild_treasury_log` tables. `GuildDashboardPage.tsx` | Delegation flow, reward sharing logic, quality check workflow not wired | Build delegation UI: guild leader assigns incoming gigs to members. Reward split config on guild projects. Pre-submission review queue for guild members |
+| 33 | Co-Creation Studios | ✅ Done | — | ⚡ High | Marketplace | `CoCreationPage.tsx` + `CoCreationCard.tsx`. Listings with `format = "Co-Creation"`. Workspace supports multiple members | Role slot filling visualization could improve | Enhance card to show role slots filled/open |
+| 35 | Auction bidding system | 🟡 Partial | 🟠 Medium | ⚡ High | Marketplace | `AuctionsPage.tsx` + `AuctionCard.tsx`. `listings` has `current_bid`, `bid_count`, `ends_at` | No bid submission endpoint. No bid history table | Create `bids` table (listing_id, bidder_id, amount, submitted_at). `place_bid()` function with validation. Real-time bid updates via Supabase realtime |
+| 37 | LinkedIn-style network | 🔴 Not Built | 🔴 Hard | 📌 Low | Social | Nothing | No follow/connection system, no feed, no endorsements | Create `connections` table (user_a, user_b, status), `endorsements` table, `feed_items` table. Build network page with connection requests, feed, endorsement giving |
+| 39 | Skill Fusion gigs | ✅ Done | — | ⚡ High | Marketplace | `SkillFusionPage.tsx` + `SkillFusionCard.tsx`. Listings with `format = "Skill Fusion"` | — | Done |
+| 41 | Progressive work reveal + AI quality assurance | 🟡 Partial | 🟠 Medium | ⚡ High | Workspace | Workspace stages provide progressive reveal. AI quality scoring exists (`ai_quality_score`, `ai_feedback`) | Live process streaming, expert hire-to-review flow | Add satisfaction prediction endpoint in `workspace-ai`. Build expert review marketplace |
+| 43 | Skill Mastery, Achievements, Notifications, Streaks, Challenges | 🟡 Partial | 🟠 Medium | ⚡ High | Gamification | `achievements`, `user_achievements` tables. `notifications` table. `profiles.streak_days`. `useNotifications` hook, popover in dashboard | No automated triggers for achievements. No challenges system. No streak calculation | Create `calculate_streak()` function (run daily via cron). Achievement triggers on gig count thresholds. `challenges` table + weekly challenge generation |
+| 45 | Earning Insights / Analytics Page | 🎨 Needs Redesign | 🔴 Hard | ⚡ High | Analytics | `AnalyticsPage.tsx` (753 lines, 22 sections). `useLiveAnalytics.ts`, `useForecasting.ts`. Queries `platform_metrics`, `quarterly_reports`, telemetry tables | Design not approved. Missing: PDF export, scheduled reports, 80+ sections requested | Rebuild UI once design provided. Add PDF generation edge function. Expand sections |
+| 47 | Dynamic Pricing, Subscriptions, Tiers | 🔴 Not Built | 🔴 Hard | 📌 Low | Economy | Nothing | No pricing engine, no subscription system, no buyer tiers | Create `subscriptions` table. Integrate Stripe for payments. Build pricing recommendation engine using market data from `listings` |
+| 49 | Reporting, Reputation Insurance, Identity verification, Scam detection | 🟡 Partial | 🔴 Hard | ⚡ High | Trust | `help_reports` table. `disputes` + Skill Court. `profiles.id_verified` boolean | No reputation insurance, no scam pattern detection, no automated flagging | Build scam detection edge function using AI. Create `reputation_insurance` table. Automated flagging on suspicious patterns |
+| 51 | Live video feed, Portfolio timelapse, Notes, Case studies, Clips | 🟡 Partial | 🔴 Hard | 📌 Low | Workspace | Video panel exists (UI only). Notes on workspace files. Portfolio JSON on profiles | No actual video streaming, no timelapse generation, no case study builder | Video: requires external service (Daily.co/LiveKit). Timelapse: edge function to stitch file version screenshots. Case study: template builder in dashboard |
+| 53 | Clips with tags on clips page | 🟡 Partial | 🟠 Medium | ⚡ High | Clips | ClipsPage has category filters and tags on mock clips | No `clips` database table, no tagging system | See Req 18 — `clips` table with `tags` array column. Tag-based filtering queries |
+| 55 | Post success stories based on popularity | 🟡 Partial | 🟠 Medium | 📌 Low | Community | `SuccessStoriesPage.tsx` exists with hardcoded content | No database table, no popularity tracking | Create `success_stories` table (user_id, title, content, views, featured). Admin curation flow |
+| 57 | Buy gigs in Bundles, Points-only, Consultation | 🟡 Partial | 🟠 Medium | 📌 Low | Marketplace | `SPOnlyPage.tsx` exists. `enterprise_consultations` table | No bundle purchasing, consultation booking flow incomplete | Create `bundles` table. Wire consultation booking calendar. SP-only checkout flow |
+| 59 | Subscription Gigs, Flash Market, Skill Rental | 🟡 Partial | 🟠 Medium | 📌 Low | Marketplace | `FlashMarketPage.tsx` with time-limited listings | No subscription gig model, no skill rental | Add `format` values for subscription/rental. Recurring escrow logic |
+| 61 | AI in workspaces for image, video, chat, code | 🟡 Partial | 🟠 Medium | ⚡ High | AI | Workspace AI panel with chat. `workspace-ai` edge function | No image generation, no video AI, no code execution | Extend edge function to use Lovable AI image models. Add code sandbox panel. Video summarization |
+| 63 | Stress test for 10K concurrent users | 🔴 Not Done | 🔴 Hard | 🔥 Critical | Infrastructure | 18 DB indexes, React Query caching, code splitting, abort controllers, connection pooling available | No load testing scripts, no performance benchmarks | Create k6/Artillery test scripts. Test: auth flow, marketplace browse, workspace realtime, search. Target: 10K concurrent with <500ms p95 |
+| 64 | Optimizations | 🟡 Partial | 🟠 Medium | 🔥 Critical | Infrastructure | Code splitting (React.lazy on every page), React Query caching, Tailwind purging, 18 DB indexes, cursor pagination on marketplace | No CDN, no read replicas, no materialized views, no full-text search indexes | Add `pg_trgm` extension for search. Materialized views for leaderboard aggregations. Image CDN for avatars/files |
+| 68 | Fingerprinting work | 🟡 Partial | 🟠 Medium | 📌 Low | Trust | `transactions.fingerprint` column, `transactions.blockchain_hash` column | No actual fingerprinting or hashing implementation | Create `fingerprint_deliverable()` function: hash file contents on submission → store in transaction. Optional: anchor hash to public blockchain |
+| 69 | Gig review and rating after completion | 🟡 Partial | 🟠 Medium | 🔥 Critical | Reviews | `reviews` table (rating, quality/communication/timeliness ratings, content, response, verified). `ReviewModal.tsx` | Review submission flow after workspace completion not wired | Wire workspace "Accept Deliverable" → open ReviewModal → insert into `reviews` → update seller `profiles.rating`. Calculate new average |
+| 71 | Spectating people work | 🔴 Not Built | 🔴 Hard | 📌 Low | Workspace | Nothing | No spectator mode, no live streaming | Would need read-only workspace access + optional video stream. Complex — low priority |
+| 72 | Gig reports into skill court or admins | ✅ Done | — | 🔥 Critical | Trust | `help_reports` table. Workspace dispute filing → `disputes` table. Skill Court handles resolution | — | Done |
+| 73 | Moderators and role access in admin dashboard | 🟡 Partial | 🟠 Medium | ⚡ High | Admin | `user_roles` enum: admin/moderator/user/enterprise. `has_role()` function | No admin dashboard UI, no moderator tools | Build admin dashboard (Req 5). Add moderator queue for flagged content. Role-gated routes |
+| 74 | Role access in guilds, dashboards, workspaces | ✅ Done | — | 🔥 Critical | Roles | `guild_members.role` (leader/officer/member). `workspace_members.role` (admin/editor/viewer). Role-based UI rendering | — | Done |
+| 76 | Micro Tipping, Bonus Pools, Guild Funding, Points sharing, loaning, withdrawal | 🟡 Partial | 🔴 Hard | ⚡ High | Economy | `guild_loans` with interest_rate. `guild_treasury_log`. `sp_transactions` | No UI for tipping, bonus pools, loan approval, withdrawal | Build SP transfer UI. `tip_user()` function. Guild loan request/approve flow. Bonus pool distribution on guild war win |
+| 78 | Global Messenger with Translation, Voice, Photos | 🟡 Partial | 🔴 Hard | ⚡ High | Communication | Workspace messenger with translation (`translated_text`). `workspace_voice_messages` table. Voice recording UI | Global messenger (only workspace-scoped). No GIFs, no emoji picker | Create `direct_messages` table + `dm_channels` table. Build `src/features/messages/DirectMessagesPage.tsx`. Reuse workspace chat components. Add emoji/GIF picker library |
+| 80 | Gig Shared File storage with access perms and notes | ✅ Done | — | ⚡ High | Workspace | `workspace_files` table (file_name, url, size, type, version, access_level, tags, description). `workspace-files` storage bucket. Upload/download in workspace | — | Done |
+| 81 | Plagiarism checks, quality AI/human, expert reviews, version comparison, delivery standards | 🟡 Partial | 🔴 Hard | ⚡ High | AI/Quality | AI quality scoring (`ai_quality_score`, `ai_feedback`). `workspace_deliverables` with requirements, revision_count | No plagiarism detection, no human expert review marketplace, no version diff | Plagiarism: edge function using AI to compare submissions. Expert review: create `expert_reviews` table + marketplace for hiring reviewers. Version diff: file comparison UI |
+| 83 | Wraps, Timelines, Lifetime Tiers, Milestone Celebrations | 🟡 Partial | 🟠 Medium | 📌 Low | Gamification | `profiles.tier` (Bronze-Diamond). `leaderboard_achievements`. `quarterly_reports` table | No yearly wrap generation, no milestone celebration UI, no timeline view | Create wrap generation edge function (quarterly cron). Build `src/features/history/HistoryPage.tsx` with timeline, wraps, milestones |
+| 84 | Mods, Automated flags, Fake detection, Content moderation queue, Appeals | 🔴 Not Built | 🔴 Hard | ⚡ High | Moderation | Nothing beyond `user_roles` | No moderation queue, no automated flagging, no fake detection | Create `moderation_queue` table. AI-based content scanning edge function. Appeal flow extending Skill Court. Admin dashboard integration |
+| 86 | Gig filters, Search, Recommendations | ✅ Done | — | 🔥 Critical | Marketplace | `MarketplaceSidebar.tsx` — category, ELO range, verified, delivery days, SP range. Search by title/description. Sort by Trending/Newest/Price. `useMarketplaceData.ts` queries with all filters | AI-powered recommendations missing | Add recommendation engine: edge function using user history + skill matching to suggest gigs |
+| 88 | Test Suite | 🟡 Partial | 🟠 Medium | 🔥 Critical | Infrastructure | vitest configured. 5 test files, ~15 tests. `Footer.test`, `Navbar.test`, `email-validation.test`, `utils.test`, `routes.test` | ~0% meaningful coverage. No integration tests, no E2E, no API tests | Expand unit tests per feature. Add integration tests for auth flow, SP transfer, workspace creation. E2E with Playwright for critical paths |
+| 90 | Email Verification, Uni badges | 🟡 Partial | 🟢 Easy | 🔥 Critical | Auth | `config.toml` has `enable_confirmations = false`. `profiles.university` field. `profiles.id_verified` | Email verification DISABLED. No university badge system | Enable email confirmations in config. Create `university_badges` table with partner unis. Verify .edu email domains |
+| 92 | Main dashboard (buyer + seller) | 🎨 Needs Redesign | 🟠 Medium | 🔥 Critical | Dashboard | Same as Req 4. Full dashboard with Overview/Gigs/Create/Court/Guilds/Wallet/Analytics/Settings | Design not approved. Missing: order history, tax breakdown, bid tracking | Rebuild UI once design provided. Add order lifecycle tracking. SP ledger view with tax details |
+| 94 | Guild pages | 🎨 Needs Redesign | 🟠 Medium | ⚡ High | Guilds | `GuildPage.tsx`, `BrowseGuildsPage.tsx`, `GuildDashboardPage.tsx`. Browse queries live data | Design not approved | Rebuild UI once design provided |
+| 95 | Unlock swapping formats progressively | 🔴 Not Built | 🟠 Medium | 📌 Low | Gamification | All formats available to all users | No progression gating | Add `format_access` logic: check `profiles.tier` before allowing format use. Bronze=Direct only, Silver=+Co-Creation, Gold=+Projects, etc. |
+| 96 | Workspace: messenger, video feed, whiteboard, status, settings | ✅ Done | — | 🔥 Critical | Workspace | `WorkspacePage.tsx` (1,390 lines). 15 panels: chat, whiteboard, video, files, stages, escrow, submit, dispute, settings, members, ai, bids, team, kanban, deadline | Whiteboard/video are placeholders (see Req 7) | See Req 7 for whiteboard + video |
+| 97 | Submit deliverable at end | ✅ Done | — | 🔥 Critical | Workspace | Submit panel — title, description, requirements checklist, file attachments. `workspace_deliverables` table | — | Done |
+| 98 | Revisions recorded | ✅ Done | — | 🔥 Critical | Workspace | `workspace_deliverables.revision_count` and `max_revisions` columns | Approve/request revision UI flow could be clearer | Add explicit "Request Revision" button on buyer side with reason field |
+| 99 | Pre-specify revision requests | 🟡 Partial | 🟢 Easy | ⚡ High | Workspace | Requirements can be added to deliverables. Max revisions configurable | No pre-specified revision templates | Add revision template builder in gig creation (Req 92 dashboard). Store as JSON on listing |
+| 100 | Automatic evidence submission in Skill Court | 🟡 Partial | 🟠 Medium | ⚡ High | Court | Evidence submission form in SkillCourtTab. `case_evidence` table | No automatic evidence collection (time tracking, activity logs) | On dispute filing: auto-attach `workspace_messages`, `workspace_files`, `workspace_stages` data as evidence entries. Log time spent viewing evidence |
+| 101 | Guild menu: settings, treasury, messenger, requests, invites, lending, roles | 🟡 Partial | 🟠 Medium | ⚡ High | Guilds | `GuildDashboardPage.tsx`. Treasury/loans tables exist | Most guild management UI is mock. No invitation flow, no lending UI | Wire treasury panel to `guild_treasury_log`. Build loan request/approve flow. Add guild messenger (reuse workspace chat components) |
+| 102 | Leaderboard with real-time data and badges | 🎨 Needs Redesign | 🟠 Medium | ⚡ High | Gamification | `LeaderboardPage.tsx` (679 lines, 7 tabs). Queries `profiles`, `guilds`, `guild_members`. `leaderboard_achievements`, `ranking_history` tables | Design not approved | Rebuild UI once design provided. Backend fully wired |
+| 103 | Full help center, knowledge base, docs, chatbot, forums, blog, success stories, certifications | 🎨 Needs Redesign | 🟠 Medium | ⚡ High | Help | `HelpPage.tsx` — knowledge base, status, bug bounty, reports (DB wired). AI chatbot (LiveChatWidget). Forums + Blog (DB wired). SuccessStories (hardcoded) | Design not approved. Missing: phone/email premium support, certifications page | Rebuild UI. Add success stories backend (Req 128). Build certifications page |
+| 105 | Featured listing, Profile highlighting (subscription-based) | 🟡 Partial | 🟠 Medium | 📌 Low | Economy | `listings.hot` boolean. `blog_posts.is_featured` | No subscription-based featuring, no profile highlighting | Add `is_featured` to listings with expiry. Profile highlight CSS variant for Pro subscribers |
+| 106 | Social Media and Payment processors | 🔴 Not Built | 🔴 Hard | 📌 Low | Payments | Social links on profiles (display only) | No Stripe, PayPal, payment integration | Integrate Stripe via edge function. Social OAuth (Google/GitHub login). Social sharing APIs |
+| 107 | Currency conversion and regional payment | 🔴 Not Built | 🔴 Hard | 📌 Low | Payments | Nothing | Nothing | Requires payment processor first (Req 106). Currency conversion API. Regional payment method support |
+| 108 | Matching on timezones, availability, ratings | 🟡 Partial | 🟠 Medium | ⚡ High | Marketplace | `profiles.timezone`, `profiles.availability`, `profiles.response_time` columns exist | No matching algorithm | Build matching edge function: score potential matches by timezone overlap, availability alignment, ELO compatibility. Surface in marketplace recommendations |
+| 110 | Marketplace search by category/trending/curated + like/follow system + verification | 🟡 Partial | 🟠 Medium | ⚡ High | Marketplace | Category filtering done. Trending sort (by views). Hot flag for popular | No curated/recommended. No like system. No follow system. No profile verification flow | Create `user_follows` table. `listing_likes` table. Curation: admin-flagged featured. Verification: ID upload + admin approval flow |
+| 112 | Newsletter, Email campaigns, Surveys | 🟡 Partial | 🟠 Medium | 📌 Low | Communication | `newsletter_subscriptions` table. Footer newsletter signup | No email campaign system, no survey system | Integrate email service (Resend/SendGrid via edge function). Create `surveys` table + survey builder |
+| 113 | Automatic Snapshots, backups, restores | 🟡 Partial | 🟠 Medium | 📌 Low | Infrastructure | Supabase provides automatic backups at infra level | No application-level snapshot/restore UI | Document backup procedures. Create manual snapshot edge function for critical data |
+| 114 | Password reset, account deletion, recovery, data export | 🟡 Partial | 🟢 Easy | ⚡ High | Auth | Supabase Auth handles password reset natively | No account deletion UI, no data export UI | Add "Delete Account" button in settings → `supabase.auth.admin.deleteUser()`. Data export: edge function to compile user data as JSON/CSV download |
+| 116 | Refunds, Chargebacks, Invoices, Tax forms, Analytics (revenue/growth/retention/cohort/funnel), Data viz, Scheduled reports, Real-time dashboards | 🟡 Partial | 🔴 Hard | ⚡ High | Analytics | Analytics page has revenue sections, growth charts, retention heatmap, funnel viz, cohort analysis, forecasting. `quarterly_reports` table | No refunds (no payment system). No invoices. No tax forms. No PDF export. No scheduled reports | Requires payment system first (Req 106). Invoice generation edge function. PDF report generation. Cron job for scheduled reports |
+| 118 | Log everything + Enterprise mode + Migration readiness | 🟡 Partial | 🟠 Medium | 🔥 Critical | Infrastructure | **Logging**: `activity_log`, `page_sessions`, `click_heatmap`, `error_log`, `search_analytics`, `funnel_events` tables. 200+ data points per session. **Enterprise**: `EnterprisePage.tsx`, `EnterpriseDashboardPage.tsx`, 5 enterprise tables, demo booking + quotes wired. **Migration**: `MIGRATION.md` with full guide. Standard Supabase SDK. All SQL in migrations. Only Lovable dep: `@lovable.dev/cloud-auth-js` with fallback | Enterprise hiring pipeline not functional. Some logging gaps | Expand telemetry to capture all file uploads, messages, gig actions. Wire enterprise candidate pipeline |
+| 119 | Remake: Marketplace, Dashboard, Profiles, User/Guild search, Workspaces | 🎨 Needs Redesign | 🔴 Hard | 🔥 Critical | Design | All pages exist and are functional with backend wiring | Design not approved — user will provide new designs | Full UI rebuild of: `MarketplacePage.tsx` + all sub-pages, `DashboardPage.tsx`, `ProfilePage.tsx`, `BrowseUsersPage.tsx`, `BrowseGuildsPage.tsx`, `WorkspacePage.tsx`. Keep all backend logic |
+| 120 | Clips algorithm with tags and prefetch | 🟡 Partial | 🟠 Medium | ⚡ High | Clips | TikTok scroll UI. Mock clips with gradients. Randomized order | No real algorithm, no prefetch, no DB | See Req 18. Add prefetch: load next 3 clips ahead. Algorithm: score by recency, views, user skill match. Tag-based filtering from `clips.tags` |
+| 121 | Check backend wiring, buttons, search bars, operations/help/roadmap | 🟡 Partial | 🟠 Medium | 🔥 Critical | QA | Most pages wired. Known issues: proposal modal doesn't create workspace, auction bids have no submission endpoint | Dead-end buttons on proposals and bids | Wire ProposalModal submit → workspace creation. Wire bid placement. Audit all CTAs across all pages |
+| 122 | Remake Analytics page (80+ sections, PDFs, monthly reports) | 🎨 Needs Redesign | 🔴 Hard | ⚡ High | Analytics | 22 sections exist. Charts, heatmaps, funnels, forecasting | Design not approved. Missing PDF generation, scheduled reports, 60+ more sections | Rebuild UI. PDF: edge function with html-to-pdf. Monthly: cron + email delivery |
+| 123 | Remake Leaderboard + backend | 🎨 Needs Redesign | 🟠 Medium | ⚡ High | Gamification | 7-tab leaderboard reading live data | Design not approved | Rebuild UI once design provided. Backend fully wired |
+| 124 | Remake Events (functional + backend) | 🎨 Needs Redesign | 🟠 Medium | ⚡ High | Community | `events`, `event_registrations`, `tournaments` tables. `EventsPage.tsx` queries DB | Design not approved | Rebuild UI. Add event creation form. Tournament bracket system |
+| 125 | Check for dummy links on all pages | 🟡 Partial | 🟢 Easy | 🔥 Critical | QA | Most internal nav uses React Router `Link`. Known: social media links (# hrefs), some CTAs → `/coming-soon` | Systematic audit not done | Run codebase search for `href="#"` and `/coming-soon`. Replace with real routes or remove. Audit every page manually |
+| 126 | Mobile-first design plan | ✅ Done | — | ⚡ High | Mobile | `MobileBottomNav.tsx`. Responsive layouts. ClipsPage immersive mobile. `useIsMobile()` hook | Not a native app | Plan documented. PWA enhancements possible |
+| 127 | Enhance Blog and Forums + backend | 🎨 Needs Redesign | 🟠 Medium | ⚡ High | Community | Blog: `blog_posts`, `blog_comments`, `blog_likes` — CRUD wired. Forums: `forum_categories`, `forum_threads`, `forum_comments`, `forum_votes` — wired | Design not approved. Missing: rich text editor, image uploads, pinning/moderation | Rebuild UI. Add TipTap/ProseMirror editor. Image upload to storage bucket. Admin pin/lock controls |
+| 128 | Backend for success stories | 🔴 Not Built | 🟠 Medium | ⚡ High | Community | `SuccessStoriesPage.tsx` with hardcoded content | No `success_stories` table | Create `success_stories` table (user_id, title, content, cover_image, metrics JSON, is_featured, created_at). Seed with existing hardcoded data. Admin curation panel |
+| 129 | Core functionality: order lifecycle | 🔴 Not Built | 🔴 Hard | 🔥 Critical | Core | Proposals exist but don't trigger workspace creation. No SP transfer on completion. Review submission not linked | Complete order lifecycle: Browse → Propose → Accept → Workspace → Deliver → Review → Pay | Create `orders` table (listing_id, buyer_id, seller_id, status, workspace_id). `accept_proposal()` function: create order + workspace + escrow + members. `complete_order()`: trigger review + SP transfer + transaction code. This is THE critical missing piece |
+| 130 | Connectors and MCP servers for workspaces | 🔴 Not Built | 🔴 Hard | 📌 Low | Infrastructure | Nothing | No third-party API connectors, no MCP | Evaluate MCP integration for workspace AI. Add connector framework for GitHub, Figma, etc. Premium feature |
+
+---
+
+## Priority Summary
+
+### 🔥 Critical (Must ship for launch) — 20 items
+| # | Requirement | Status |
+|---|------------|--------|
+| 1 | Signup + onboarding | ✅ Done |
+| 2 | Starting SP rewards | 🟡 Needs trigger |
+| 3 | SP economy + tax | 🟡 Needs transfer function |
+| 4 | User dashboard | 🎨 Awaiting design |
+| 21 | Multiple formats | ✅ Done |
+| 22 | Skill Court | ✅ Done |
+| 25 | ELO Rating | 🟡 Needs calc engine |
+| 28 | Transaction verification | ✅ Done |
+| 29 | Multi-stage escrow | ✅ Done |
+| 63 | 10K stress test | 🔴 Not done |
+| 64 | Optimizations | 🟡 Partial |
+| 69 | Reviews/ratings | 🟡 Needs wiring |
+| 72 | Gig reports | ✅ Done |
+| 74 | Role access | ✅ Done |
+| 86 | Search/filters | ✅ Done |
+| 88 | Test suite | 🟡 Minimal |
+| 90 | Email verification | 🟡 Disabled |
+| 92 | Main dashboard | 🎨 Awaiting design |
+| 96 | Workspace | ✅ Done |
+| 97 | Submit deliverable | ✅ Done |
+| 98 | Revisions | ✅ Done |
+| 118 | Logging/enterprise/migration | 🟡 Partial |
+| 119 | Redesign core pages | 🎨 Awaiting design |
+| 121 | Backend wiring audit | 🟡 Partial |
+| 125 | Dummy link audit | 🟡 Not done |
+| 129 | Core order lifecycle | 🔴 Not built |
+
+### ⚡ High (Important for good launch) — 35 items
+See table above for all items marked ⚡ High.
+
+### 📌 Low (Post-launch) — 15 items
+See table above for all items marked 📌 Low.
+
+---
+
+## Difficulty Summary
+
+### 🟢 Easy (1-2 sessions) — 8 items
+Reqs: 2, 19, 90, 99, 114, 125, 126 + parts of 1
+
+### 🟠 Medium (2-4 sessions) — 35 items
+Reqs: 3, 4, 5, 6, 12, 14, 15, 16, 18-parts, 24, 25, 35, 41, 43, 45-parts, 53, 55, 57, 59, 61, 64, 68, 69, 73, 83, 88, 92, 94, 95, 100, 101, 102, 108, 110, 112, 113, 116-parts, 120, 121, 122-parts, 123, 124, 127, 128
+
+### 🔴 Hard (4+ sessions) — 22 items
+Reqs: 5, 7, 10, 11, 18, 31, 37, 45, 47, 49, 51, 63, 76, 78, 81, 84, 106, 107, 116, 119, 129, 130
+
+---
+
+## Redesign Queue (Awaiting User Design)
+These items are functionally built but need UI rebuild once design is provided:
+
+| # | Page | Current File | Lines |
+|---|------|-------------|-------|
+| 4/92 | Dashboard | `src/features/dashboard/DashboardPage.tsx` | 1,124 |
+| 6 | Profile | `src/features/profile/ProfilePage.tsx` | 674 |
+| 45/122 | Analytics | `src/features/analytics/AnalyticsPage.tsx` | 753 |
+| 94 | Guild Pages | `src/features/guild/GuildPage.tsx` + 2 more | ~600 |
+| 102/123 | Leaderboard | `src/features/leaderboard/LeaderboardPage.tsx` | 679 |
+| 103 | Help Center | `src/features/help/HelpPage.tsx` | ~500 |
+| 119 | Marketplace | `src/features/marketplace/MarketplacePage.tsx` + 7 sub-pages | ~2,000 |
+| 119 | Workspaces | `src/features/workspace/WorkspacePage.tsx` | 1,390 |
+| 119 | Browse Users/Guilds | `src/features/users/BrowseUsersPage.tsx` + guilds | ~400 |
+| 124 | Events | `src/features/events/EventsPage.tsx` | ~500 |
+| 127 | Blog + Forums | `src/features/blog/BlogPage.tsx` + `ForumsPage.tsx` | ~800 |
+
+---
+
+## Execution Order (Recommended)
+
+### Phase 1: Core Engine (Before any redesign)
+1. **Req 129**: Order lifecycle (`orders` table, `accept_proposal()`, `complete_order()`)
+2. **Req 3**: SP transfer function with tax
+3. **Req 2**: SP signup bonus trigger
+4. **Req 25**: ELO calculation engine
+5. **Req 69**: Wire reviews after completion
+6. **Req 90**: Enable email verification
+7. **Req 16**: Stage-based SP release automation
+
+### Phase 2: Backend Completion
+8. **Req 35**: Auction bid submission
+9. **Req 18/53/120**: Clips backend (table, upload, algorithm)
+10. **Req 43**: Achievement/streak triggers
+11. **Req 19**: Badge automation
+12. **Req 100**: Auto evidence in court
+13. **Req 14/101**: Guild CRUD + management
+14. **Req 128**: Success stories backend
+15. **Req 121**: Full backend wiring audit + fix dead buttons
+16. **Req 125**: Dummy link audit
+
+### Phase 3: Redesign (After user provides designs)
+17. **Req 119**: Marketplace, Dashboard, Profiles, Workspaces
+18. **Req 102/123**: Leaderboard
+19. **Req 45/122**: Analytics
+20. **Req 124**: Events
+21. **Req 127**: Blog + Forums
+22. **Req 94**: Guild pages
+23. **Req 103**: Help center
+
+### Phase 4: Advanced Features
+24. **Req 5/73**: Admin dashboard + moderator tools
+25. **Req 78**: Global messenger
+26. **Req 84**: Automated moderation
+27. **Req 76**: Tipping, lending, bonus pools
+28. **Req 110**: Like/follow system
+29. **Req 108**: Smart matching
+
+### Phase 5: Infrastructure & Scale
+30. **Req 63**: Stress testing
+31. **Req 64**: Optimizations (materialized views, FTS indexes)
+32. **Req 88**: Comprehensive test suite
+33. **Req 114**: Account deletion + data export
+34. **Req 113**: Backup documentation
+
+### Phase 6: Post-Launch
+35. **Req 47**: Dynamic pricing + subscriptions
+36. **Req 106/107**: Payment processors + currency
+37. **Req 37**: LinkedIn-style network
+38. **Req 10/11**: Skill Academy + tutors
+39. **Req 130**: MCP/connectors
+40. **Req 71**: Spectating
+41. **Req 51**: Video feed + timelapse
