@@ -97,16 +97,15 @@ const AnimatedRoutes = () => {
           <Route path="/transaction" element={<TransactionLookupPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/events" element={<EventsPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/workspace/:id" element={<WorkspacePage />} />
+          <Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
+          <Route path="/workspace/:id" element={<RequireAuth><WorkspacePage /></RequireAuth>} />
           <Route path="/profile/:userId" element={<ProfilePage />} />
           <Route path="/guild/:guildId" element={<GuildPage />} />
-          <Route path="/guild-dashboard/:guildId" element={<GuildDashboardPage />} />
-          <Route path="/enterprise-dashboard" element={<EnterpriseDashboardPage />} />
+          <Route path="/guild-dashboard/:guildId" element={<RequireAuth><GuildDashboardPage /></RequireAuth>} />
+          <Route path="/enterprise-dashboard" element={<RequireAuth><EnterpriseDashboardPage /></RequireAuth>} />
           <Route path="/success-stories" element={<SuccessStoriesPage />} />
-          <Route path="/saved" element={<SavedPostsPage />} />
-          <Route path="/guilds" element={<BrowseGuildsPage />} />
-          <Route path="/users" element={<BrowseUsersPage />} />
+          <Route path="/saved" element={<RequireAuth><SavedPostsPage /></RequireAuth>} />
+          <Route path="/discover" element={<DiscoverPage />} />
           <Route path="/clips" element={<ClipsPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/coming-soon" element={<ComingSoonPage />} />

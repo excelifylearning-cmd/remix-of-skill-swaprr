@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { path: "/marketplace", label: "Market", icon: Store },
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/clips", label: "Clips", icon: Film },
-  { path: "/guilds", label: "Guilds", icon: Shield },
+  { path: "/discover", label: "Discover", icon: Shield },
   { path: "/forums", label: "Forums", icon: MessageSquare },
 ];
 
