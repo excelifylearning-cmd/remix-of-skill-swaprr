@@ -687,7 +687,7 @@ const GuildsTab = () => {
         <Users size={32} className="mx-auto mb-3 text-muted-foreground/30" />
         <p className="text-foreground font-medium mb-1">Discover New Guilds</p>
         <p className="text-sm text-muted-foreground mb-4">Join communities of like-minded swappers</p>
-        <Link to="/guilds" className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <Link to="/discover?tab=guilds" className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
           Browse Guilds <ArrowRight size={14} />
         </Link>
       </div>
