@@ -13,10 +13,10 @@ const NAV_ITEMS = [
 ];
 
 const APP_PATHS = [
-  "/marketplace", "/dashboard", "/clips", "/guilds", "/forums",
+  "/marketplace", "/dashboard", "/clips", "/discover", "/forums",
   "/profile", "/guild", "/workspace", "/leaderboard", "/analytics",
   "/transaction", "/events", "/enterprise-dashboard", "/guild-dashboard",
-  "/saved", "/users",
+  "/saved",
 ];
 
 const MobileBottomNav = () => {
