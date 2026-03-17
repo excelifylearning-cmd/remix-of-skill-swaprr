@@ -12,6 +12,7 @@ import CookieConsent from "@/components/shared/CookieConsent";
 import MobileBottomNav from "@/components/shared/MobileBottomNav";
 import TelemetryProvider from "@/components/shared/TelemetryProvider";
 import { AuthProvider } from "@/lib/auth-context";
+import RequireAuth from "@/components/shared/RequireAuth";
 
 const HomePage = lazy(() => import("./features/home/HomePage"));
 const AboutPage = lazy(() => import("./features/about/AboutPage"));
