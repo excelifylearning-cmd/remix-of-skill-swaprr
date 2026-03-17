@@ -8,15 +8,15 @@ const NAV_ITEMS = [
   { path: "/marketplace", label: "Market", icon: Store },
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/clips", label: "Clips", icon: Film },
-  { path: "/guilds", label: "Guilds", icon: Shield },
+  { path: "/discover", label: "Discover", icon: Shield },
   { path: "/forums", label: "Forums", icon: MessageSquare },
 ];
 
 const APP_PATHS = [
-  "/marketplace", "/dashboard", "/clips", "/guilds", "/forums",
+  "/marketplace", "/dashboard", "/clips", "/discover", "/forums",
   "/profile", "/guild", "/workspace", "/leaderboard", "/analytics",
   "/transaction", "/events", "/enterprise-dashboard", "/guild-dashboard",
-  "/saved", "/users",
+  "/saved",
 ];
 
 const MobileBottomNav = () => {
