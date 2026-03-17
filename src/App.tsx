@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, ReactNode } from "react";
 import ScrollToTop from "@/components/shared/ScrollToTop";
 import LoadingScreen from "@/components/shared/LoadingScreen";
 import LiveChatWidget from "@/components/shared/LiveChatWidget";
