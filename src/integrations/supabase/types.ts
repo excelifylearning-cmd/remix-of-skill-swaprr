@@ -1637,6 +1637,7 @@ export type Database = {
           created_at: string
           created_by: string
           description: string
+          guild_sections: Json | null
           id: string
           is_public: boolean
           name: string
@@ -1656,6 +1657,7 @@ export type Database = {
           created_at?: string
           created_by: string
           description?: string
+          guild_sections?: Json | null
           id?: string
           is_public?: boolean
           name: string
@@ -1675,6 +1677,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           description?: string
+          guild_sections?: Json | null
           id?: string
           is_public?: boolean
           name?: string
@@ -2169,6 +2172,7 @@ export type Database = {
           availability: string | null
           avatar_emoji: string | null
           avatar_url: string | null
+          banner_url: string | null
           bio: string | null
           certificates: Json | null
           created_at: string
@@ -2178,6 +2182,7 @@ export type Database = {
           email: string
           full_name: string
           github_url: string | null
+          hero_color: string | null
           hourly_rate: string | null
           id: string
           id_verified: boolean | null
@@ -2192,6 +2197,7 @@ export type Database = {
           portfolio_items: Json | null
           portfolio_url: string | null
           preferred_comm: string | null
+          profile_sections: Json | null
           referral_code: string | null
           referred_by: string | null
           response_time: string | null
@@ -2214,6 +2220,7 @@ export type Database = {
           availability?: string | null
           avatar_emoji?: string | null
           avatar_url?: string | null
+          banner_url?: string | null
           bio?: string | null
           certificates?: Json | null
           created_at?: string
@@ -2223,6 +2230,7 @@ export type Database = {
           email?: string
           full_name?: string
           github_url?: string | null
+          hero_color?: string | null
           hourly_rate?: string | null
           id?: string
           id_verified?: boolean | null
@@ -2237,6 +2245,7 @@ export type Database = {
           portfolio_items?: Json | null
           portfolio_url?: string | null
           preferred_comm?: string | null
+          profile_sections?: Json | null
           referral_code?: string | null
           referred_by?: string | null
           response_time?: string | null
@@ -2259,6 +2268,7 @@ export type Database = {
           availability?: string | null
           avatar_emoji?: string | null
           avatar_url?: string | null
+          banner_url?: string | null
           bio?: string | null
           certificates?: Json | null
           created_at?: string
@@ -2268,6 +2278,7 @@ export type Database = {
           email?: string
           full_name?: string
           github_url?: string | null
+          hero_color?: string | null
           hourly_rate?: string | null
           id?: string
           id_verified?: boolean | null
@@ -2282,6 +2293,7 @@ export type Database = {
           portfolio_items?: Json | null
           portfolio_url?: string | null
           preferred_comm?: string | null
+          profile_sections?: Json | null
           referral_code?: string | null
           referred_by?: string | null
           response_time?: string | null
