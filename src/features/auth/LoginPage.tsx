@@ -80,14 +80,14 @@ const LoginPage = () => {
               <p className="mb-8 text-center text-sm text-muted-foreground">Log in to continue swapping skills.</p>
 
               {error && (
-                <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/5 p-3">
+                <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="mb-4 flex items-center justify-center gap-2 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-center">
                   <AlertCircle size={14} className="text-destructive shrink-0" />
                   <p className="text-xs text-destructive">{error}</p>
                 </motion.div>
               )}
 
               {success && (
-                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mb-4 flex items-center gap-2 rounded-lg border border-skill-green/20 bg-skill-green/5 p-3">
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mb-4 flex items-center justify-center gap-2 rounded-lg border border-skill-green/20 bg-skill-green/5 p-3 text-center">
                   <CheckCircle2 size={14} className="text-skill-green shrink-0" />
                   <p className="text-xs text-skill-green">Login successful! Redirecting to dashboard...</p>
                 </motion.div>
